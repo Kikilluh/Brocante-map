@@ -41,9 +41,11 @@
       "id": "openagenda",
       "type": "openagenda",
       "enabled": true,
-      "_comment": "Nécessite OPENAGENDA_KEY. Liste des agendas (UID) à interroger.",
+      "_comment": "Nécessite OPENAGENDA_KEY. 'agendas' = UID figés ; 'discover' = recherche automatique d'agendas (liste écrite dans les logs).",
       "agendas": [],
-      "search": "brocante vide-grenier braderie"
+      "discover": ["Touraine", "Indre-et-Loire", "Tours", "Amboise", "Chinon", "Loches", "Centre-Val de Loire"],
+      "maxDiscovered": 40,
+      "searchTerms": ["brocante", "vide-grenier", "braderie", "puces", "bourse"]
     },
     {
       "id": "manual",
