@@ -60,6 +60,13 @@ jobs:
           SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
           echo "$SA" | jq -r '"project_id de la clé : \(.project_id)\ncompte de service : \(.client_email)"' || echo "La clé n'est pas un JSON valide"
+          echo "$SA" > "$RUNNER_TEMP/sa.json"
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/sa.json" >/dev/null 2>&1 || true
+          echo "--- Projets accessibles par ce compte ---"
+          gcloud projects list --format="table(projectId,projectNumber,name)" 2>&1 || true
+          echo "--- Projet n° 430321816133 ---"
+          gcloud projects describe 430321816133 --format="value(projectId,name)" 2>&1 || true
+          rm -f "$RUNNER_TEMP/sa.json"
 
       - name: Déploiement Firebase Hosting
         if: env.HAS_FIREBASE == 'true'
