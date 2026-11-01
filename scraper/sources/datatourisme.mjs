@@ -99,6 +99,7 @@ async function runApi(source, { departments, log }) {
   const raws = [];
   const seen = new Set();
   let logged = false;
+  let loggedDetail = false;
 
   for (const term of source.searchTerms ?? ['brocante']) {
     let url = new URL(base);
@@ -121,12 +122,30 @@ async function runApi(source, { departments, log }) {
         const id = n['@id'] ?? n.uuid ?? n.id ?? JSON.stringify(n).slice(0, 200);
         if (seen.has(id)) continue;
         seen.add(id);
-        for (const r of mapNode(n)) {
-          // filtre géographique côté client (l'API cherche dans toute la France)
-          if (r.dept && !departments.includes(r.dept)) continue;
-          raws.push(r);
-          count++;
+        let mapped = mapNode(n);
+        // filtre géographique côté client (l'API cherche dans toute la France)
+        mapped = mapped.filter((r) => !r.dept || departments.includes(r.dept));
+        if (!mapped.length) continue;
+        // La liste ne contient pas les dates (takesPlaceAt) : on lit la fiche complète.
+        if (mapped.every((r) => !r.start) && n.uuid) {
+          try {
+            const detailUrl = new URL(`${base.replace(/\/$/, '')}/${n.uuid}`);
+            detailUrl.searchParams.set('api_key', key);
+            const raw = await fetchText(detailUrl.href, { json: true, checkRobots: false, headers: { 'X-API-KEY': key } });
+            const full = raw?.object ?? raw?.data ?? listOf(raw)[0] ?? raw;
+            if (!loggedDetail) {
+              loggedDetail = true;
+              log(`  [diagnostic] clés d'une fiche : ${Object.keys(full ?? {}).join(', ')}`);
+            }
+            mapped = mapNode({ ...n, ...full }).filter((r) => !r.dept || departments.includes(r.dept));
+          } catch (e) {
+            log(`  fiche ${n.uuid} → ${e.message}`);
+          }
         }
+        const dated = mapped.filter((r) => r.start);
+        if (mapped.length && !dated.length) log(`  sans date (ignoré) : ${mapped[0].title} – ${mapped[0].city ?? '?'}`);
+        raws.push(...dated);
+        count += dated.length;
       }
       const next = nextUrl(data, url.href);
       if (next) {

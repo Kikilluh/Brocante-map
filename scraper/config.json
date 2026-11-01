@@ -35,7 +35,7 @@
       "pageSize": 100,
       "pageSizeParam": "page_size",
       "pageParam": "page",
-      "maxPagesPerTerm": 30
+      "maxPagesPerTerm": 20
     },
     {
       "id": "openagenda",
