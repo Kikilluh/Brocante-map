@@ -5,7 +5,7 @@ const CATS = {
   spectacle: 'Spectacles',
   exposition: 'Expos & musées',
   visite: 'Visites & patrimoine',
-  atelier: 'Ateliers & stages',
+  atelier: 'Ateliers atelier: 'Ateliers & stages', animations',
   rando: 'Randos & nature',
   sport: 'Sport',
   fete: 'Fêtes & festivals',

@@ -3,15 +3,15 @@
 // Catégories d'activités. L'ordre compte : la première qui correspond l'emporte.
 export const CATEGORIES = [
   ['brocante', /brocante|vide[\s-]?greniers?|vide[\s-]?maisons?|vide[\s-]?dressing|braderie|\bpuces\b|bric[\s-]?[àa][\s-]?brac|bourse aux|\btroc\b|antiquit/i],
-  ['atelier', /atelier|\bstages?\b|initiation|\bcours\b|workshop|masterclass|apprendre [àa]/i],
+  ['atelier', /atelier|\bstages?\b|initiation|\bcours\b|workshop|masterclass|apprendre [àa]|\banimations?\b|\bjeux\b|jeu de (soci[ée]t[ée]|plateau)|ludique|escape game/i],
   ['concert', /concert|r[ée]cital|musique|chorale|\bjazz\b|orchestre|\bdj\b|fanfare|op[ée]ra|\brock\b|chanson/i],
-  ['spectacle', /spectacle|th[ée][aâ]tre|\bdanse\b|cirque|humour|one[\s-]?man|com[ée]die|cin[ée]ma|projection|marionnette|\bcontes?\b|ballet|magie/i],
+  ['spectacle', /spectacle|th[ée][aâ]tr|\bdanse\b|cirque|humour|one[\s-]?man|com[ée]die|\bcin[ée]|projection|marionnette|\bcont(e|es|eur|euse)\b|raconte|ballet|magie|repr[ée]sentation|impro/i],
   ['visite', /visite|patrimoine|ch[âa]teau|monument|guid[ée]e|journ[ée]es? europ[ée]ennes/i],
   ['exposition', /exposition|\bexpo\b|mus[ée]e|galerie|vernissage/i],
-  ['rando', /randonn[ée]e|\brandos?\b|balade|marche nordique|sortie nature|promenade|sentier|\bnature\b|ornitho|botani/i],
+  ['rando', /randonn[ée]e|\brandos?\b|balade|marche nordique|sortie nature|promenade|sentier|\bnature\b|ornitho|botani|champignon|jardin|for[êe]t/i],
   ['sport', /\bsports?\b|course|\btrail\b|marathon|tournoi|\bmatch\b|v[ée]lo|cyclo|triathlon|p[ée]tanque|\bgolf\b|kayak|cano[ëe]|\byoga\b/i],
   ['fete', /f[êe]te|festival|carnaval|feu d.artifice|\bbal\b|guinguette|soir[ée]e|no[ëe]l|halloween/i],
-  ['marche', /march[ée]|\bfoire\b|\bsalon\b|d[ée]gustation|gastronom|producteurs|\bvins?\b|\bloto\b/i],
+  ['marche', /march[ée]|\bfoire\b|\bsalon\b|d[ée]gustation|gastronom|producteurs|\bvins?\b|\bloto\b|ap[ée]ro|paysan/i],
   ['conference', /conf[ée]rence|rencontre|d[ée]bat|lecture|d[ée]dicace|caf[ée][\s-]philo|table ronde|projection-d[ée]bat/i],
 ];
 
