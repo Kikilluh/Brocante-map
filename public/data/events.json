@@ -1,12 +1,12 @@
 {
- "generatedAt": "2026-11-01T19:14:17.576Z",
+ "generatedAt": "2026-11-01T19:31:29.014Z",
  "departments": [
   "37"
  ],
  "sources": {
   "datatourisme": {
    "ok": true,
-   "count": 534
+   "count": 537
   },
   "openagenda": {
    "ok": true,
@@ -5902,6 +5902,50 @@
    "id": "2026-11-13-joue-les-tours-chloe-et-vassilena-serafimova"
   },
   {
+   "title": "Soirée culturelle - Auberge de la Treille",
+   "category": "fete",
+   "start": "2026-11-13",
+   "end": "2026-11-27",
+   "dates": [
+    [
+     "2026-11-13",
+     "2026-11-13",
+     "18:30"
+    ],
+    [
+     "2026-11-18",
+     "2026-11-18",
+     "18:30"
+    ],
+    [
+     "2026-11-27",
+     "2026-11-27",
+     "18:45"
+    ]
+   ],
+   "hours": "18:30",
+   "city": "Saint-Martin-le-Beau",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "Maison des solidarités",
+   "lat": 47.355327,
+   "lon": 0.909486,
+   "free": false,
+   "priceMin": 13,
+   "priceMax": 13,
+   "description": "Soirée culturelle de l'Auberge de la Treille. Rencontre-Cocktail. Participation 13€ (+7€ pour les personnes restant diner) réservation indispensable.",
+   "credit": "OFFICE DE TOURISME AUTOUR DE CHENONCEAUX, VALLEE DU CHER",
+   "image": "https://centre.media.tourinsoft.eu/upload/a-book-3101151-1280.jpg",
+   "imageCredit": "pixabay",
+   "sources": [
+    {
+     "id": "datatourisme",
+     "url": null
+    }
+   ],
+   "id": "2026-11-13-saint-martin-le-beau-soiree-culturelle-auberge-de-la-treille"
+  },
+  {
    "title": "BERNARD MABILLE",
    "category": "spectacle",
    "start": "2026-11-13",
@@ -7518,6 +7562,32 @@
    "id": "2026-11-18-tours-fred-tousch-patrick-de-valette-le-bateau-dans-la-rue"
   },
   {
+   "title": "Fête du Touraine Primeur",
+   "category": "fete",
+   "start": "2026-11-19",
+   "end": "2026-11-19",
+   "city": "Bléré",
+   "postcode": "37150",
+   "dept": "37",
+   "address": "32 Avenue du 11 Novembre 1918",
+   "lat": 47.32494,
+   "lon": 1.00668,
+   "free": false,
+   "priceMin": 15,
+   "priceMax": 15,
+   "description": "Venez partager un repas de qualité dans le cadre de la fête du Touraine primeur ! Jeudi 19 novembre 2026 à la cave coopérative Beaujardin pour une somme de 15 € Les places sont limitées, il est donc nécessaire d'effectuer une réservation avant le 14 novembre 2025 au 02 47 57 91 04 ou au 06 09 44",
+   "credit": "OFFICE DE TOURISME AUTOUR DE CHENONCEAUX, VALLEE DU CHER",
+   "image": "https://centre.media.tourinsoft.eu/upload/Affiche-Touraine-Primeur.jpg",
+   "imageCredit": "Mairie de Bléré",
+   "sources": [
+    {
+     "id": "datatourisme",
+     "url": null
+    }
+   ],
+   "id": "2026-11-19-blere-fete-du-touraine-primeur"
+  },
+  {
    "title": "BIRDSTONE (RELEASE PARTY !) MARAVE",
    "category": "concert",
    "start": "2026-11-19",
@@ -8488,7 +8558,7 @@
    "id": "2026-11-22-crissay-sur-manse-marche-de-noel"
   },
   {
-   "title": "La Cuisine - Compagnie Maboul Distorsion",
+   "title": "ANNULÉ - La Cuisine - Compagnie Maboul Distorsion",
    "category": "spectacle",
    "start": "2026-11-22",
    "end": "2026-11-22",
@@ -8500,17 +8570,17 @@
    "address": "1290 Rue de Chenonceaux",
    "lat": 47.3461692,
    "lon": 0.9522347,
-   "description": "Spectacle la cuisine - Compagnie Maboul Distorsion",
+   "description": "Le spectacle \"La Cuisine\" prévu le 22 novembre à Dierre est reporté à une date ultérieure",
    "credit": "OFFICE DE TOURISME AUTOUR DE CHENONCEAUX, VALLEE DU CHER",
-   "image": "https://centre.media.tourinsoft.eu/upload/27-La-Cuisine-Maboul-Distorsion-credit-Damien-Bossis-047-copie.jpg",
-   "imageCredit": "Damien Bossis",
+   "image": "https://centre.media.tourinsoft.eu/upload/Affiche-39.jpg",
+   "imageCredit": "CC",
    "sources": [
     {
      "id": "datatourisme",
      "url": null
     }
    ],
-   "id": "2026-11-22-dierre-la-cuisine-compagnie-maboul-distorsion"
+   "id": "2026-11-22-dierre-annule-la-cuisine-compagnie-maboul-distorsion"
   },
   {
    "title": "Marché de Noël",
