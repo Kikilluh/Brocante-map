@@ -34,6 +34,7 @@ jobs:
       - name: Collecte des événements
         run: npm run scrape
         env:
+          DATATOURISME_API_KEY: ${{ secrets.DATATOURISME_API_KEY }}
           DATATOURISME_FEED_URL: ${{ secrets.DATATOURISME_FEED_URL }}
           OPENAGENDA_KEY: ${{ secrets.OPENAGENDA_KEY }}
 

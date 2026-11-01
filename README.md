@@ -36,13 +36,15 @@ npm run serve     # site en local sur http://localhost:5000
 
 ## Sources de données
 
-| Source | Type | Mise en place |
+| Source | État | Mise en place |
 |---|---|---|
-| vide-greniers.org | pages HTML (balises schema.org `Event`) | rien à faire |
-| brocabrac.fr | pages HTML (balises schema.org `Event`) | rien à faire |
-| DATAtourisme | open data national des offices de tourisme (Licence Ouverte) | créer un flux JSON-LD sur [diffuseur.datatourisme.fr](https://diffuseur.datatourisme.fr), puis mettre son URL dans le secret `DATATOURISME_FEED_URL` |
-| OpenAgenda | API | secret `OPENAGENDA_KEY` et UID des agendas dans `config.json` |
-| Manuel | `data/manual.json` | `[{ "title", "start": "AAAA-MM-JJ", "end", "city", "postcode", "address" }]` |
+| DATAtourisme (API) | ✅ actif | clé API gratuite → secret `DATATOURISME_API_KEY` (ancien flux Diffuseur : `DATATOURISME_FEED_URL`, fermeture oct. 2027) |
+| OpenAgenda | ✅ actif | secret `OPENAGENDA_KEY` + UID des agendas dans `config.json` |
+| Manuel | ✅ actif | `data/manual.json` : `[{ "title", "start": "AAAA-MM-JJ", "end", "city", "postcode", "address" }]` |
+| vide-greniers.org | ⏸ désactivé | en attente d'accord écrit du site, puis `"enabled": true` |
+| brocabrac.fr | ⏸ désactivé | en attente d'accord écrit du site, puis `"enabled": true` |
+
+**API DATAtourisme :** le connecteur interroge `/v1/catalog` avec le paramètre `search` pour chaque mot-clé de `searchTerms`, puis ne garde que les départements configurés. Le format exact des réponses n'a pas pu être vérifié lors de l'écriture : au premier lancement, les logs affichent une ligne `[diagnostic]` avec la structure reçue. Les noms de paramètres (`pageSizeParam`, `pageParam`, `extraParams`) se règlent dans `config.json` sans toucher au code.
 
 Les sites d'annonces sont lus par un **extracteur générique schema.org** (JSON-LD, avec les microdonnées en repli). Ces sites publient en général ces balises pour Google, ce qui résiste mieux à un changement de mise en page qu'un parseur écrit pour un site précis. Pour ajouter un site, il suffit d'ajouter une entrée `structured-html` dans `config.json` avec ses URL de liste (`{dept}` et `{page}` sont remplacés).
 

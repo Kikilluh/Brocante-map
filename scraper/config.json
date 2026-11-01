@@ -8,7 +8,8 @@
     {
       "id": "vide-greniers.org",
       "type": "structured-html",
-      "enabled": true,
+      "enabled": false,
+      "_disabled": "Désactivé en attendant l'accord écrit du site (droit des bases de données).",
       "_comment": "Pages listant les événements d'un département. {dept} est remplacé par le code, {page} par le numéro de page.",
       "listUrls": ["https://vide-greniers.org/{dept}?page={page}"],
       "maxPages": 10,
@@ -17,7 +18,8 @@
     {
       "id": "brocabrac.fr",
       "type": "structured-html",
-      "enabled": true,
+      "enabled": false,
+      "_disabled": "Désactivé en attendant l'accord écrit du site (droit des bases de données).",
       "listUrls": ["https://brocabrac.fr/{dept}/?p={page}"],
       "maxPages": 10,
       "followLinksPattern": "^https?://(www\\.)?brocabrac\\.fr/\\d{2,3}/[^/]+/\\d+"
@@ -26,7 +28,14 @@
       "id": "datatourisme",
       "type": "datatourisme",
       "enabled": true,
-      "_comment": "Données ouvertes (Licence Ouverte). Créez un flux JSON-LD filtré sur 'Brocante / Vide-grenier' sur https://diffuseur.datatourisme.fr puis mettez son URL dans le secret DATATOURISME_FEED_URL."
+      "_comment": "Données ouvertes (Licence Ouverte). Clé API gratuite -> secret DATATOURISME_API_KEY. Les paramètres ci-dessous pourront être ajustés après lecture de https://api.datatourisme.fr/v1/docs.",
+      "apiUrl": "https://api.datatourisme.fr/v1/catalog",
+      "searchTerms": ["brocante", "vide-grenier", "braderie", "marché aux puces", "bourse aux jouets"],
+      "extraParams": {},
+      "pageSize": 100,
+      "pageSizeParam": "page_size",
+      "pageParam": "page",
+      "maxPagesPerTerm": 30
     },
     {
       "id": "openagenda",

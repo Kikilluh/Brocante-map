@@ -1,0 +1,21 @@
+{
+ "generatedAt": "2026-11-01T08:28:20.483Z",
+ "departments": [
+  "37"
+ ],
+ "sources": {
+  "datatourisme": {
+   "ok": false,
+   "error": "fetch failed"
+  },
+  "openagenda": {
+   "ok": true,
+   "count": 0
+  },
+  "manual": {
+   "ok": true,
+   "count": 0
+  }
+ },
+ "events": []
+}
