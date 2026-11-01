@@ -8,6 +8,7 @@
 
 import { fetchText } from '../lib/http.mjs';
 import { splitVenue } from '../lib/venues.mjs';
+import { isEventUrl } from '../lib/normalize.mjs';
 
 const arr = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
@@ -160,6 +161,8 @@ export function mapNode(n) {
       lat: fr(get(geo, 'latitude', 'lat')),
       lon: fr(get(geo, 'longitude', 'lon', 'lng')),
       url,
+      // hasContact.homepage = souvent le site général de l'organisateur, pas la page de l'événement
+      urlKind: url && !isEventUrl(url, title) ? 'site' : null,
       credit,
       ...readPrices(n),
       ...readAudience(n),

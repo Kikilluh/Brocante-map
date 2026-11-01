@@ -146,6 +146,20 @@ const num = (v) => (v == null || v === '' || !Number.isFinite(Number(v)) ? null 
  *         description, conditions, types, category, priceMin, priceMax, free, ageMin, ageMax, capacity, credit }
  * @returns {object|null}
  */
+const URL_STOP = new Set(['les', 'des', 'une', 'pour', 'avec', 'dans', 'sous', 'chez', 'aux', 'par', 'sur', 'son', 'ses', 'leur', 'exposition', 'visite', 'concert']);
+/**
+ * Lien propre à l'événement ? Les offices de tourisme renseignent souvent seulement le site général
+ * de l'organisateur (ex. page d'accueil ou d'actualités). On considère le lien comme spécifique si
+ * son chemin reprend un mot significatif du titre.
+ */
+export function isEventUrl(url, title = '') {
+  if (!url) return false;
+  let path;
+  try { path = slug(decodeURIComponent(new URL(url).pathname + new URL(url).search)); } catch { return false; }
+  const words = slug(title).split('-').filter((w) => w.length >= 4 && !URL_STOP.has(w));
+  return words.some((w) => path.includes(w));
+}
+
 export function makeEvent(raw, source) {
   const title = cleanText(raw.title);
   if (!title) return null;
@@ -198,6 +212,7 @@ export function makeEvent(raw, source) {
     capacity: num(raw.capacity) ?? parseCapacity(text),
     description,
     url: raw.url || null,
+    urlKind: raw.url && raw.urlKind ? raw.urlKind : null,
     credit: raw.credit || null,
     audience: raw.audience || null,
     image: raw.image || null,

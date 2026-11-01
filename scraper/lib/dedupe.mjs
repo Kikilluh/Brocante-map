@@ -25,6 +25,8 @@ function merge(a, b) {
     if (k === 'sources') continue;
     if (a[k] == null || a[k] === '') a[k] = b[k];
   }
+  // Un lien propre à l'événement (autre source) remplace un simple site d'organisateur
+  if (a.urlKind === 'site' && b.url && !b.urlKind) { a.url = b.url; a.urlKind = null; }
   if (b.description && (a.description?.length ?? 0) < b.description.length) a.description = b.description;
   for (const s of b.sources) if (!a.sources.some((x) => x.id === s.id)) a.sources.push(s);
   if (b.occurrences) {

@@ -360,6 +360,14 @@ const thumb = (x) => (x.image ? `<img class="thumb" src="${esc(x.image)}" alt=""
 const hero = (x) => (x.image ? `<figure class="hero"><img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">${x.imageCredit ? `<figcaption>${esc(x.imageCredit)}</figcaption>` : ''}</figure>` : '');
 
 // ---------- Fiche détaillée ----------
+// Lien principal d'un événement : billetterie, page de l'événement, ou seulement le site de l'organisateur
+function evLink(ev, short = false) {
+  if (!ev.url) return '';
+  if (ev.sources?.some((s) => s.id === 'ticketmaster')) return link(ev.url, 'Billets', 'primary');
+  if (ev.urlKind === 'site') return link(ev.url, short ? 'Site organisateur' : "Site de l'organisateur", 'primary');
+  return link(ev.url, short ? 'Site' : "Page de l'événement", 'primary');
+}
+const searchLink = (ev) => link(`https://www.google.com/search?q=${encodeURIComponent(`"${ev.title}" ${ev.city ?? ''}`.trim())}`, "Chercher l'événement");
 const link = (href, label, cls = '') => `<a class="${cls}" href="${esc(href)}" target="_blank" rel="noopener">${label}</a>`;
 function sourcesLine(x) {
   const s = (x.sources ?? []).map((s) => (s.url ? link(s.url, esc(SOURCE_NAMES[s.id] ?? s.id)) : esc(SOURCE_NAMES[s.id] ?? s.id))).join(' · ');
@@ -382,7 +390,8 @@ function eventDetail(ev) {
     ${state.group.set && notes.length ? `<p class="fitline">${notes.map(esc).join(' · ')}</p>` : ''}
     ${state.group.set && ev.priceMin == null && ev.free == null ? '<p class="fitline warn">Prix non précisé : vérifiez auprès de l\'organisateur.</p>' : ''}
     <div class="actions sticky">
-      ${ev.url ? link(ev.url, ev.sources?.some((s) => s.id === 'ticketmaster') ? 'Billets' : 'Site / infos', 'primary') : ''}
+      ${evLink(ev)}
+      ${!ev.url || ev.urlKind === 'site' ? searchLink(ev) : ''}
       ${link(`https://www.openstreetmap.org/directions?to=${ev.lat},${ev.lon}`, 'Itinéraire')}
       <button data-share>Partager</button>
     </div>
@@ -419,7 +428,7 @@ function popupHtml(x, isEv) {
     ? [priceLabel(x), ageLabel(x), x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean)
     : [x.distanceKm ? km(x.distanceKm) : '', x.duration ?? '', x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
   const main = isEv
-    ? (x.url ? link(x.url, x.sources?.some((s) => s.id === 'ticketmaster') ? 'Billets' : 'Site', 'primary') : '')
+    ? evLink(x, true)
     : (x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
   return `<div class="popcard">
     ${x.image ? `<img class="popimg" src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
