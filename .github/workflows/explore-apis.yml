@@ -1,0 +1,44 @@
+name: Exploration des API (diagnostic)
+
+# Lancement manuel : récupère la documentation et des exemples de réponses des API
+# et les enregistre sur la branche "exploration" (clés API masquées).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  explore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer docs et exemples
+        env:
+          DT: ${{ secrets.DATATOURISME_API_KEY }}
+          OA: ${{ secrets.OPENAGENDA_KEY }}
+        run: |
+          mkdir out && cd out
+          get() { curl -sS -L --max-time 60 -o "$1" "$2" -w "$1 -> %{http_code} %{content_type}\n" || echo "$1 -> échec"; }
+          get dt-docs.html            "https://api.datatourisme.fr/v1/docs"
+          get dt-swagger.html         "https://api.datatourisme.fr/v1/swagger"
+          for p in swagger.json openapi.json swagger/json docs/json swagger.yaml openapi.yaml api-docs; do
+            get "dt-$(echo $p | tr '/.' '__')" "https://api.datatourisme.fr/v1/$p"
+          done
+          get dt-catalog.json         "https://api.datatourisme.fr/v1/catalog?api_key=$DT&page_size=3"
+          uuid=$(jq -r '.objects[0].uuid // empty' dt-catalog.json)
+          [ -n "$uuid" ] && get dt-detail.json "https://api.datatourisme.fr/v1/catalog/$uuid?api_key=$DT"
+          get dt-search-concert.json  "https://api.datatourisme.fr/v1/catalog?api_key=$DT&page_size=3&search=concert%20Tours"
+          get oa-events.json          "https://api.openagenda.com/v2/agendas/54621/events?key=$OA&size=3&detailed=1"
+          # liens trouvés dans la doc (pour suivre des sous-pages)
+          grep -oE 'href="[^"]+"|"/v1/[^"]+"' dt-docs.html dt-swagger.html 2>/dev/null | sort -u > dt-links.txt || true
+          # masquer les clés partout
+          for f in *; do sed -i "s/$DT/REDACTED/g; s/$OA/REDACTED/g" "$f"; done
+          ls -la
+      - name: Enregistrer sur la branche exploration
+        run: |
+          cd out
+          git init -q -b exploration
+          git config user.name "brocante-map-bot"
+          git config user.email "brocante-map-bot@users.noreply.github.com"
+          git add -A && git commit -q -m "Exploration API $(date -u +%F)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" exploration
