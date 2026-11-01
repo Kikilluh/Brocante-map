@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-01T14:37:15.003Z",
+ "generatedAt": "2026-11-01T17:05:34.329Z",
  "departments": [
   "37"
  ],
@@ -10,7 +10,7 @@
   },
   "openagenda": {
    "ok": true,
-   "count": 18
+   "count": 17
   },
   "ticketmaster": {
    "ok": true,
@@ -824,7 +824,6 @@
    "free": false,
    "priceMin": 0,
    "priceMax": 5,
-   "ageMax": 12,
    "description": "Stands, ateliers, expositions, découvertes, rencontres et connaissances avec de multiples amoureux des reptiles, pédagogie, vente, restauration… Amphibiens et reptiles exotiques, mais aussi les espèces locales seront à l’honneur avec la présence d’AmphiRept. - De nombreux supports pédagogiques ser",
    "url": "https://www.amphirept.com/salon-reptiles-2026",
    "credit": "OFFICE DE TOURISME TOURAINE NATURE",
@@ -2998,30 +2997,6 @@
     }
    ],
    "id": "2026-11-01-tours-exposition-meuble-sommairement"
-  },
-  {
-   "title": "exposition · là où les organes oragent",
-   "category": "exposition",
-   "start": "2026-11-01",
-   "end": "2026-11-01",
-   "hours": "11h00–18h00",
-   "city": "Tours",
-   "postcode": "37000",
-   "dept": "37",
-   "venue": "Centre de création contemporaine Olivier Debré",
-   "address": "Jardin François Ier, 37000 Tours",
-   "lat": 47.395836,
-   "lon": 0.685401,
-   "description": "Lauréates du prix Mécénat Touraine Entreprises, Laura Bottereau & Marine Fiquet investissent les galeries du CCC OD.",
-   "url": "https://openagenda.com/cccod/events/73479380_exposition-la-ou-les-organes-oragent",
-   "credit": "Centre de création contemporaine Olivier Debré - CCC OD",
-   "sources": [
-    {
-     "id": "openagenda",
-     "url": "https://openagenda.com/cccod/events/73479380_exposition-la-ou-les-organes-oragent"
-    }
-   ],
-   "id": "2026-11-01-tours-exposition-la-ou-les-organes-oragent"
   },
   {
    "title": "Ciné enJoué : Justin le juste",
@@ -9565,7 +9540,6 @@
    "free": false,
    "priceMin": 0,
    "priceMax": 12,
-   "ageMax": 10,
    "description": "La Fabrique à théâtre propose aux amoureux de Molière, et à ceux qui vont le rencontrer, un réjouissant parcours parmi les scènes les plus fameuses de ses comédies, jouées selon les codes du 17ème siècle.",
    "url": "https://monts.fr/fr/rb/1448319/florilege-moliere",
    "credit": "Azay-Chinon Val de Loire Tourisme",
@@ -14095,7 +14069,6 @@
    "free": false,
    "priceMin": 0,
    "priceMax": 12,
-   "ageMax": 15,
    "description": "Coline Boulogne et Emma Spinelli forment le duo Lyre Straits, consacré aux musiques anciennes de la renaissance et du baroque. Le programme proposé par le duo est dédié au répertoire anglais des XVIe et XVIIe siècles. Coline et Emma explorent cette musique à travers différentes combinaisons.",
    "url": "https://sites.google.com/view/surlespasdejaneausten/accueil",
    "credit": "Loches Touraine Châteaux de la Loire",
