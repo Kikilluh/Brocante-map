@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-01T18:24:07.981Z",
+ "generatedAt": "2026-11-01T18:38:18.204Z",
  "departments": [
   "37"
  ],
@@ -10,7 +10,7 @@
   },
   "openagenda": {
    "ok": true,
-   "count": 17
+   "count": 16
   },
   "ticketmaster": {
    "ok": true,
@@ -989,32 +989,6 @@
     }
    ],
    "id": "2026-11-01-amboise-atelier-d-automne-a-la-pagode-de-chanteloup"
-  },
-  {
-   "title": "Halloween 2026",
-   "category": "fete",
-   "start": "2026-11-01",
-   "end": "2026-11-01",
-   "hours": "14h00–19h30",
-   "city": "Anché",
-   "postcode": "37500",
-   "dept": "37",
-   "venue": "Château des Brétignolles",
-   "address": "1 Route de Chinon, 37500 Anché",
-   "lat": 47.134038,
-   "lon": 0.320535,
-   "description": "Décorations et chasse aux bonbons",
-   "url": "https://openagenda.com/chateau-des-bretignolles/events/64953693_halloween-2026",
-   "credit": "Château des Brétignolles",
-   "image": "https://img.openagenda.com/main/8c49cd039a784992bdef4093b88dec2a.base.image.jpg",
-   "imageCredit": "Château des Brétignolles",
-   "sources": [
-    {
-     "id": "openagenda",
-     "url": "https://openagenda.com/chateau-des-bretignolles/events/64953693_halloween-2026"
-    }
-   ],
-   "id": "2026-11-01-anche-halloween-2026"
   },
   {
    "title": "Calder au cœur de la France",
