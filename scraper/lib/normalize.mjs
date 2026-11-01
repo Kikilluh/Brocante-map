@@ -194,7 +194,7 @@ export function makeEvent(raw, source) {
     priceMin,
     priceMax,
     ageMin: num(raw.ageMin) ?? a.ageMin,
-    ageMax: num(raw.ageMax) ?? a.ageMax,
+    ageMax: (() => { const m = num(raw.ageMax) ?? a.ageMax; return m != null && m < 18 ? m : null; })(),
     capacity: num(raw.capacity) ?? parseCapacity(text),
     description,
     url: raw.url || null,

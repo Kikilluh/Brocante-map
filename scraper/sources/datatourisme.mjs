@@ -75,7 +75,8 @@ function readAudience(n) {
     const mi = numOrNull(get(t, 'requiredMinAge')) ?? numOrNull(get(t, 'suggestedMinAge'));
     const ma = numOrNull(get(t, 'requiredMaxAge')) ?? numOrNull(get(t, 'suggestedMaxAge'));
     if (mi != null) mins.push(mi);
-    if (ma != null) maxs.push(ma);
+    // un âge maximum de 18 ans ou plus est un public tarifaire (« jeunes de moins de 26 ans »), pas une limite
+    if (ma != null && ma < 18) maxs.push(ma);
     const mp = numOrNull(get(t, 'requiredMaxPersonCount'));
     if (mp != null) maxPersons = maxPersons == null ? mp : Math.max(maxPersons, mp);
     const l = fr(get(t, 'label'));
