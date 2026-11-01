@@ -317,7 +317,7 @@ function renderList() {
   const inView = b?.contains ? current.filter((x) => b.contains([x.lat, x.lon])) : current;
   const n = inView.length;
   const total = current.length;
-  const noun = isEv ? `sortie${n > 1 ? 's' : ''}` : `lieu${n > 1 ? 'x' : ''} et activité${n > 1 ? 's' : ''}`;
+  const noun = isEv ? `événement${n > 1 ? 's' : ''}` : `lieu${n > 1 ? 'x' : ''} et activité${n > 1 ? 's' : ''}`;
   $('count').textContent = n === total ? `${n} ${noun}` : `${n} ${noun} ici · ${total} au total`;
   $('listCount').textContent = n;
   const ol = $('list');
@@ -488,7 +488,7 @@ $('detail').addEventListener('click', async (e) => {
   if (e.target.closest('[data-back]')) return unselect();
   if (e.target.closest('[data-share]')) {
     const url = location.href;
-    const title = $('detail').querySelector('h2')?.textContent ?? 'Sortie';
+    const title = $('detail').querySelector('h2')?.textContent ?? 'Événement';
     try {
       if (navigator.share) await navigator.share({ title, url });
       else { await navigator.clipboard.writeText(url); e.target.textContent = 'Lien copié ✓'; }
@@ -685,7 +685,7 @@ function renderGroup() {
   $$('#groupDialog .step').forEach((s) => { s.hidden = +s.dataset.step !== step; });
   $$('#groupDialog .step-tab').forEach((b, i) => { b.classList.toggle('done', i < step); b.setAttribute('aria-current', i === step ? 'step' : 'false'); });
   $('groupPrev').hidden = step === 0;
-  $('groupNext').textContent = step === 3 ? 'Voir nos sorties' : 'Suivant';
+  $('groupNext').textContent = step === 3 ? 'Voir nos idées' : 'Suivant';
   $('adults').textContent = draft.adults;
   const who = draft.kids.length ? 'famille' : draft.adults === 1 ? 'solo' : draft.adults === 2 ? 'couple' : draft.adults >= 3 ? 'amis' : null;
   $$('[data-gpreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.gpreset === who)));
@@ -849,3 +849,10 @@ updateInstallPill();
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
+
+// Toucher en dehors d'une fenêtre (sur la carte assombrie) la referme
+$$('dialog.modal').forEach((d) => d.addEventListener('click', (e) => {
+  if (e.target !== d) return;
+  const r = d.getBoundingClientRect();
+  if (e.clientY < r.top || e.clientY > r.bottom || e.clientX < r.left || e.clientX > r.right) d.close();
+}));

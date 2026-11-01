@@ -90,8 +90,11 @@ button { cursor: pointer; }
   /* Petit écran : le logo laisse sa place tant que le groupe n'est pas renseigné */
   .top:has(.group-btn:not(.set)) .brand { display: none; }
   .top { gap: 6px; }
-  .mode { padding: 6px 4px; }
-  .group-btn:not(.set) { padding: 0 10px; font-size: 13.5px; gap: 5px; }
+  .top { padding-left: 8px; padding-right: 8px; }
+  .mode { padding: 3px 7px; font-size: 12.5px; line-height: 1.1; white-space: normal; overflow: visible; flex: 1 1 auto; }
+  .modes { min-height: 40px; }
+  .icon-btn:not(.flat) { width: 38px; height: 38px; }
+  .group-btn:not(.set) { padding: 0 9px; font-size: 13px; gap: 4px; height: 38px; }
 }
 /* Recherche : repliée derrière la loupe sur mobile */
 .search {
@@ -369,3 +372,24 @@ button { cursor: pointer; }
 /* Poignée plus grande, plus facile à attraper */
 .sheet-handle { padding-top: 10px; }
 .grip { width: 48px; height: 6px; }
+/* Très petits écrans (≤ 340 px) : bouton groupe en icône seule */
+@media (max-width: 340px) {
+  .group-btn:not(.set) { width: 38px; padding: 0; justify-content: center; }
+  .group-btn .group-label { display: none; }
+}
+/* Mobile : les fenêtres s'ouvrent en panneau par le bas, la carte reste visible au-dessus */
+@media (max-width: 760px) {
+  .modal {
+    margin: auto 0 0; height: auto; max-height: 88dvh; border-radius: 20px 20px 0 0;
+    box-shadow: 0 -8px 30px rgba(0,0,0,.2);
+  }
+  .modal::backdrop { background: rgba(0,0,0,.3); }
+  .modal-inner { height: auto; max-height: 88dvh; }
+  .modal-head { padding-top: 14px; position: relative; }
+  .modal-head::before { content: ""; position: absolute; top: 6px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: var(--border); }
+  /* Assistant groupe : hauteur fixe pour ne pas sauter d'une étape à l'autre */
+  #groupDialog, #groupDialog .modal-inner { height: min(540px, 82dvh); }
+  .modal[open] { animation: sheet-up .22s ease-out; }
+}
+@keyframes sheet-up { from { transform: translateY(40px); opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .modal[open] { animation: none; } }
