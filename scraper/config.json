@@ -1,0 +1,47 @@
+{
+  "_comment": "Départements couverts. Pour passer à la France entière, ajoutez les codes (\"01\" … \"95\", \"2A\", \"2B\", \"971\"…).",
+  "departments": ["37"],
+  "horizonDays": 365,
+  "requestDelayMs": 1500,
+  "userAgent": "BrocanteMapBot/1.0 (+https://github.com/kikilluh/brocante-map)",
+  "sources": [
+    {
+      "id": "vide-greniers.org",
+      "type": "structured-html",
+      "enabled": true,
+      "_comment": "Pages listant les événements d'un département. {dept} est remplacé par le code, {page} par le numéro de page.",
+      "listUrls": ["https://vide-greniers.org/{dept}?page={page}"],
+      "maxPages": 10,
+      "followLinksPattern": "^https?://(www\\.)?vide-greniers\\.org/evenement/"
+    },
+    {
+      "id": "brocabrac.fr",
+      "type": "structured-html",
+      "enabled": true,
+      "listUrls": ["https://brocabrac.fr/{dept}/?p={page}"],
+      "maxPages": 10,
+      "followLinksPattern": "^https?://(www\\.)?brocabrac\\.fr/\\d{2,3}/[^/]+/\\d+"
+    },
+    {
+      "id": "datatourisme",
+      "type": "datatourisme",
+      "enabled": true,
+      "_comment": "Données ouvertes (Licence Ouverte). Créez un flux JSON-LD filtré sur 'Brocante / Vide-grenier' sur https://diffuseur.datatourisme.fr puis mettez son URL dans le secret DATATOURISME_FEED_URL."
+    },
+    {
+      "id": "openagenda",
+      "type": "openagenda",
+      "enabled": true,
+      "_comment": "Nécessite OPENAGENDA_KEY. Liste des agendas (UID) à interroger.",
+      "agendas": [],
+      "search": "brocante vide-grenier braderie"
+    },
+    {
+      "id": "manual",
+      "type": "manual",
+      "enabled": true,
+      "_comment": "Ajouts manuels : data/manual.json",
+      "file": "../data/manual.json"
+    }
+  ]
+}

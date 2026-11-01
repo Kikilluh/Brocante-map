@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Brocante Map</title>
+  <meta name="description" content="Carte interactive des brocantes, vide-greniers et braderies en Indre-et-Loire, filtrable par date.">
+  <meta name="theme-color" content="#c2410c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z' fill='%23c2410c'/%3E%3Ccircle cx='16' cy='13' r='4.5' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z" fill="currentColor"/><circle cx="16" cy="13" r="4.5" fill="var(--surface)"/></svg>
+      <div>
+        <h1>Brocante Map</h1>
+        <p class="subtitle" id="zone">Indre-et-Loire</p>
+      </div>
+    </div>
+    <button class="btn ghost only-mobile" id="toggleFilters" aria-expanded="false" aria-controls="filters">Filtres</button>
+  </header>
+
+  <section class="filters" id="filters" aria-label="Filtres">
+    <div class="presets" role="group" aria-label="Période rapide">
+      <button class="chip" data-preset="today">Aujourd'hui</button>
+      <button class="chip" data-preset="weekend">Ce week-end</button>
+      <button class="chip" data-preset="nextweekend">Week-end prochain</button>
+      <button class="chip" data-preset="7">7 jours</button>
+      <button class="chip" data-preset="30">30 jours</button>
+      <button class="chip" data-preset="all">Tout</button>
+    </div>
+    <div class="range">
+      <label>Du <input type="date" id="from"></label>
+      <label>au <input type="date" id="to"></label>
+    </div>
+    <div class="types" id="types" role="group" aria-label="Type d'événement"></div>
+    <label class="search">
+      <span class="sr-only">Commune ou mot-clé</span>
+      <input type="search" id="q" placeholder="Commune, mot-clé…" autocomplete="off">
+    </label>
+  </section>
+
+  <div id="demoBanner" class="banner" hidden>
+    Données de démonstration — la carte sera alimentée automatiquement dès la première collecte.
+  </div>
+
+  <main class="layout">
+    <div id="map" aria-label="Carte des brocantes"></div>
+    <aside class="panel" id="panel">
+      <button class="panel-handle only-mobile" id="panelHandle" aria-expanded="false">
+        <span id="count">…</span>
+      </button>
+      <div class="panel-head">
+        <strong id="countDesk">…</strong>
+        <label class="sort">Tri
+          <select id="sort">
+            <option value="date">par date</option>
+            <option value="distance">par distance</option>
+          </select>
+        </label>
+      </div>
+      <ol class="list" id="list"></ol>
+      <footer class="meta" id="meta"></footer>
+    </aside>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+  <script src="app.js" type="module"></script>
+</body>
+</html>

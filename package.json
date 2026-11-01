@@ -1,0 +1,14 @@
+{
+  "name": "brocante-map",
+  "private": true,
+  "type": "module",
+  "description": "Carte interactive des brocantes et vide-greniers, alimentée automatiquement.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "scrape": "node scraper/index.mjs",
+    "test": "node --test scraper/test/*.test.mjs",
+    "demo": "node scraper/tools/make-demo.mjs",
+    "serve": "npx --yes serve public -l 5000",
+    "deploy": "npx --yes firebase-tools deploy --only hosting"
+  }
+}

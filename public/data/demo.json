@@ -1,0 +1,3228 @@
+{
+ "demo": true,
+ "departments": [
+  "37"
+ ],
+ "events": [
+  {
+   "id": "demo-0",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-11-01",
+   "end": "2026-11-01",
+   "city": "L'Île-Bouchard",
+   "postcode": "37220",
+   "dept": "37",
+   "address": null,
+   "lat": 47.12577,
+   "lon": 0.40966,
+   "hours": "8h–17h",
+   "exhibitors": 44,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-46",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-11-02",
+   "end": "2026-11-02",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.85385,
+   "lon": 0.93578,
+   "hours": "7h–18h",
+   "exhibitors": 57,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-47",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2026-11-07",
+   "end": "2026-11-07",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.37608,
+   "lon": 0.81641,
+   "hours": "7h–18h",
+   "exhibitors": 147,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-75",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-07",
+   "end": "2026-11-07",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.42006,
+   "lon": 0.97407,
+   "hours": "8h–17h",
+   "exhibitors": 92,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-106",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-07",
+   "end": "2026-11-07",
+   "city": "Langeais",
+   "postcode": "37130",
+   "dept": "37",
+   "address": null,
+   "lat": 47.31626,
+   "lon": 0.40761,
+   "hours": "7h–18h",
+   "exhibitors": 114,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-126",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-11-07",
+   "end": "2026-11-07",
+   "city": "Montbazon",
+   "postcode": "37250",
+   "dept": "37",
+   "address": null,
+   "lat": 47.2872,
+   "lon": 0.72497,
+   "hours": "7h–18h",
+   "exhibitors": 30,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-134",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-11-07",
+   "end": "2026-11-07",
+   "city": "Langeais",
+   "postcode": "37130",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32758,
+   "lon": 0.41725,
+   "hours": "8h–17h",
+   "exhibitors": 158,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-137",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-11-08",
+   "end": "2026-11-08",
+   "city": "Sainte-Maure-de-Touraine",
+   "postcode": "37800",
+   "dept": "37",
+   "address": null,
+   "lat": 47.10921,
+   "lon": 0.63948,
+   "hours": "7h–18h",
+   "exhibitors": 47,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-45",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-11",
+   "end": "2026-11-11",
+   "city": "Chinon",
+   "postcode": "37500",
+   "dept": "37",
+   "address": null,
+   "lat": 47.16244,
+   "lon": 0.22711,
+   "hours": "8h–17h",
+   "exhibitors": 115,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-121",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-14",
+   "end": "2026-11-14",
+   "city": "Azay-le-Rideau",
+   "postcode": "37190",
+   "dept": "37",
+   "address": null,
+   "lat": 47.24973,
+   "lon": 0.46758,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-128",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-11-14",
+   "end": "2026-11-14",
+   "city": "Sainte-Maure-de-Touraine",
+   "postcode": "37800",
+   "dept": "37",
+   "address": null,
+   "lat": 47.11202,
+   "lon": 0.62857,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-5",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-11-15",
+   "end": "2026-11-15",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32795,
+   "lon": 0.60481,
+   "hours": "7h–18h",
+   "exhibitors": 58,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-20",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-11-15",
+   "end": "2026-11-16",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.37775,
+   "lon": 0.74018,
+   "hours": "7h–18h",
+   "exhibitors": 146,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-29",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-15",
+   "end": "2026-11-15",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39554,
+   "lon": 0.81699,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-33",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-15",
+   "end": "2026-11-15",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.33949,
+   "lon": 0.61299,
+   "hours": "8h–17h",
+   "exhibitors": 189,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-58",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-11-15",
+   "end": "2026-11-15",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.38879,
+   "lon": 0.60529,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-60",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-11-15",
+   "end": "2026-11-15",
+   "city": "Sainte-Maure-de-Touraine",
+   "postcode": "37800",
+   "dept": "37",
+   "address": null,
+   "lat": 47.12378,
+   "lon": 0.62704,
+   "hours": "8h–17h",
+   "exhibitors": 20,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-104",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-17",
+   "end": "2026-11-17",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.37626,
+   "lon": 0.73076,
+   "hours": "7h–18h",
+   "exhibitors": 173,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-15",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.37867,
+   "lon": 0.82992,
+   "hours": "7h–18h",
+   "exhibitors": 166,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-39",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.33306,
+   "lon": 0.62882,
+   "hours": "7h–18h",
+   "exhibitors": 81,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-41",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.35985,
+   "lon": 0.72899,
+   "hours": "8h–17h",
+   "exhibitors": 54,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-56",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "city": "Chinon",
+   "postcode": "37500",
+   "dept": "37",
+   "address": null,
+   "lat": 47.16242,
+   "lon": 0.23209,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-64",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-11-21",
+   "end": "2026-11-22",
+   "city": "Loches",
+   "postcode": "37600",
+   "dept": "37",
+   "address": null,
+   "lat": 47.12499,
+   "lon": 0.98213,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-86",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "city": "Joué-lès-Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34191,
+   "lon": 0.66092,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-94",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.29205,
+   "lon": 0.1724,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-102",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "city": "Saint-Cyr-sur-Loire",
+   "postcode": "37540",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39513,
+   "lon": 0.66239,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-11",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-11-22",
+   "end": "2026-11-23",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.2873,
+   "lon": 0.16908,
+   "hours": "8h–17h",
+   "exhibitors": 47,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-81",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2026-11-22",
+   "end": "2026-11-22",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41829,
+   "lon": 0.97273,
+   "hours": "7h–18h",
+   "exhibitors": 60,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-82",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-11-22",
+   "end": "2026-11-23",
+   "city": "Chambray-lès-Tours",
+   "postcode": "37170",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32601,
+   "lon": 0.70038,
+   "hours": "8h–17h",
+   "exhibitors": 178,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-114",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-22",
+   "end": "2026-11-22",
+   "city": "Montbazon",
+   "postcode": "37250",
+   "dept": "37",
+   "address": null,
+   "lat": 47.28387,
+   "lon": 0.70988,
+   "hours": "8h–17h",
+   "exhibitors": 153,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-98",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-11-28",
+   "end": "2026-11-28",
+   "city": "Vouvray",
+   "postcode": "37210",
+   "dept": "37",
+   "address": null,
+   "lat": 47.40299,
+   "lon": 0.81669,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-51",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-11-29",
+   "end": "2026-11-29",
+   "city": "Château-Renault",
+   "postcode": "37110",
+   "dept": "37",
+   "address": null,
+   "lat": 47.60279,
+   "lon": 0.89808,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-62",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-11-29",
+   "end": "2026-11-29",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.33424,
+   "lon": 0.60446,
+   "hours": "7h–18h",
+   "exhibitors": 48,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-78",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-11-29",
+   "end": "2026-11-29",
+   "city": "Saint-Cyr-sur-Loire",
+   "postcode": "37540",
+   "dept": "37",
+   "address": null,
+   "lat": 47.40147,
+   "lon": 0.66308,
+   "hours": "8h–17h",
+   "exhibitors": 197,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-13",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-12-05",
+   "end": "2026-12-05",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34736,
+   "lon": 0.59815,
+   "hours": "7h–18h",
+   "exhibitors": 69,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-50",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-05",
+   "end": "2026-12-05",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.36202,
+   "lon": 0.73913,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-83",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-05",
+   "end": "2026-12-05",
+   "city": "Bléré",
+   "postcode": "37150",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32409,
+   "lon": 1.00181,
+   "hours": "7h–18h",
+   "exhibitors": 149,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-119",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-05",
+   "end": "2026-12-06",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.42052,
+   "lon": 0.98174,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-16",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2026-12-06",
+   "end": "2026-12-06",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "address": null,
+   "lat": 47.3842,
+   "lon": 0.68992,
+   "hours": "7h–18h",
+   "exhibitors": 28,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-90",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2026-12-06",
+   "end": "2026-12-06",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34879,
+   "lon": 0.74414,
+   "hours": "7h–18h",
+   "exhibitors": 180,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-111",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-12-06",
+   "end": "2026-12-06",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.28372,
+   "lon": 0.18619,
+   "hours": "8h–17h",
+   "exhibitors": 92,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-133",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-06",
+   "end": "2026-12-07",
+   "city": "Joué-lès-Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "address": null,
+   "lat": 47.33863,
+   "lon": 0.67229,
+   "hours": "7h–18h",
+   "exhibitors": 118,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-85",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-09",
+   "end": "2026-12-09",
+   "city": "Azay-le-Rideau",
+   "postcode": "37190",
+   "dept": "37",
+   "address": null,
+   "lat": 47.2692,
+   "lon": 0.44891,
+   "hours": "7h–18h",
+   "exhibitors": 110,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-74",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-12",
+   "end": "2026-12-12",
+   "city": "Joué-lès-Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34006,
+   "lon": 0.66774,
+   "hours": "7h–18h",
+   "exhibitors": 197,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-103",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-12",
+   "end": "2026-12-12",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.36411,
+   "lon": 0.75918,
+   "hours": "8h–17h",
+   "exhibitors": 139,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-122",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-12",
+   "end": "2026-12-12",
+   "city": "Vouvray",
+   "postcode": "37210",
+   "dept": "37",
+   "address": null,
+   "lat": 47.42086,
+   "lon": 0.81617,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-10",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-13",
+   "end": "2026-12-13",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.86581,
+   "lon": 0.92192,
+   "hours": "7h–18h",
+   "exhibitors": 143,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-14",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-13",
+   "end": "2026-12-13",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41362,
+   "lon": 0.59231,
+   "hours": "7h–18h",
+   "exhibitors": 88,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-52",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-13",
+   "end": "2026-12-13",
+   "city": "Loches",
+   "postcode": "37600",
+   "dept": "37",
+   "address": null,
+   "lat": 47.13648,
+   "lon": 0.99505,
+   "hours": "7h–18h",
+   "exhibitors": 184,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-61",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-12-13",
+   "end": "2026-12-13",
+   "city": "Montbazon",
+   "postcode": "37250",
+   "dept": "37",
+   "address": null,
+   "lat": 47.29712,
+   "lon": 0.71444,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-79",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-12-13",
+   "end": "2026-12-13",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.38956,
+   "lon": 0.59929,
+   "hours": "7h–18h",
+   "exhibitors": 57,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-87",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-13",
+   "end": "2026-12-14",
+   "city": "Neuillé-Pont-Pierre",
+   "postcode": "37360",
+   "dept": "37",
+   "address": null,
+   "lat": 47.54123,
+   "lon": 0.53817,
+   "hours": "7h–18h",
+   "exhibitors": 162,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-100",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-12-13",
+   "end": "2026-12-13",
+   "city": "Joué-lès-Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34781,
+   "lon": 0.65592,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-135",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-13",
+   "end": "2026-12-13",
+   "city": "Descartes",
+   "postcode": "37160",
+   "dept": "37",
+   "address": null,
+   "lat": 46.98217,
+   "lon": 0.70284,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-88",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-17",
+   "end": "2026-12-17",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.40892,
+   "lon": 0.59779,
+   "hours": "7h–18h",
+   "exhibitors": 38,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-116",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-12-17",
+   "end": "2026-12-17",
+   "city": "Montbazon",
+   "postcode": "37250",
+   "dept": "37",
+   "address": null,
+   "lat": 47.28139,
+   "lon": 0.71334,
+   "hours": "8h–17h",
+   "exhibitors": 34,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-35",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-18",
+   "end": "2026-12-18",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "address": null,
+   "lat": 47.40786,
+   "lon": 0.69154,
+   "hours": "8h–17h",
+   "exhibitors": 161,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-7",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "city": "Château-Renault",
+   "postcode": "37110",
+   "dept": "37",
+   "address": null,
+   "lat": 47.58586,
+   "lon": 0.92465,
+   "hours": "7h–18h",
+   "exhibitors": 166,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-76",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39758,
+   "lon": 0.58256,
+   "hours": "8h–17h",
+   "exhibitors": 58,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-77",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.38268,
+   "lon": 0.81174,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-92",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "city": "L'Île-Bouchard",
+   "postcode": "37220",
+   "dept": "37",
+   "address": null,
+   "lat": 47.12133,
+   "lon": 0.4441,
+   "hours": "7h–18h",
+   "exhibitors": 86,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-107",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.85633,
+   "lon": 0.91047,
+   "hours": "7h–18h",
+   "exhibitors": 33,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-138",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.3569,
+   "lon": 0.73439,
+   "hours": "7h–18h",
+   "exhibitors": 182,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-17",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2026-12-20",
+   "end": "2026-12-20",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.42312,
+   "lon": 0.99336,
+   "hours": "7h–18h",
+   "exhibitors": 133,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-28",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2026-12-21",
+   "end": "2026-12-21",
+   "city": "Sainte-Maure-de-Touraine",
+   "postcode": "37800",
+   "dept": "37",
+   "address": null,
+   "lat": 47.09649,
+   "lon": 0.62634,
+   "hours": "7h–18h",
+   "exhibitors": 95,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-136",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-23",
+   "end": "2026-12-23",
+   "city": "Langeais",
+   "postcode": "37130",
+   "dept": "37",
+   "address": null,
+   "lat": 47.31652,
+   "lon": 0.38918,
+   "hours": "7h–18h",
+   "exhibitors": 73,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-32",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-26",
+   "end": "2026-12-26",
+   "city": "Joué-lès-Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34598,
+   "lon": 0.6826,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-65",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-12-26",
+   "end": "2026-12-26",
+   "city": "Montbazon",
+   "postcode": "37250",
+   "dept": "37",
+   "address": null,
+   "lat": 47.29938,
+   "lon": 0.71344,
+   "hours": "8h–17h",
+   "exhibitors": 37,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-89",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2026-12-26",
+   "end": "2026-12-26",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.86404,
+   "lon": 0.93488,
+   "hours": "8h–17h",
+   "exhibitors": 162,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-99",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2026-12-26",
+   "end": "2026-12-26",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.86548,
+   "lon": 0.93406,
+   "hours": "8h–17h",
+   "exhibitors": 86,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-125",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-12-27",
+   "end": "2026-12-27",
+   "city": "Saint-Cyr-sur-Loire",
+   "postcode": "37540",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39986,
+   "lon": 0.64891,
+   "hours": "7h–18h",
+   "exhibitors": 199,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-132",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2026-12-27",
+   "end": "2026-12-27",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41244,
+   "lon": 0.97554,
+   "hours": "7h–18h",
+   "exhibitors": 48,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-25",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-01",
+   "end": "2027-01-01",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.84924,
+   "lon": 0.9416,
+   "hours": "7h–18h",
+   "exhibitors": 130,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-18",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-01-02",
+   "end": "2027-01-02",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.86737,
+   "lon": 0.9388,
+   "hours": "8h–17h",
+   "exhibitors": 39,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-91",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-01-02",
+   "end": "2027-01-02",
+   "city": "Neuillé-Pont-Pierre",
+   "postcode": "37360",
+   "dept": "37",
+   "address": null,
+   "lat": 47.546,
+   "lon": 0.5429,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-105",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-02",
+   "end": "2027-01-02",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34873,
+   "lon": 0.72975,
+   "hours": "8h–17h",
+   "exhibitors": 54,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-108",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-02",
+   "end": "2027-01-02",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39867,
+   "lon": 0.97343,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-123",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-02",
+   "end": "2027-01-02",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.85989,
+   "lon": 0.92173,
+   "hours": "7h–18h",
+   "exhibitors": 129,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-2",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-03",
+   "end": "2027-01-03",
+   "city": "Neuillé-Pont-Pierre",
+   "postcode": "37360",
+   "dept": "37",
+   "address": null,
+   "lat": 47.54255,
+   "lon": 0.54985,
+   "hours": "7h–18h",
+   "exhibitors": 90,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-27",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-01-03",
+   "end": "2027-01-03",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.40064,
+   "lon": 0.84747,
+   "hours": "7h–18h",
+   "exhibitors": 30,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-34",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-09",
+   "end": "2027-01-09",
+   "city": "Château-Renault",
+   "postcode": "37110",
+   "dept": "37",
+   "address": null,
+   "lat": 47.58879,
+   "lon": 0.90555,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-63",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-09",
+   "end": "2027-01-09",
+   "city": "Loches",
+   "postcode": "37600",
+   "dept": "37",
+   "address": null,
+   "lat": 47.13417,
+   "lon": 0.98843,
+   "hours": "8h–17h",
+   "exhibitors": 129,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-66",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-09",
+   "end": "2027-01-09",
+   "city": "Vouvray",
+   "postcode": "37210",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41053,
+   "lon": 0.80124,
+   "hours": "7h–18h",
+   "exhibitors": 54,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-127",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-01-09",
+   "end": "2027-01-09",
+   "city": "Neuillé-Pont-Pierre",
+   "postcode": "37360",
+   "dept": "37",
+   "address": null,
+   "lat": 47.56122,
+   "lon": 0.56208,
+   "hours": "7h–18h",
+   "exhibitors": 69,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-54",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-10",
+   "end": "2027-01-10",
+   "city": "Loches",
+   "postcode": "37600",
+   "dept": "37",
+   "address": null,
+   "lat": 47.11885,
+   "lon": 0.99528,
+   "hours": "7h–18h",
+   "exhibitors": 81,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-70",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-01-10",
+   "end": "2027-01-10",
+   "city": "Montbazon",
+   "postcode": "37250",
+   "dept": "37",
+   "address": null,
+   "lat": 47.27871,
+   "lon": 0.70815,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-109",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-01-10",
+   "end": "2027-01-10",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.37424,
+   "lon": 0.74008,
+   "hours": "8h–17h",
+   "exhibitors": 33,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-24",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-12",
+   "end": "2027-01-12",
+   "city": "Château-Renault",
+   "postcode": "37110",
+   "dept": "37",
+   "address": null,
+   "lat": 47.57957,
+   "lon": 0.91683,
+   "hours": "7h–18h",
+   "exhibitors": 172,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-1",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-01-17",
+   "end": "2027-01-17",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41794,
+   "lon": 0.60226,
+   "hours": "8h–17h",
+   "exhibitors": 53,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-6",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-17",
+   "end": "2027-01-17",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34693,
+   "lon": 0.61333,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-22",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-01-17",
+   "end": "2027-01-17",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.33554,
+   "lon": 0.59882,
+   "hours": "7h–18h",
+   "exhibitors": 36,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-84",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-17",
+   "end": "2027-01-17",
+   "city": "Langeais",
+   "postcode": "37130",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32557,
+   "lon": 0.41365,
+   "hours": "7h–18h",
+   "exhibitors": 73,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-72",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-19",
+   "end": "2027-01-19",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.3319,
+   "lon": 0.61699,
+   "hours": "8h–17h",
+   "exhibitors": 46,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-93",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34212,
+   "lon": 0.60643,
+   "hours": "7h–18h",
+   "exhibitors": 32,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-96",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "address": null,
+   "lat": 47.38377,
+   "lon": 0.68801,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-124",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "city": "L'Île-Bouchard",
+   "postcode": "37220",
+   "dept": "37",
+   "address": null,
+   "lat": 47.11129,
+   "lon": 0.43359,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-4",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-01-24",
+   "end": "2027-01-24",
+   "city": "Chambray-lès-Tours",
+   "postcode": "37170",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34682,
+   "lon": 0.69815,
+   "hours": "7h–18h",
+   "exhibitors": 152,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-115",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2027-01-24",
+   "end": "2027-01-25",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.28857,
+   "lon": 0.17264,
+   "hours": "8h–17h",
+   "exhibitors": 60,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-139",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-01-24",
+   "end": "2027-01-24",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41006,
+   "lon": 0.59775,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-48",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-01-30",
+   "end": "2027-01-30",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.37978,
+   "lon": 0.81702,
+   "hours": "7h–18h",
+   "exhibitors": 51,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-23",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "city": "Descartes",
+   "postcode": "37160",
+   "dept": "37",
+   "address": null,
+   "lat": 46.98542,
+   "lon": 0.68424,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-37",
+   "title": "Braderie des commerçants (exemple)",
+   "type": "braderie",
+   "start": "2027-01-31",
+   "end": "2027-02-01",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.34651,
+   "lon": 0.60138,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-71",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.27151,
+   "lon": 0.1872,
+   "hours": "7h–18h",
+   "exhibitors": 39,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-117",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "city": "Neuillé-Pont-Pierre",
+   "postcode": "37360",
+   "dept": "37",
+   "address": null,
+   "lat": 47.53883,
+   "lon": 0.55361,
+   "hours": "7h–18h",
+   "exhibitors": 68,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-130",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.29373,
+   "lon": 0.15195,
+   "hours": "7h–18h",
+   "exhibitors": 128,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-131",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39933,
+   "lon": 0.82486,
+   "hours": "7h–18h",
+   "exhibitors": 47,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-55",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-02-06",
+   "end": "2027-02-06",
+   "city": "Azay-le-Rideau",
+   "postcode": "37190",
+   "dept": "37",
+   "address": null,
+   "lat": 47.26217,
+   "lon": 0.46458,
+   "hours": "8h–17h",
+   "exhibitors": 180,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-73",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-02-06",
+   "end": "2027-02-06",
+   "city": "Sainte-Maure-de-Touraine",
+   "postcode": "37800",
+   "dept": "37",
+   "address": null,
+   "lat": 47.10154,
+   "lon": 0.63749,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-110",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-02-06",
+   "end": "2027-02-06",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.36266,
+   "lon": 0.73443,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-113",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-02-06",
+   "end": "2027-02-06",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.3735,
+   "lon": 0.75825,
+   "hours": "8h–17h",
+   "exhibitors": 136,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-42",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-02-07",
+   "end": "2027-02-07",
+   "city": "Chambray-lès-Tours",
+   "postcode": "37170",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32887,
+   "lon": 0.7222,
+   "hours": "7h–18h",
+   "exhibitors": 130,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-69",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-02-07",
+   "end": "2027-02-07",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39943,
+   "lon": 0.9899,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-9",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-02-09",
+   "end": "2027-02-09",
+   "city": "Descartes",
+   "postcode": "37160",
+   "dept": "37",
+   "address": null,
+   "lat": 46.96752,
+   "lon": 0.7187,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-112",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-02-09",
+   "end": "2027-02-09",
+   "city": "L'Île-Bouchard",
+   "postcode": "37220",
+   "dept": "37",
+   "address": null,
+   "lat": 47.12982,
+   "lon": 0.43002,
+   "hours": "7h–18h",
+   "exhibitors": 198,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-30",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-02-13",
+   "end": "2027-02-13",
+   "city": "Vouvray",
+   "postcode": "37210",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39965,
+   "lon": 0.79828,
+   "hours": "8h–17h",
+   "exhibitors": 156,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-68",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-02-13",
+   "end": "2027-02-13",
+   "city": "Loches",
+   "postcode": "37600",
+   "dept": "37",
+   "address": null,
+   "lat": 47.12186,
+   "lon": 1.00902,
+   "hours": "8h–17h",
+   "exhibitors": 168,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-118",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-02-13",
+   "end": "2027-02-13",
+   "city": "Saint-Cyr-sur-Loire",
+   "postcode": "37540",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39164,
+   "lon": 0.67862,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-8",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-02-14",
+   "end": "2027-02-14",
+   "city": "Vouvray",
+   "postcode": "37210",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41371,
+   "lon": 0.79781,
+   "hours": "7h–18h",
+   "exhibitors": 63,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-31",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-02-14",
+   "end": "2027-02-14",
+   "city": "Chinon",
+   "postcode": "37500",
+   "dept": "37",
+   "address": null,
+   "lat": 47.16418,
+   "lon": 0.25349,
+   "hours": "8h–17h",
+   "exhibitors": 58,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-44",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-02-14",
+   "end": "2027-02-14",
+   "city": "Joué-lès-Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "address": null,
+   "lat": 47.341,
+   "lon": 0.66389,
+   "hours": "7h–18h",
+   "exhibitors": 142,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-97",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-02-14",
+   "end": "2027-02-14",
+   "city": "L'Île-Bouchard",
+   "postcode": "37220",
+   "dept": "37",
+   "address": null,
+   "lat": 47.12343,
+   "lon": 0.40813,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-120",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-02-14",
+   "end": "2027-02-14",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.8612,
+   "lon": 0.91882,
+   "hours": "7h–18h",
+   "exhibitors": 160,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-67",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-02-15",
+   "end": "2027-02-15",
+   "city": "Bléré",
+   "postcode": "37150",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32619,
+   "lon": 0.99935,
+   "hours": "7h–18h",
+   "exhibitors": 55,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-12",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-02-18",
+   "end": "2027-02-18",
+   "city": "Azay-le-Rideau",
+   "postcode": "37190",
+   "dept": "37",
+   "address": null,
+   "lat": 47.2557,
+   "lon": 0.45199,
+   "hours": "7h–18h",
+   "exhibitors": 198,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-26",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-02-18",
+   "end": "2027-02-18",
+   "city": "Azay-le-Rideau",
+   "postcode": "37190",
+   "dept": "37",
+   "address": null,
+   "lat": 47.25012,
+   "lon": 0.46939,
+   "hours": "8h–17h",
+   "exhibitors": 139,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-21",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-02-20",
+   "end": "2027-02-20",
+   "city": "Montlouis-sur-Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "address": null,
+   "lat": 47.38659,
+   "lon": 0.81876,
+   "hours": "7h–18h",
+   "exhibitors": 106,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-43",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-02-20",
+   "end": "2027-02-20",
+   "city": "Montbazon",
+   "postcode": "37250",
+   "dept": "37",
+   "address": null,
+   "lat": 47.29885,
+   "lon": 0.70178,
+   "hours": "7h–18h",
+   "exhibitors": 124,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-57",
+   "title": "Vide-grenier de l'école (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-02-20",
+   "end": "2027-02-20",
+   "city": "Bléré",
+   "postcode": "37150",
+   "dept": "37",
+   "address": null,
+   "lat": 47.33945,
+   "lon": 1.00431,
+   "hours": "8h–17h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-36",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-02-21",
+   "end": "2027-02-21",
+   "city": "Langeais",
+   "postcode": "37130",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32196,
+   "lon": 0.40582,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-38",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-02-21",
+   "end": "2027-02-21",
+   "city": "Ballan-Miré",
+   "postcode": "37510",
+   "dept": "37",
+   "address": null,
+   "lat": 47.32978,
+   "lon": 0.62578,
+   "hours": "8h–17h",
+   "exhibitors": 54,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-95",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-02-22",
+   "end": "2027-02-22",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.28593,
+   "lon": 0.16537,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-101",
+   "title": "Vide-grenier du comité des fêtes (exemple)",
+   "type": "vide-grenier",
+   "start": "2027-02-25",
+   "end": "2027-02-25",
+   "city": "Bléré",
+   "postcode": "37150",
+   "dept": "37",
+   "address": null,
+   "lat": 47.33436,
+   "lon": 1.0081,
+   "hours": "8h–17h",
+   "exhibitors": 194,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-53",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-02-26",
+   "end": "2027-02-26",
+   "city": "Vouvray",
+   "postcode": "37210",
+   "dept": "37",
+   "address": null,
+   "lat": 47.41738,
+   "lon": 0.79384,
+   "hours": "8h–17h",
+   "exhibitors": 57,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-19",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-02-27",
+   "end": "2027-02-27",
+   "city": "Saint-Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "address": null,
+   "lat": 47.3614,
+   "lon": 0.74801,
+   "hours": "7h–18h",
+   "exhibitors": 193,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-129",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-02-27",
+   "end": "2027-02-27",
+   "city": "Chinon",
+   "postcode": "37500",
+   "dept": "37",
+   "address": null,
+   "lat": 47.15449,
+   "lon": 0.25743,
+   "hours": "8h–17h",
+   "exhibitors": 94,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-3",
+   "title": "Bourse aux jouets (exemple)",
+   "type": "bourse",
+   "start": "2027-02-28",
+   "end": "2027-02-28",
+   "city": "Fondettes",
+   "postcode": "37230",
+   "dept": "37",
+   "address": null,
+   "lat": 47.39565,
+   "lon": 0.58409,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-40",
+   "title": "Marché aux puces (exemple)",
+   "type": "puces",
+   "start": "2027-02-28",
+   "end": "2027-02-28",
+   "city": "Preuilly-sur-Claise",
+   "postcode": "37290",
+   "dept": "37",
+   "address": null,
+   "lat": 46.84383,
+   "lon": 0.91879,
+   "hours": "7h–18h",
+   "exhibitors": 105,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-49",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-02-28",
+   "end": "2027-02-28",
+   "city": "Descartes",
+   "postcode": "37160",
+   "dept": "37",
+   "address": null,
+   "lat": 46.97474,
+   "lon": 0.67975,
+   "hours": "7h–18h",
+   "exhibitors": null,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-59",
+   "title": "Brocante annuelle (exemple)",
+   "type": "brocante",
+   "start": "2027-02-28",
+   "end": "2027-02-28",
+   "city": "Bourgueil",
+   "postcode": "37140",
+   "dept": "37",
+   "address": null,
+   "lat": 47.29662,
+   "lon": 0.14875,
+   "hours": "7h–18h",
+   "exhibitors": 52,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "demo-80",
+   "title": "Brocante et antiquités (exemple)",
+   "type": "brocante",
+   "start": "2027-02-28",
+   "end": "2027-02-28",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "address": null,
+   "lat": 47.40344,
+   "lon": 0.98634,
+   "hours": "8h–17h",
+   "exhibitors": 182,
+   "description": "Événement fictif de démonstration.",
+   "url": null,
+   "sources": [
+    {
+     "id": "démo",
+     "url": null
+    }
+   ]
+  }
+ ]
+}
