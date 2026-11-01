@@ -50,7 +50,10 @@ export async function createGeocoder(cachePath) {
       if (ev.lat != null && ev.lon != null && ev.postcode) return ev;
       let r = null;
       if (ev.address && ev.city) r = await query(`${ev.address} ${ev.city}`, { postcode: ev.postcode });
-      if (!r && ev.city) r = await query(ev.city, { postcode: ev.postcode, type: 'municipality' });
+      if (!r && ev.city) {
+        r = await query(ev.city, { postcode: ev.postcode, type: 'municipality' });
+        if (r) ev.approx = true; // position = centre de la commune
+      }
       if (r) {
         if (ev.lat == null || ev.lon == null) {
           ev.lat = r.lat;

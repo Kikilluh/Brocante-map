@@ -59,3 +59,16 @@ test('API v1 : prix, public, jauge, dates multiples', () => {
   assert.equal(ev.hours, '20:30');
   assert.equal(ev.credit, 'Office de tourisme Tours Val de Loire');
 });
+
+test('nom du lieu tiré de l\'adresse', async () => {
+  const { splitVenue } = await import('../lib/venues.mjs');
+  assert.deepEqual(splitVenue(['Le Temps Machine', '45-49 rue des Martyrs']), { venue: 'Le Temps Machine', address: '45-49 rue des Martyrs' });
+  assert.deepEqual(splitVenue(['25 Avenue André Malraux']), { venue: null, address: '25 Avenue André Malraux' });
+  assert.deepEqual(splitVenue(['Place du marché']), { venue: null, address: 'Place du marché' });
+  assert.deepEqual(splitVenue(['Forteresse royale de Chinon']), { venue: 'Forteresse royale de Chinon', address: null });
+  const [raw] = mapNode({ label: { '@fr': 'Concert' }, isLocatedAt: [{ address: [{ postalCode: '37300', streetAddress: ['Le Temps Machine', '45 rue des Martyrs'] }] }], takesPlaceAt: [{ startDate: '2026-12-01' }], hasContact: [{ legalName: 'Asso Rock' }] });
+  const ev = makeEvent(raw, 'datatourisme');
+  assert.equal(ev.venue, 'Le Temps Machine');
+  assert.equal(ev.address, '45 rue des Martyrs');
+  assert.equal(ev.organizer, 'Asso Rock');
+});

@@ -45,6 +45,7 @@ export function mapEvent(ev, uid) {
         ? `${t.begin.slice(11, 16)}${t.end && /T\d{2}:\d{2}/.test(t.end) ? '–' + t.end.slice(11, 16) : ''}`.replace(':', 'h').replace(':', 'h')
         : null,
     })),
+    venue: loc.name ?? null,
     address: loc.address,
     postcode: loc.postalCode,
     city: loc.city,

@@ -11,6 +11,7 @@ import { configureHttp } from './lib/http.mjs';
 import { makeEvent } from './lib/normalize.mjs';
 import { createGeocoder } from './lib/geocode.mjs';
 import { dedupe } from './lib/dedupe.mjs';
+import { createVenueFinder } from './lib/venues.mjs';
 import * as structuredHtml from './sources/structured-html.mjs';
 import * as datatourisme from './sources/datatourisme.mjs';
 import * as openagenda from './sources/openagenda.mjs';
@@ -84,6 +85,18 @@ for (const ev of collected) {
   inScope.push(ev);
 }
 await geocoder.save();
+
+// Nom du lieu manquant : lieu nommé OpenStreetMap le plus proche (seulement si la position est précise)
+const venues = await createVenueFinder(departments, join(ROOT, 'cache'), console.log);
+let venueFound = 0;
+for (const ev of inScope) {
+  if (!ev.venue && !ev.approx) {
+    ev.venue = venues.nearest(ev.lat, ev.lon);
+    if (ev.venue) venueFound++;
+  }
+  delete ev.approx;
+}
+console.log(`Lieux : ${inScope.filter((e) => e.venue).length}/${inScope.length} événements avec un nom de lieu (${venueFound} via OpenStreetMap)`);
 
 /** Allège le JSON : retire les champs vides, garde la liste des dates seulement si plusieurs. */
 function compact(ev) {

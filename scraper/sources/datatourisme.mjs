@@ -7,6 +7,7 @@
 // Ancien mode "flux Diffuseur" (fermeture oct. 2027) conservé : secret DATATOURISME_FEED_URL.
 
 import { fetchText } from '../lib/http.mjs';
+import { splitVenue } from '../lib/venues.mjs';
 
 const arr = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
@@ -105,6 +106,8 @@ export function mapNode(n) {
   const postcode = fr(get(addr, 'postalCode', 'postcode', 'zipCode'));
   const contact = arr(get(n, 'hasContact', 'contact'))[0] ?? {};
   const url = fr(get(contact, 'homepage', 'foaf:homepage', 'url', 'website'));
+  const organizer = fr(get(contact, 'legalName'));
+  const { venue, address } = splitVenue(arr(get(addr, 'streetAddress', 'street')).map(fr).filter(Boolean));
   const creator = get(n, 'hasBeenCreatedBy');
   const credit = fr(get(arr(creator)[0] ?? {}, 'legalName'));
 
@@ -130,7 +133,9 @@ export function mapNode(n) {
       types,
       description: desc,
       occurrences,
-      address: arr(get(addr, 'streetAddress', 'street')).map(fr).filter(Boolean).join(', ') || null,
+      venue,
+      address,
+      organizer,
       postcode,
       city,
       lat: fr(get(geo, 'latitude', 'lat')),
@@ -152,7 +157,7 @@ export function listOf(data) {
 
 const FIELDS = [
   'uuid', 'label', 'type', 'isLocatedAt.geo', 'isLocatedAt.address', 'takesPlaceAt', 'offers', 'hasDescription',
-  'hasContact.homepage', 'hasClientTarget', 'allowedPersons', 'hasTheme', 'hasBeenCreatedBy.legalName',
+  'hasContact.homepage', 'hasContact.legalName', 'hasClientTarget', 'allowedPersons', 'hasTheme', 'hasBeenCreatedBy.legalName',
 ].join(',');
 
 async function runApi(source, { departments, log }) {

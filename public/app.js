@@ -173,7 +173,9 @@ function popupHtml(ev) {
     <h3>${esc(ev.title)}</h3>
     <p>${badge(ev)}</p>
     <p><strong>${esc(occLabel(ev._next))}</strong>${ev._next.hours ? ` · ${esc(ev._next.hours)}` : ''}${others > 0 ? ` <span class="muted">(+ ${others} autre${others > 1 ? 's' : ''} date${others > 1 ? 's' : ''})</span>` : ''}</p>
-    <p>${esc([ev.address, ev.postcode && ev.city ? `${ev.postcode} ${ev.city}` : ev.city].filter(Boolean).join(', '))}</p>
+    ${ev.venue ? `<p class="venue">${esc(ev.venue)}</p>` : ''}
+    <p class="${ev.venue ? 'muted' : ''}">${esc([ev.address, ev.postcode && ev.city ? `${ev.postcode} ${ev.city}` : ev.city].filter(Boolean).join(', '))}</p>
+    ${ev.organizer && ev.organizer !== ev.venue ? `<p class="muted">Organisé par ${esc(ev.organizer)}</p>` : ''}
     ${facts.length ? `<p class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</p>` : ''}
     ${ev.description ? `<p class="muted">${esc(ev.description.slice(0, 240))}${ev.description.length > 240 ? '…' : ''}</p>` : ''}
     <div class="links"><a href="${route}" target="_blank" rel="noopener">Itinéraire</a>${ev.url ? `<a href="${esc(ev.url)}" target="_blank" rel="noopener">Site</a>` : ''}</div>
@@ -253,6 +255,7 @@ function render() {
     li.innerHTML = `<button class="item" data-id="${esc(ev.id)}">
       <div class="when">${esc(occLabel(ev._next))}${ev._next.hours ? ` · ${esc(ev._next.hours)}` : ''}</div>
       <div class="title">${esc(ev.title)}</div>
+      ${ev.venue ? `<div class="venue">${esc(ev.venue)}</div>` : ''}
       <div class="where">${badge(ev)} ${esc(ev.city ?? '')}${d != null ? ` · ${d.toFixed(0)} km` : ''}${facts ? ` · ${esc(facts)}` : ''}</div>
     </button>`;
     frag.append(li);
@@ -387,7 +390,7 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
       category,
       occurrences,
       sources: e.sources ?? [],
-      _search: norm(`${e.title} ${e.city ?? ''} ${e.postcode ?? ''} ${e.description ?? ''} ${CATS[category]}`),
+      _search: norm(`${e.title} ${e.venue ?? ''} ${e.organizer ?? ''} ${e.city ?? ''} ${e.postcode ?? ''} ${e.description ?? ''} ${CATS[category]}`),
     };
   });
 
@@ -399,7 +402,7 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
     ? `Mis à jour le ${new Date(data.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. `
     : 'Données de démonstration. ')
     + `Données : ${srcs.length ? srcs.map((s) => esc(SOURCE_NAMES[s] ?? s)).join(', ') : '—'}`
-    + ' — <a href="https://www.datatourisme.fr" target="_blank" rel="noopener">DATAtourisme</a> et OpenAgenda sous Licence Ouverte (Etalab 2.0), producteurs cités sur chaque fiche.';
+    + ' — <a href="https://www.datatourisme.fr" target="_blank" rel="noopener">DATAtourisme</a> et OpenAgenda sous Licence Ouverte (Etalab 2.0), producteurs cités sur chaque fiche ; noms de lieux complétés avec © les contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL).';
 
   render();
   if (events.length) {

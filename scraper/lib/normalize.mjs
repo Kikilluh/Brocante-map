@@ -184,6 +184,8 @@ export function makeEvent(raw, source) {
     city: raw.city ? cleanText(raw.city) : null,
     postcode,
     dept: raw.dept || deptFromPostcode(postcode),
+    venue: raw.venue ? cleanText(raw.venue) : null,
+    organizer: raw.organizer ? cleanText(raw.organizer) : null,
     address: raw.address ? cleanText(raw.address) : null,
     lat,
     lon,
