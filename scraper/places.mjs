@@ -338,7 +338,9 @@ const near = (a, b) => Math.abs(a.lat - b.lat) < 0.004 && Math.abs(a.lon - b.lon
 const key = (n) => slug(n).replace(/-(de|du|la|le|les|des|d|l)-/g, '-');
 const kept = [];
 for (const p of places) {
-  const twin = kept.find((q) => near(p, q) && (key(q.name).includes(key(p.name)) || key(p.name).includes(key(q.name))));
+  const isRoute = (x) => x.kind === 'rando' || x.kind === 'velo';
+  const twin = kept.find((q) => (q.kind === p.kind || (isRoute(q) && isRoute(p))) && near(p, q)
+    && (key(q.name).includes(key(p.name)) || key(p.name).includes(key(q.name))));
   if (twin) {
     for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network']) twin[k] ??= p[k];
     twin.sources.push({ id: p.source, url: p.sourceUrl ?? null });
