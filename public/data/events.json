@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-01T14:01:11.270Z",
+ "generatedAt": "2026-11-01T14:14:06.773Z",
  "departments": [
   "37"
  ],
@@ -11,6 +11,10 @@
   "openagenda": {
    "ok": true,
    "count": 18
+  },
+  "ticketmaster": {
+   "ok": true,
+   "count": 239
   },
   "manual": {
    "ok": true,
@@ -3649,6 +3653,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -3661,6 +3667,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/arnaud-tsamere-0"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/arnaud-tsamere-billet/idmanif/604289/idtier/18864121"
     }
    ],
    "id": "2026-11-05-joue-les-tours-arnaud-tsamere-nouveau-spectacle"
@@ -3674,6 +3684,7 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "LE TEMPS MACHINE",
    "address": "Parvis Miles Davis",
    "lat": 47.33938,
    "lon": 0.6630262,
@@ -3687,9 +3698,59 @@
     {
      "id": "datatourisme",
      "url": "https://letempsmachine.com/agenda/nono-la-grinta-1re-partie"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/nono-la-grinta-1re-partie-billet/idmanif/658321/idseance/4326757"
     }
    ],
    "id": "2026-11-05-joue-les-tours-nono-la-grinta"
+  },
+  {
+   "title": "CALI",
+   "category": "concert",
+   "start": "2026-11-05",
+   "end": "2026-11-05",
+   "hours": "20:00",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/cali-billet/idmanif/671351/idseance/4404965",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/cali-billet/idmanif/671351/idseance/4404965"
+    }
+   ],
+   "id": "2026-11-05-montlouis-sur-loire-cali"
+  },
+  {
+   "title": "ULTRA VOMIT",
+   "category": "concert",
+   "start": "2026-11-05",
+   "end": "2026-11-05",
+   "hours": "20:30",
+   "city": "Notre Dame D'oe",
+   "postcode": "37390",
+   "dept": "37",
+   "venue": "SALLE OESIA",
+   "address": "RUE DES FIZES",
+   "lat": 47.449376,
+   "lon": 0.699277,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/ultra-vomit-billet/idmanif/656903/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/ultra-vomit-billet/idmanif/656903/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-05-notre-dame-d-oe-ultra-vomit"
   },
   {
    "title": "Festival Emergences Oasis Boom Bodies",
@@ -3718,6 +3779,29 @@
    "id": "2026-11-05-tours-festival-emergences-oasis-boom-bodies"
   },
   {
+   "title": "DRAG RACE FRANCE LIVE SAISON 4 - DRAG RACE FRANCE LIVE",
+   "category": "spectacle",
+   "start": "2026-11-05",
+   "end": "2026-11-05",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/drag-race-france-live-saison-4-billet/idmanif/644642/idseance/4232560",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/drag-race-france-live-saison-4-billet/idmanif/644642/idseance/4232560"
+    }
+   ],
+   "id": "2026-11-05-tours-drag-race-france-live-saison-4-drag-race-france-live"
+  },
+  {
    "title": "Ebony",
    "category": "concert",
    "start": "2026-11-06",
@@ -3726,6 +3810,7 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "LE TEMPS MACHINE",
    "address": "Parvis Miles Davis",
    "lat": 47.33938,
    "lon": 0.6630262,
@@ -3739,6 +3824,10 @@
     {
      "id": "datatourisme",
      "url": "https://letempsmachine.com/agenda/ebony-1re-partie"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/ebony-1re-partie-billet/idmanif/658323/idseance/4326759"
     }
    ],
    "id": "2026-11-06-joue-les-tours-ebony"
@@ -3764,6 +3853,29 @@
     }
    ],
    "id": "2026-11-06-poce-sur-cisse-saban-shukar-concert-et-danses-des-balkans"
+  },
+  {
+   "title": "MATCH D'IMPROVISATION DE TOURAINE",
+   "category": "spectacle",
+   "start": "2026-11-06",
+   "end": "2026-11-06",
+   "hours": "20:00",
+   "city": "Rouziers De Touraine",
+   "postcode": "37360",
+   "dept": "37",
+   "venue": "'LES QUATRE VENTS' ESPACE CULTUREL",
+   "address": "LES BLOURDIERS",
+   "lat": 47.517277,
+   "lon": 0.648299,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/match-d-improvisation-de-touraine-billet/idmanif/667014/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/match-d-improvisation-de-touraine-billet/idmanif/667014/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-06-rouziers-de-touraine-match-d-improvisation-de-touraine"
   },
   {
    "title": "S.H.A.K.E.S.P.E.A.R.E aux Wagons",
@@ -3889,6 +4001,52 @@
    "id": "2026-11-06-tours-l-art-au-quotidien"
   },
   {
+   "title": "CHRISTOPHE MAE",
+   "category": "concert",
+   "start": "2026-11-06",
+   "end": "2026-11-06",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/christophe-mae-billet/idmanif/638100/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/christophe-mae-billet/idmanif/638100/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-06-tours-christophe-mae"
+  },
+  {
+   "title": "BALAVOINE, Ma Bataille",
+   "category": "concert",
+   "start": "2026-11-06",
+   "end": "2026-11-06",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/balavoine-ma-bataille-billet/idmanif/649565/idseance/4273658",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/balavoine-ma-bataille-billet/idmanif/649565/idseance/4273658"
+    }
+   ],
+   "id": "2026-11-06-tours-balavoine-ma-bataille"
+  },
+  {
    "title": "Mignardises : lecture dansée",
    "category": "conference",
    "start": "2026-11-07",
@@ -3942,9 +4100,11 @@
    "category": "concert",
    "start": "2026-11-07",
    "end": "2026-11-07",
+   "hours": "20:30",
    "city": "Avoine",
    "postcode": "37420",
    "dept": "37",
+   "venue": "ESPACE CULTUREL",
    "address": "Rue de l'Ardoise",
    "lat": 47.2053966,
    "lon": 0.1843386,
@@ -3958,6 +4118,10 @@
     {
      "id": "datatourisme",
      "url": "https://www.ville-avoine.fr/saison-culturelle-2026-2027/"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/raul-paz-billet/idmanif/671617/idseance/4406852"
     }
    ],
    "id": "2026-11-07-avoine-concert-de-musique-cubaine-par-raul-paz"
@@ -4121,6 +4285,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -4133,6 +4299,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/vincent-delerm"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/vincent-delerm-billet/idmanif/644239/idtier/18864121"
     }
    ],
    "id": "2026-11-07-joue-les-tours-vincent-delerm"
@@ -4252,6 +4422,29 @@
     }
    ],
    "id": "2026-11-07-mosnes-soiree-tartiflette"
+  },
+  {
+   "title": "ELMER FOOD BEAT",
+   "category": "concert",
+   "start": "2026-11-07",
+   "end": "2026-11-07",
+   "hours": "20:30",
+   "city": "Notre Dame D'oe",
+   "postcode": "37390",
+   "dept": "37",
+   "venue": "SALLE OESIA",
+   "address": "RUE DES FIZES",
+   "lat": 47.449376,
+   "lon": 0.699277,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/elmer-food-beat-billet/idmanif/652575/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/elmer-food-beat-billet/idmanif/652575/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-07-notre-dame-d-oe-elmer-food-beat"
   },
   {
    "title": "\"Drôle de boutique\" - Spectacle humoristique",
@@ -4562,6 +4755,29 @@
    "id": "2026-11-07-tours-atelier-d-auto-reparation-de-velos"
   },
   {
+   "title": "MICHELE LAROQUE ET KAD MERAD - MICHÈLE LAROQUE & KAD MERAD",
+   "category": "spectacle",
+   "start": "2026-11-07",
+   "end": "2026-11-07",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/michele-laroque-et-kad-merad-billet/idmanif/617365/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/michele-laroque-et-kad-merad-billet/idmanif/617365/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-07-tours-michele-laroque-et-kad-merad-michele-laroque-kad-merad"
+  },
+  {
    "title": "Testez vos connaissances sur le code de la route",
    "category": "atelier",
    "start": "2026-11-07",
@@ -4690,6 +4906,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -4702,6 +4920,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/julien-lieb-naufrages-tour"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/julien-lieb-billet/idmanif/653985/idseance/4304371"
     }
    ],
    "id": "2026-11-08-joue-les-tours-julien-lieb-naufrages-tour"
@@ -5043,6 +5265,7 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "LE TEMPS MACHINE",
    "address": "Parvis Miles Davis",
    "lat": 47.33938,
    "lon": 0.6630262,
@@ -5056,6 +5279,10 @@
     {
      "id": "datatourisme",
      "url": "https://letempsmachine.com/agenda/jeanjass-1re-partie"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/jeanjass-1re-partie-billet/idmanif/658335/idseance/4326771"
     }
    ],
    "id": "2026-11-10-joue-les-tours-jeanjass"
@@ -5109,6 +5336,29 @@
     }
    ],
    "id": "2026-11-10-saint-pierre-des-corps-les-wriggles"
+  },
+  {
+   "title": "ASAF AVIDAN",
+   "category": "concert",
+   "start": "2026-11-10",
+   "end": "2026-11-10",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/asaf-avidan-billet/idmanif/662023/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/asaf-avidan-billet/idmanif/662023/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-10-tours-asaf-avidan"
   },
   {
    "title": "Randonnée à Genillé",
@@ -5366,6 +5616,52 @@
    "id": "2026-11-13-descartes-representations-theatrales"
   },
   {
+   "title": "CHLOE ET VASSILENA SERAFIMOVA",
+   "category": "concert",
+   "start": "2026-11-13",
+   "end": "2026-11-13",
+   "hours": "19:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "LE TEMPS MACHINE",
+   "address": "45-49 rue des Martyrs",
+   "lat": 47.353626,
+   "lon": 0.666028,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/chloe-et-vassilena-serafimova-billet/idmanif/674484/idseance/4432812",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/chloe-et-vassilena-serafimova-billet/idmanif/674484/idseance/4432812"
+    }
+   ],
+   "id": "2026-11-13-joue-les-tours-chloe-et-vassilena-serafimova"
+  },
+  {
+   "title": "BERNARD MABILLE",
+   "category": "spectacle",
+   "start": "2026-11-13",
+   "end": "2026-11-13",
+   "hours": "20:00",
+   "city": "St Cyr Sur Loire",
+   "postcode": "37540",
+   "dept": "37",
+   "venue": "L'ESCALE",
+   "address": "Allee Rene Coulon",
+   "lat": 47.419118,
+   "lon": 0.65506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/bernard-mabille-billet/idmanif/631534/idseance/4139252",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/bernard-mabille-billet/idmanif/631534/idseance/4139252"
+    }
+   ],
+   "id": "2026-11-13-st-cyr-sur-loire-bernard-mabille"
+  },
+  {
    "title": "The Inspector Cluzo",
    "category": "concert",
    "start": "2026-11-13",
@@ -5392,6 +5688,29 @@
     }
    ],
    "id": "2026-11-13-tours-the-inspector-cluzo"
+  },
+  {
+   "title": "STRANGELOVE",
+   "category": "concert",
+   "start": "2026-11-13",
+   "end": "2026-11-13",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/strangelove-billet/idmanif/653438/idseance/4298951",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/strangelove-billet/idmanif/653438/idseance/4298951"
+    }
+   ],
+   "id": "2026-11-13-tours-strangelove"
   },
   {
    "title": "Atelier BD et sensibilisation aux troubles Dys",
@@ -5623,6 +5942,29 @@
     }
    ],
    "id": "2026-11-14-descartes-concert-de-l-orchestre-de-la-region-centre"
+  },
+  {
+   "title": "MARTA MOLECULE",
+   "category": "concert",
+   "start": "2026-11-14",
+   "end": "2026-11-14",
+   "hours": "19:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "LE TEMPS MACHINE",
+   "address": "45-49 rue des Martyrs",
+   "lat": 47.353626,
+   "lon": 0.666028,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/marta-molecule-billet/idmanif/674487/idseance/4432815",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/marta-molecule-billet/idmanif/674487/idseance/4432815"
+    }
+   ],
+   "id": "2026-11-14-joue-les-tours-marta-molecule"
   },
   {
    "title": "Ar(t)chéologie",
@@ -5963,6 +6305,29 @@
     }
    ],
    "id": "2026-11-14-tours-astereotypie-festival-des-utopies-reelles"
+  },
+  {
+   "title": "HUBERT FELIX THIEFAINE",
+   "category": "concert",
+   "start": "2026-11-14",
+   "end": "2026-11-14",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/hubert-felix-thiefaine-billet/idmanif/654468/idseance/4306067",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/hubert-felix-thiefaine-billet/idmanif/654468/idseance/4306067"
+    }
+   ],
+   "id": "2026-11-14-tours-hubert-felix-thiefaine"
   },
   {
    "title": "Concert gospel, Soulfire",
@@ -6371,6 +6736,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -6383,6 +6750,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/stephan-eicher-poussiere-d-or"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/stephan-eicher-billet/idmanif/667390/idseance/4382999"
     }
    ],
    "id": "2026-11-16-joue-les-tours-stephan-eicher-poussiere-dor"
@@ -6538,6 +6909,7 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "LE TEMPS MACHINE",
    "address": "Parvis Miles Davis",
    "lat": 47.33938,
    "lon": 0.6630262,
@@ -6551,6 +6923,10 @@
     {
      "id": "datatourisme",
      "url": "https://letempsmachine.com/agenda/luiza-1re-partie"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/luiza-1re-partie-billet/idmanif/658338/idseance/4326773"
     }
    ],
    "id": "2026-11-18-joue-les-tours-luiza"
@@ -6800,6 +7176,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -6812,6 +7190,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/medine-enfants-du-destin-tournee-acoustique"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/medine-billet/idmanif/656950/idtier/18864121"
     }
    ],
    "id": "2026-11-19-joue-les-tours-medine-enfants-du-destin"
@@ -7034,6 +7416,29 @@
    "id": "2026-11-20-chenonceaux-diner-caritatif-en-accords-mets-et-vins"
   },
   {
+   "title": "PACKAGE VALENTINA",
+   "category": "concert",
+   "start": "2026-11-20",
+   "end": "2026-11-20",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/pack/package-valentina-billet/idpack/5001",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/pack/package-valentina-billet/idpack/5001"
+    }
+   ],
+   "id": "2026-11-20-joue-les-tours-package-valentina"
+  },
+  {
    "title": "Les Ramoneurs De Menhirs Toxic Frogs",
    "category": "concert",
    "start": "2026-11-20",
@@ -7061,13 +7466,38 @@
    "id": "2026-11-20-tours-les-ramoneurs-de-menhirs-toxic-frogs"
   },
   {
+   "title": "PHILIPPINE DELAIRE",
+   "category": "spectacle",
+   "start": "2026-11-20",
+   "end": "2026-11-20",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/philippine-delaire-billet/idmanif/640996/idseance/4196351",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/philippine-delaire-billet/idmanif/640996/idseance/4196351"
+    }
+   ],
+   "id": "2026-11-20-tours-philippine-delaire"
+  },
+  {
    "title": "Concert swing et lindy-hop : The Swing Shouters",
    "category": "concert",
    "start": "2026-11-21",
    "end": "2026-11-21",
+   "hours": "20:30",
    "city": "Avoine",
    "postcode": "37420",
    "dept": "37",
+   "venue": "ESPACE CULTUREL",
    "address": "Rue de l'Ardoise",
    "lat": 47.2053966,
    "lon": 0.1843386,
@@ -7081,6 +7511,10 @@
     {
      "id": "datatourisme",
      "url": "https://www.ville-avoine.fr/saison-culturelle-2026-2027/"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/the-swing-shouters-billet/idmanif/671619/idseance/4406860"
     }
    ],
    "id": "2026-11-21-avoine-concert-swing-et-lindy-hop-the-swing-shouters"
@@ -7246,6 +7680,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -7258,6 +7694,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/poetic-lover"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/poetic-lover-billet/idmanif/645920/idtier/18864121"
     }
    ],
    "id": "2026-11-21-joue-les-tours-poetic-lover-tour"
@@ -7398,6 +7838,52 @@
     }
    ],
    "id": "2026-11-21-sainte-maure-de-touraine-conference-les-femmes-et-la-grande-guerre"
+  },
+  {
+   "title": "YANN GUILLARME",
+   "category": "spectacle",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/yann-guillarme-billet/idmanif/644190/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/yann-guillarme-billet/idmanif/644190/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-21-tours-yann-guillarme"
+  },
+  {
+   "title": "DAVID HALLYDAY",
+   "category": "concert",
+   "start": "2026-11-21",
+   "end": "2026-11-21",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/david-hallyday-billet/idmanif/645721/idseance/4238352",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/david-hallyday-billet/idmanif/645721/idseance/4238352"
+    }
+   ],
+   "id": "2026-11-21-tours-david-hallyday"
   },
   {
    "title": "Animation Zéro Déchet",
@@ -7693,6 +8179,52 @@
    "id": "2026-11-22-tours-bourse-aux-disques-et-bd"
   },
   {
+   "title": "JEAN BAPTISTE GUEGAN",
+   "category": "concert",
+   "start": "2026-11-22",
+   "end": "2026-11-22",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/jean-baptiste-guegan-billet/idmanif/643426/idseance/4221673",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/jean-baptiste-guegan-billet/idmanif/643426/idseance/4221673"
+    }
+   ],
+   "id": "2026-11-22-tours-jean-baptiste-guegan"
+  },
+  {
+   "title": "MAMI WATTA",
+   "category": "spectacle",
+   "start": "2026-11-22",
+   "end": "2026-11-22",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/mami-watta-billet/idmanif/662772/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/mami-watta-billet/idmanif/662772/idtier/18864121"
+    }
+   ],
+   "id": "2026-11-22-tours-mami-watta"
+  },
+  {
    "title": "Lectures en sol majeur",
    "category": "conference",
    "start": "2026-11-25",
@@ -7793,9 +8325,12 @@
    "category": "spectacle",
    "start": "2026-11-25",
    "end": "2026-11-25",
+   "hours": "20:30",
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -7808,6 +8343,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/le-bourgeois-gentilhomme-avec-jean-paul-rouve"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-bourgeois-gentilhomme-billet/idmanif/667392/idseance/4383001"
     }
    ],
    "id": "2026-11-25-joue-les-tours-le-bourgeois-gentilhomme"
@@ -7848,6 +8387,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -7860,6 +8401,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/samuel-bambi-machine"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/samuel-bambi-billet/idmanif/657597/idtier/18864121"
     }
    ],
    "id": "2026-11-26-joue-les-tours-samuel-bambi-machine"
@@ -8023,6 +8568,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -8035,6 +8582,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/fin-fin-et-fin-lancelot-cherer"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/fin-fin-et-fin-billet/idmanif/661326/idtier/18864121"
     }
    ],
    "id": "2026-11-27-joue-les-tours-fin-fin-et-fin"
@@ -8895,6 +9446,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -8907,6 +9460,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/guillaume-meurice-nouveau-spectacle"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/guillaume-meurice-billet/idmanif/661105/idtier/18864121"
     }
    ],
    "id": "2026-11-28-joue-les-tours-guillaume-meurice-nouveau-spectacle"
@@ -9068,6 +9625,29 @@
     }
    ],
    "id": "2026-11-28-reignac-sur-indre-concert-pluri-elles"
+  },
+  {
+   "title": "LES MANGUES RELIGIEUSES - KADAVRESKY",
+   "category": "spectacle",
+   "start": "2026-11-28",
+   "end": "2026-11-28",
+   "hours": "20:30",
+   "city": "Rouziers De Touraine",
+   "postcode": "37360",
+   "dept": "37",
+   "venue": "'LES QUATRE VENTS' ESPACE CULTUREL",
+   "address": "LES BLOURDIERS",
+   "lat": 47.517277,
+   "lon": 0.648299,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/les-mangues-religieuses-kadavresky-billet/idmanif/667013/idseance/4379166",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/les-mangues-religieuses-kadavresky-billet/idmanif/667013/idseance/4379166"
+    }
+   ],
+   "id": "2026-11-28-rouziers-de-touraine-les-mangues-religieuses-kadavresky"
   },
   {
    "title": "Le Thanato-insolitus muséum",
@@ -9436,6 +10016,29 @@
    "id": "2026-11-29-villeperdue-marche-de-noel"
   },
   {
+   "title": "OLIVIER DE BENOIST",
+   "category": "spectacle",
+   "start": "2026-12-01",
+   "end": "2026-12-01",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/olivier-de-benoist-billet/idmanif/643071/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/olivier-de-benoist-billet/idmanif/643071/idtier/18864121"
+    }
+   ],
+   "id": "2026-12-01-joue-les-tours-olivier-de-benoist"
+  },
+  {
    "title": "Le gra,d concours des chansons de nöel",
    "category": "concert",
    "start": "2026-12-01",
@@ -9738,6 +10341,7 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "LE TEMPS MACHINE",
    "address": "Parvis Miles Davis",
    "lat": 47.33938,
    "lon": 0.6630262,
@@ -9751,6 +10355,10 @@
     {
      "id": "datatourisme",
      "url": "https://letempsmachine.com/agenda/changeline-cheapjewels"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/changeline-cheapjewels-billet/idmanif/674491/idseance/4432820"
     }
    ],
    "id": "2026-12-04-joue-les-tours-changeline-cheapjewels"
@@ -9847,6 +10455,29 @@
     }
    ],
    "id": "2026-12-04-tours-miossec-quinquis"
+  },
+  {
+   "title": "SECRET(S) MEDICAL",
+   "category": "spectacle",
+   "start": "2026-12-04",
+   "end": "2026-12-04",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/secret-s-medical-billet/idmanif/641400/idseance/4197801",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/secret-s-medical-billet/idmanif/641400/idseance/4197801"
+    }
+   ],
+   "id": "2026-12-04-tours-secret-s-medical"
   },
   {
    "title": "Noël au château de Montpoupon",
@@ -9986,6 +10617,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -9998,6 +10631,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/la-guerre-des-sexes"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/la-guerre-des-sexes-billet/idmanif/638269/idtier/18864121"
     }
    ],
    "id": "2026-12-05-joue-les-tours-la-guerre-des-sexes"
@@ -10011,6 +10648,7 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "LE TEMPS MACHINE",
    "address": "Parvis Miles Davis",
    "lat": 47.33938,
    "lon": 0.6630262,
@@ -10024,6 +10662,10 @@
     {
      "id": "datatourisme",
      "url": "https://letempsmachine.com/agenda/2l-costa"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/2l-costa-billet/idmanif/674493/idseance/4432822"
     }
    ],
    "id": "2026-12-05-joue-les-tours-2l-costa"
@@ -10205,6 +10847,29 @@
     }
    ],
    "id": "2026-12-05-tours-nirmata-chill-live"
+  },
+  {
+   "title": "KEVIN LEVY",
+   "category": "spectacle",
+   "start": "2026-12-05",
+   "end": "2026-12-05",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/kevin-levy-billet/idmanif/628976/idseance/4126282",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/kevin-levy-billet/idmanif/628976/idseance/4126282"
+    }
+   ],
+   "id": "2026-12-05-tours-kevin-levy"
   },
   {
    "title": "Téléthon",
@@ -10427,6 +11092,29 @@
    "id": "2026-12-06-tours-musee-pour-tous"
   },
   {
+   "title": "JEANFI JANSSENS",
+   "category": "spectacle",
+   "start": "2026-12-06",
+   "end": "2026-12-06",
+   "hours": "17:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/jeanfi-janssens-billet/idmanif/632074/idseance/4140633",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/jeanfi-janssens-billet/idmanif/632074/idseance/4140633"
+    }
+   ],
+   "id": "2026-12-06-tours-jeanfi-janssens"
+  },
+  {
    "title": "Ciné en' joué",
    "category": "spectacle",
    "start": "2026-12-07",
@@ -10531,6 +11219,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -10543,6 +11233,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/une-heure-t-attendre-sylvain-meyniac-avec-thierry-fremont"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/une-heure-a-t-attendre-billet/idmanif/667395/idseance/4383004"
     }
    ],
    "id": "2026-12-09-joue-les-tours-une-heure-a-t-attendre"
@@ -10775,6 +11469,29 @@
     }
    ],
    "id": "2026-12-11-la-celle-saint-avant-marche-de-noel"
+  },
+  {
+   "title": "CLEMENT BLOUIN",
+   "category": "spectacle",
+   "start": "2026-12-11",
+   "end": "2026-12-11",
+   "hours": "20:30",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/clement-blouin-billet/idmanif/671355/idseance/4404969",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/clement-blouin-billet/idmanif/671355/idseance/4404969"
+    }
+   ],
+   "id": "2026-12-11-montlouis-sur-loire-clement-blouin"
   },
   {
    "title": "Cabaret de Noël à la salle des fêtes de Noizay",
@@ -11077,6 +11794,29 @@
    "id": "2026-12-12-monts-marche-de-noel-de-monts"
   },
   {
+   "title": "LE CABARET DE NOEL - COLLECTIF DE L'OGRE - LE CABARET DE NOEL",
+   "category": "spectacle",
+   "start": "2026-12-12",
+   "end": "2026-12-12",
+   "hours": "19:00",
+   "city": "Rouziers De Touraine",
+   "postcode": "37360",
+   "dept": "37",
+   "venue": "'LES QUATRE VENTS' ESPACE CULTUREL",
+   "address": "LES BLOURDIERS",
+   "lat": 47.517277,
+   "lon": 0.648299,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-cabaret-de-noel-collectif-de-l-ogre-billet/idmanif/667026/idseance/4379194",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-cabaret-de-noel-collectif-de-l-ogre-billet/idmanif/667026/idseance/4379194"
+    }
+   ],
+   "id": "2026-12-12-rouziers-de-touraine-le-cabaret-de-noel-collectif-de-l-ogre-le-cabaret-de-noel"
+  },
+  {
    "title": "Marché de Noël à la ferme",
    "category": "fete",
    "start": "2026-12-12",
@@ -11126,6 +11866,29 @@
     }
    ],
    "id": "2026-12-12-tours-magma-burger-airport"
+  },
+  {
+   "title": "THOMAS MARTY",
+   "category": "spectacle",
+   "start": "2026-12-12",
+   "end": "2026-12-12",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/thomas-marty-billet/idmanif/611746/idseance/4010634",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/thomas-marty-billet/idmanif/611746/idseance/4010634"
+    }
+   ],
+   "id": "2026-12-12-tours-thomas-marty"
   },
   {
    "title": "1ère carte blanche aux professeurs de l'École municipale de musique",
@@ -11356,6 +12119,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -11368,9 +12133,36 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/tristan-lopin-partez-sans-moi-je-vous-rejoins"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/tristan-lopin-billet/idmanif/642572/idseance/4213863"
     }
    ],
    "id": "2026-12-15-joue-les-tours-tristan-lopin-partez-sans-moi-je-vous-rejoins"
+  },
+  {
+   "title": "UN SOIR AVEC ELIE SEMOUN & FRANCK DUBOSC - UN SOIR AVEC ELIE SEMOUN",
+   "category": "spectacle",
+   "start": "2026-12-15",
+   "end": "2026-12-15",
+   "hours": "20:30",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/un-soir-avec-elie-semoun-franck-dubosc-billet/idmanif/665911/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/un-soir-avec-elie-semoun-franck-dubosc-billet/idmanif/665911/idtier/18864121"
+    }
+   ],
+   "id": "2026-12-15-montlouis-sur-loire-un-soir-avec-elie-semoun-franck-dubosc-un-soir-avec-elie-se"
   },
   {
    "title": "Thomas Piet Koala",
@@ -11400,6 +12192,29 @@
    "id": "2026-12-16-tours-thomas-piet-koala"
   },
   {
+   "title": "AKIM OMIRI",
+   "category": "spectacle",
+   "start": "2026-12-16",
+   "end": "2026-12-16",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/akim-omiri-billet/idmanif/665816/idseance/4372145",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/akim-omiri-billet/idmanif/665816/idseance/4372145"
+    }
+   ],
+   "id": "2026-12-16-tours-akim-omiri"
+  },
+  {
    "title": "Made in France",
    "category": "spectacle",
    "start": "2026-12-17",
@@ -11408,6 +12223,8 @@
    "city": "Joué-lès-Tours",
    "postcode": "37300",
    "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
    "lat": 47.33938,
    "lon": 0.6630262,
    "free": false,
@@ -11420,6 +12237,10 @@
     {
      "id": "datatourisme",
      "url": "https://espacemalraux.jouelestours.fr/saison-culturelle/spectacles-tout-public/made-france"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/made-in-france-billet/idmanif/667456/idseance/4383146"
     }
    ],
    "id": "2026-12-17-joue-les-tours-made-in-france"
@@ -11538,6 +12359,29 @@
     }
    ],
    "id": "2026-12-18-tours-cabaret-de-noel-du-theatre-du-sous-sol"
+  },
+  {
+   "title": "Le Cadre Noir de Saumur",
+   "category": "spectacle",
+   "start": "2026-12-18",
+   "end": "2026-12-18",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-cadre-noir-de-saumur-billet/idmanif/641933/idseance/4200138",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-cadre-noir-de-saumur-billet/idmanif/641933/idseance/4200138"
+    }
+   ],
+   "id": "2026-12-18-tours-le-cadre-noir-de-saumur"
   },
   {
    "title": "Visite guidée « Le noël royal des animaux » au château royal d'Amboise",
@@ -11959,6 +12803,52 @@
    "id": "2026-12-19-tours-cabaret-de-noel-du-theatre-du-sous-sol"
   },
   {
+   "title": "CONCERT DE NOEL-VIVALDI LES 4 SAISONS",
+   "category": "spectacle",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "EGLISE NOTRE DAME LA RICHE",
+   "address": "15 RUE GEORGES COURTELINE",
+   "lat": 47.393415,
+   "lon": 0.674868,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/concert-de-noel-vivaldi-les-4-saisons-billet/idmanif/677137/idseance/4449527",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/concert-de-noel-vivaldi-les-4-saisons-billet/idmanif/677137/idseance/4449527"
+    }
+   ],
+   "id": "2026-12-19-tours-concert-de-noel-vivaldi-les-4-saisons"
+  },
+  {
+   "title": "Le Cadre Noir de Saumur",
+   "category": "spectacle",
+   "start": "2026-12-19",
+   "end": "2026-12-19",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-cadre-noir-de-saumur-billet/idmanif/641933/idseance/4200139",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-cadre-noir-de-saumur-billet/idmanif/641933/idseance/4200139"
+    }
+   ],
+   "id": "2026-12-19-tours-le-cadre-noir-de-saumur"
+  },
+  {
    "title": "Festival des orgues de la collégiale Saint-Denis",
    "category": "fete",
    "start": "2026-12-20",
@@ -12078,6 +12968,52 @@
     }
    ],
    "id": "2026-12-20-tours-boum-de-noel-4-kidz"
+  },
+  {
+   "title": "Le Cadre Noir de Saumur",
+   "category": "spectacle",
+   "start": "2026-12-20",
+   "end": "2026-12-20",
+   "hours": "15:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-cadre-noir-de-saumur-billet/idmanif/641933/idseance/4200140",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-cadre-noir-de-saumur-billet/idmanif/641933/idseance/4200140"
+    }
+   ],
+   "id": "2026-12-20-tours-le-cadre-noir-de-saumur"
+  },
+  {
+   "title": "COCHONS D'INDE",
+   "category": "spectacle",
+   "start": "2026-12-20",
+   "end": "2026-12-20",
+   "hours": "16:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/cochons-d-inde-billet/idmanif/657226/idseance/4320941",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/cochons-d-inde-billet/idmanif/657226/idseance/4320941"
+    }
+   ],
+   "id": "2026-12-20-tours-cochons-d-inde"
   },
   {
    "title": "Noël au pays des châteaux I Atelier les fées des bois",
@@ -12281,6 +13217,29 @@
    "id": "2026-12-22-tours-visite-guidee-l-architecture-art-deco"
   },
   {
+   "title": "CASSE NOISETTE",
+   "category": "spectacle",
+   "start": "2026-12-22",
+   "end": "2026-12-22",
+   "hours": "15:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/casse-noisette-billet/idmanif/640997/idseance/4196352",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/casse-noisette-billet/idmanif/640997/idseance/4196352"
+    }
+   ],
+   "id": "2026-12-22-tours-casse-noisette"
+  },
+  {
    "title": "L'heure du conte au château royal d'Amboise",
    "category": "spectacle",
    "start": "2026-12-23",
@@ -12371,6 +13330,29 @@
     }
    ],
    "id": "2026-12-23-sache-atelier-ma-broderie-de-noel"
+  },
+  {
+   "title": "LES QUATRE SAISONS - BALLET - LES 4 SAISONS - BALLET",
+   "category": "spectacle",
+   "start": "2026-12-23",
+   "end": "2026-12-23",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/les-quatre-saisons-ballet-billet/idmanif/649971/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/les-quatre-saisons-ballet-billet/idmanif/649971/idtier/18864121"
+    }
+   ],
+   "id": "2026-12-23-tours-les-quatre-saisons-ballet-les-4-saisons-ballet"
   },
   {
    "title": "Village du Père Noël",
@@ -12848,6 +13830,121 @@
    "id": "2027-01-05-chambray-les-tours-le-boudoir-la-gourmandise"
   },
   {
+   "title": "AMANDINE LOURDEL",
+   "category": "spectacle",
+   "start": "2027-01-08",
+   "end": "2027-01-08",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/amandine-lourdel-billet/idmanif/648177/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/amandine-lourdel-billet/idmanif/648177/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-08-tours-amandine-lourdel"
+  },
+  {
+   "title": "ATOURSDEBRASS",
+   "category": "concert",
+   "start": "2027-01-10",
+   "end": "2027-01-10",
+   "hours": "15:00",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/atoursdebrass-billet/idmanif/671358/idseance/4404976",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/atoursdebrass-billet/idmanif/671358/idseance/4404976"
+    }
+   ],
+   "id": "2027-01-10-montlouis-sur-loire-atoursdebrass"
+  },
+  {
+   "title": "CHANTAL GOYA",
+   "category": "spectacle",
+   "start": "2027-01-10",
+   "end": "2027-01-10",
+   "hours": "15:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/chantal-goya-billet/idmanif/649216/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/chantal-goya-billet/idmanif/649216/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-10-tours-chantal-goya"
+  },
+  {
+   "title": "500 VOIX POUR JOHNNY",
+   "category": "concert",
+   "start": "2027-01-10",
+   "end": "2027-01-10",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/500-voix-pour-johnny-billet/idmanif/652645/idseance/4294253",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/500-voix-pour-johnny-billet/idmanif/652645/idseance/4294253"
+    }
+   ],
+   "id": "2027-01-10-tours-500-voix-pour-johnny"
+  },
+  {
+   "title": "LA JOCONDE PARLE ENFIN",
+   "category": "spectacle",
+   "start": "2027-01-10",
+   "end": "2027-01-10",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/la-joconde-parle-enfin-billet/idmanif/656464/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/la-joconde-parle-enfin-billet/idmanif/656464/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-10-tours-la-joconde-parle-enfin"
+  },
+  {
    "title": "Exposition de dessins d'Hanna Stoianova",
    "category": "exposition",
    "start": "2027-01-14",
@@ -12938,6 +14035,7 @@
    "city": "Avoine",
    "postcode": "37420",
    "dept": "37",
+   "venue": "ESPACE CULTUREL",
    "address": "Rue de l'Ardoise",
    "lat": 47.2053966,
    "lon": 0.1843386,
@@ -12951,6 +14049,10 @@
     {
      "id": "datatourisme",
      "url": "https://www.ville-avoine.fr/saison-culturelle-2026-2027/"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/roman-doduik-billet/idmanif/671633/idseance/4406961"
     }
    ],
    "id": "2027-01-15-avoine-spectacle-d-humour-roman-doduik"
@@ -13004,6 +14106,29 @@
     }
    ],
    "id": "2027-01-15-ligueil-concert-so-british-de-lyre-straits"
+  },
+  {
+   "title": "FOREVER - TRIBUTE TO MICHAEL JACKSON - FOREVER",
+   "category": "concert",
+   "start": "2027-01-15",
+   "end": "2027-01-15",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/forever-tribute-to-michael-jackson-billet/idmanif/632890/idseance/4144672",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/forever-tribute-to-michael-jackson-billet/idmanif/632890/idseance/4144672"
+    }
+   ],
+   "id": "2027-01-15-tours-forever-tribute-to-michael-jackson-forever"
   },
   {
    "title": "Concert Opus 333 - 27 ème édition festival de cuivres",
@@ -13119,6 +14244,52 @@
    "id": "2027-01-16-ligueil-escape-game"
   },
   {
+   "title": "VERONIC DICAIRE",
+   "category": "spectacle",
+   "start": "2027-01-16",
+   "end": "2027-01-16",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/veronic-dicaire-billet/idmanif/643756/idseance/4222506",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/veronic-dicaire-billet/idmanif/643756/idseance/4222506"
+    }
+   ],
+   "id": "2027-01-16-tours-veronic-dicaire"
+  },
+  {
+   "title": "CONSTANCE",
+   "category": "spectacle",
+   "start": "2027-01-16",
+   "end": "2027-01-16",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/constance-billet/idmanif/654458/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/constance-billet/idmanif/654458/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-16-tours-constance"
+  },
+  {
    "title": "Mouvement(s) - 27ème édition du festival de cuivres",
    "category": "fete",
    "start": "2027-01-17",
@@ -13168,6 +14339,75 @@
    "id": "2027-01-17-ligueil-projection-film-raison-et-sentiments-de-ang-lee"
   },
   {
+   "title": "THE MUSICAL STORY OF ELVIS",
+   "category": "concert",
+   "start": "2027-01-17",
+   "end": "2027-01-17",
+   "hours": "19:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/the-musical-story-of-elvis-billet/idmanif/653971/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/the-musical-story-of-elvis-billet/idmanif/653971/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-17-tours-the-musical-story-of-elvis"
+  },
+  {
+   "title": "VOYAGE VOYAGES",
+   "category": "spectacle",
+   "start": "2027-01-18",
+   "end": "2027-01-18",
+   "hours": "15:00",
+   "city": "Amboise",
+   "postcode": "37400",
+   "dept": "37",
+   "venue": "THEATRE BEAUMARCHAIS",
+   "address": "AV DES MARTYRS DE LA RESISTANCE",
+   "lat": 47.411313,
+   "lon": 0.979441,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/voyage-voyages-billet/idmanif/660336/idseance/4342912",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/voyage-voyages-billet/idmanif/660336/idseance/4342912"
+    }
+   ],
+   "id": "2027-01-18-amboise-voyage-voyages"
+  },
+  {
+   "title": "LE PANAME COMEDY CLUB",
+   "category": "spectacle",
+   "start": "2027-01-19",
+   "end": "2027-01-19",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-paname-comedy-club-billet/idmanif/666191/idseance/4375973",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-paname-comedy-club-billet/idmanif/666191/idseance/4375973"
+    }
+   ],
+   "id": "2027-01-19-joue-les-tours-le-paname-comedy-club"
+  },
+  {
    "title": "Soléo par Les Entêtés Production",
    "category": "spectacle",
    "start": "2027-01-20",
@@ -13191,6 +14431,29 @@
     }
    ],
    "id": "2027-01-20-joue-les-tours-soleo-par-les-entetes-production"
+  },
+  {
+   "title": "SAM SAUVAGE",
+   "category": "concert",
+   "start": "2027-01-21",
+   "end": "2027-01-21",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/sam-sauvage-billet/idmanif/667473/idseance/4383317",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/sam-sauvage-billet/idmanif/667473/idseance/4383317"
+    }
+   ],
+   "id": "2027-01-21-joue-les-tours-sam-sauvage"
   },
   {
    "title": "Les Mondes de Jules par la Tite Compagnie",
@@ -13219,6 +14482,29 @@
    "id": "2027-01-22-chambray-les-tours-les-mondes-de-jules-par-la-tite-compagnie"
   },
   {
+   "title": "LA ZARRA 1ère Kiona - LA ZARRA",
+   "category": "concert",
+   "start": "2027-01-22",
+   "end": "2027-01-22",
+   "hours": "20:30",
+   "city": "St Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "venue": "LE NOUVEL ATRIUM",
+   "address": "8-10 BOULEVARD PAUL DOUMER",
+   "lat": 47.368439,
+   "lon": 0.7271,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/la-zarra-1ere-kiona-billet/idmanif/669146/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/la-zarra-1ere-kiona-billet/idmanif/669146/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-22-st-avertin-la-zarra-1ere-kiona-la-zarra"
+  },
+  {
    "title": "Concert : \"Les Wriggles\"",
    "category": "concert",
    "start": "2027-01-23",
@@ -13245,6 +14531,167 @@
    "id": "2027-01-23-amboise-concert-les-wriggles"
   },
   {
+   "title": "OKIDOK",
+   "category": "spectacle",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/okidok-billet/idmanif/669233/idseance/4391129",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/okidok-billet/idmanif/669233/idseance/4391129"
+    }
+   ],
+   "id": "2027-01-23-joue-les-tours-okidok"
+  },
+  {
+   "title": "THE ELTON TRIBUTE",
+   "category": "concert",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "hours": "20:30",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/the-elton-tribute-billet/idmanif/671362/idseance/4404980",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/the-elton-tribute-billet/idmanif/671362/idseance/4404980"
+    }
+   ],
+   "id": "2027-01-23-montlouis-sur-loire-the-elton-tribute"
+  },
+  {
+   "title": "TALISCO COPYCAT",
+   "category": "concert",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "hours": "20:00",
+   "city": "St Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "venue": "LE NOUVEL ATRIUM",
+   "address": "8-10 BOULEVARD PAUL DOUMER",
+   "lat": 47.368439,
+   "lon": 0.7271,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/talisco-copycat-billet/idmanif/669147/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/talisco-copycat-billet/idmanif/669147/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-23-st-avertin-talisco-copycat"
+  },
+  {
+   "title": "L'ENFER C'EST BELLE MERE",
+   "category": "spectacle",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "hours": "19:00",
+   "city": "Tours",
+   "postcode": "37200",
+   "dept": "37",
+   "venue": "ESPACE JACQUES VILLERET",
+   "address": "11, rue de Saussure",
+   "lat": 47.365689,
+   "lon": 0.707333,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/l-enfer-c-est-belle-mere-billet/idmanif/663187/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/l-enfer-c-est-belle-mere-billet/idmanif/663187/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-23-tours-l-enfer-c-est-belle-mere"
+  },
+  {
+   "title": "ALEXIS TRAMONI",
+   "category": "spectacle",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/alexis-tramoni-billet/idmanif/661166/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/alexis-tramoni-billet/idmanif/661166/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-23-tours-alexis-tramoni"
+  },
+  {
+   "title": "LAURENT VOULZY",
+   "category": "concert",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/laurent-voulzy-billet/idmanif/645994/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/laurent-voulzy-billet/idmanif/645994/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-23-tours-laurent-voulzy"
+  },
+  {
+   "title": "SYNCHRONICITE MENTALISME",
+   "category": "spectacle",
+   "start": "2027-01-23",
+   "end": "2027-01-23",
+   "hours": "21:00",
+   "city": "Tours",
+   "postcode": "37200",
+   "dept": "37",
+   "venue": "ESPACE JACQUES VILLERET",
+   "address": "11, rue de Saussure",
+   "lat": 47.365689,
+   "lon": 0.707333,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/synchronicite-mentalisme-billet/idmanif/663189/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/synchronicite-mentalisme-billet/idmanif/663189/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-23-tours-synchronicite-mentalisme"
+  },
+  {
    "title": "Festivités de la Saint-Vincent",
    "category": "autre",
    "start": "2027-01-23",
@@ -13268,6 +14715,144 @@
    "id": "2027-01-23-vouvray-festivites-de-la-saint-vincent"
   },
   {
+   "title": "FABIEN OLICARD",
+   "category": "spectacle",
+   "start": "2027-01-24",
+   "end": "2027-01-24",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/fabien-olicard-billet/idmanif/659213/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/fabien-olicard-billet/idmanif/659213/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-24-tours-fabien-olicard"
+  },
+  {
+   "title": "FORMIDABLE ! AZNAVOUR",
+   "category": "concert",
+   "start": "2027-01-26",
+   "end": "2027-01-26",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/formidable-aznavour-billet/idmanif/646210/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/formidable-aznavour-billet/idmanif/646210/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-26-joue-les-tours-formidable-aznavour"
+  },
+  {
+   "title": "WITH U2 DAY",
+   "category": "concert",
+   "start": "2027-01-29",
+   "end": "2027-01-29",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/with-u2-day-billet/idmanif/653659/idseance/4301562",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/with-u2-day-billet/idmanif/653659/idseance/4301562"
+    }
+   ],
+   "id": "2027-01-29-tours-with-u2-day"
+  },
+  {
+   "title": "ONE NIGHT OF QUEEN",
+   "category": "concert",
+   "start": "2027-01-29",
+   "end": "2027-01-29",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/one-night-of-queen-billet/idmanif/622002/idseance/4088632",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/one-night-of-queen-billet/idmanif/622002/idseance/4088632"
+    }
+   ],
+   "id": "2027-01-29-tours-one-night-of-queen"
+  },
+  {
+   "title": "TOM BALDETTI",
+   "category": "spectacle",
+   "start": "2027-01-29",
+   "end": "2027-01-29",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/tom-baldetti-billet/idmanif/672094/idseance/4412951",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/tom-baldetti-billet/idmanif/672094/idseance/4412951"
+    }
+   ],
+   "id": "2027-01-29-tours-tom-baldetti"
+  },
+  {
+   "title": "ANA GODEFROY",
+   "category": "spectacle",
+   "start": "2027-01-30",
+   "end": "2027-01-30",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/ana-godefroy-billet/idmanif/644862/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/ana-godefroy-billet/idmanif/644862/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-30-joue-les-tours-ana-godefroy"
+  },
+  {
    "title": "La taille de formation des arbres d'ornement",
    "category": "concert",
    "start": "2027-01-30",
@@ -13289,6 +14874,121 @@
     }
    ],
    "id": "2027-01-30-monthodon-la-taille-de-formation-des-arbres-d-ornement"
+  },
+  {
+   "title": "MEHDI DJAADI - MEDHI DJAADI",
+   "category": "spectacle",
+   "start": "2027-01-30",
+   "end": "2027-01-30",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/mehdi-djaadi-billet/idmanif/654953/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/mehdi-djaadi-billet/idmanif/654953/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-30-tours-mehdi-djaadi-medhi-djaadi"
+  },
+  {
+   "title": "FUNKY SOUL FAMILY",
+   "category": "concert",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "hours": "18:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/funky-soul-family-billet/idmanif/648508/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/funky-soul-family-billet/idmanif/648508/idtier/18864121"
+    }
+   ],
+   "id": "2027-01-31-joue-les-tours-funky-soul-family"
+  },
+  {
+   "title": "UN CHATEAU DE CARTES",
+   "category": "spectacle",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "hours": "16:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/un-chateau-de-cartes-billet/idmanif/658005/idseance/4325416",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/un-chateau-de-cartes-billet/idmanif/658005/idseance/4325416"
+    }
+   ],
+   "id": "2027-01-31-tours-un-chateau-de-cartes"
+  },
+  {
+   "title": "DE MICHEL BERGER A FRANCE GALL-TRIBUTE",
+   "category": "concert",
+   "start": "2027-01-31",
+   "end": "2027-01-31",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/de-michel-berger-a-france-gall-tribute-billet/idmanif/658768/idseance/4335407",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/de-michel-berger-a-france-gall-tribute-billet/idmanif/658768/idseance/4335407"
+    }
+   ],
+   "id": "2027-01-31-tours-de-michel-berger-a-france-gall-tribute"
+  },
+  {
+   "title": "PASION DE BUENA VISTA",
+   "category": "spectacle",
+   "start": "2027-02-01",
+   "end": "2027-02-01",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/pasion-de-buena-vista-billet/idmanif/656360/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/pasion-de-buena-vista-billet/idmanif/656360/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-01-joue-les-tours-pasion-de-buena-vista"
   },
   {
    "title": "Le boudoir par la Tite Compagnie: l'ivresse",
@@ -13340,6 +15040,98 @@
    "id": "2027-02-04-le-boulay-conference-la-statuaire-et-le-decor-sculpte-dans-les-eglises-du-pays-"
   },
   {
+   "title": "BALLET JULIEN LESTEL",
+   "category": "spectacle",
+   "start": "2027-02-05",
+   "end": "2027-02-05",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/ballet-julien-lestel-billet/idmanif/669263/idseance/4391173",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/ballet-julien-lestel-billet/idmanif/669263/idseance/4391173"
+    }
+   ],
+   "id": "2027-02-05-joue-les-tours-ballet-julien-lestel"
+  },
+  {
+   "title": "200 VOIX POUR GOLDMAN",
+   "category": "concert",
+   "start": "2027-02-06",
+   "end": "2027-02-06",
+   "hours": "17:00",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/200-voix-pour-goldman-billet/idmanif/653431/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/200-voix-pour-goldman-billet/idmanif/653431/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-06-montlouis-sur-loire-200-voix-pour-goldman"
+  },
+  {
+   "title": "PABLO MIRA",
+   "category": "spectacle",
+   "start": "2027-02-06",
+   "end": "2027-02-06",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/pablo-mira-billet/idmanif/640060/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/pablo-mira-billet/idmanif/640060/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-06-tours-pablo-mira"
+  },
+  {
+   "title": "JEAN-BENOIT DIALLO",
+   "category": "spectacle",
+   "start": "2027-02-06",
+   "end": "2027-02-06",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/jean-benoit-diallo-billet/idmanif/636970/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/jean-benoit-diallo-billet/idmanif/636970/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-06-tours-jean-benoit-diallo"
+  },
+  {
    "title": "Cinéma La femme qui en savait trop",
    "category": "spectacle",
    "start": "2027-02-09",
@@ -13361,6 +15153,52 @@
     }
    ],
    "id": "2027-02-09-chambray-les-tours-cinema-la-femme-qui-en-savait-trop"
+  },
+  {
+   "title": "LE LAC DES CYGNES",
+   "category": "spectacle",
+   "start": "2027-02-09",
+   "end": "2027-02-09",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-lac-des-cygnes-billet/idmanif/660583/idseance/4343520",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-lac-des-cygnes-billet/idmanif/660583/idseance/4343520"
+    }
+   ],
+   "id": "2027-02-09-tours-le-lac-des-cygnes"
+  },
+  {
+   "title": "JEROME COMMANDEUR",
+   "category": "spectacle",
+   "start": "2027-02-11",
+   "end": "2027-02-11",
+   "hours": "20:30",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/jerome-commandeur-billet/idmanif/671367/idseance/4404985",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/jerome-commandeur-billet/idmanif/671367/idseance/4404985"
+    }
+   ],
+   "id": "2027-02-11-montlouis-sur-loire-jerome-commandeur"
   },
   {
    "title": "Théâtre : \"Cyrano\"",
@@ -13389,13 +15227,176 @@
    "id": "2027-02-12-amboise-theatre-cyrano"
   },
   {
+   "title": "UN ATELIER POUR 2",
+   "category": "spectacle",
+   "start": "2027-02-12",
+   "end": "2027-02-12",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/un-atelier-pour-2-billet/idmanif/676013/idseance/4441425",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/un-atelier-pour-2-billet/idmanif/676013/idseance/4441425"
+    }
+   ],
+   "id": "2027-02-12-joue-les-tours-un-atelier-pour-2"
+  },
+  {
+   "title": "LAURENT GERRA",
+   "category": "spectacle",
+   "start": "2027-02-12",
+   "end": "2027-02-12",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/laurent-gerra-billet/idmanif/652915/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/laurent-gerra-billet/idmanif/652915/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-12-tours-laurent-gerra"
+  },
+  {
+   "title": "ELIE SEMOUN",
+   "category": "spectacle",
+   "start": "2027-02-12",
+   "end": "2027-02-12",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/elie-semoun-billet/idmanif/663451/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/elie-semoun-billet/idmanif/663451/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-12-tours-elie-semoun"
+  },
+  {
+   "title": "L’HERITAGE GOLDMAN",
+   "category": "concert",
+   "start": "2027-02-12",
+   "end": "2027-02-12",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/l-heritage-goldman-billet/idmanif/632961/idseance/4144982",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/l-heritage-goldman-billet/idmanif/632961/idseance/4144982"
+    }
+   ],
+   "id": "2027-02-12-tours-l-heritage-goldman"
+  },
+  {
+   "title": "GALA EXCEPTIONNEL DU PINGUETTE COMEDY - GALA EXCEPTIONNEL DU PINGUETTE",
+   "category": "spectacle",
+   "start": "2027-02-13",
+   "end": "2027-02-13",
+   "hours": "20:00",
+   "city": "Rouziers De Touraine",
+   "postcode": "37360",
+   "dept": "37",
+   "venue": "'LES QUATRE VENTS' ESPACE CULTUREL",
+   "address": "LES BLOURDIERS",
+   "lat": 47.517277,
+   "lon": 0.648299,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/gala-exceptionnel-du-pinguette-comedy-billet/idmanif/667056/idseance/4380445",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/gala-exceptionnel-du-pinguette-comedy-billet/idmanif/667056/idseance/4380445"
+    }
+   ],
+   "id": "2027-02-13-rouziers-de-touraine-gala-exceptionnel-du-pinguette-comedy-gala-exceptionnel-du"
+  },
+  {
+   "title": "VICTORIA DAUBERVILLE - CLASSIQUE ?",
+   "category": "spectacle",
+   "start": "2027-02-13",
+   "end": "2027-02-13",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/victoria-dauberville-classique-billet/idmanif/640135/idseance/4190338",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/victoria-dauberville-classique-billet/idmanif/640135/idseance/4190338"
+    }
+   ],
+   "id": "2027-02-13-tours-victoria-dauberville-classique"
+  },
+  {
+   "title": "LES ETOILES DU CIRQUE DE PEKIN - ODYSSEE - LES ETOILES DU CIRQUE DE PEKIN",
+   "category": "spectacle",
+   "start": "2027-02-14",
+   "end": "2027-02-14",
+   "hours": "14:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/les-etoiles-du-cirque-de-pekin-odyssee-billet/idmanif/637731/idseance/4180056",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/les-etoiles-du-cirque-de-pekin-odyssee-billet/idmanif/637731/idseance/4180056"
+    }
+   ],
+   "id": "2027-02-14-tours-les-etoiles-du-cirque-de-pekin-odyssee-les-etoiles-du-cirque-de-pekin"
+  },
+  {
    "title": "Concert de l'Orchestre Symphonique de la Région Centre-Val de Loire",
    "category": "concert",
    "start": "2027-02-15",
    "end": "2027-02-15",
+   "hours": "20:30",
    "city": "Avoine",
    "postcode": "37420",
    "dept": "37",
+   "venue": "ESPACE CULTUREL",
    "address": "Rue de l'Ardoise",
    "lat": 47.2053966,
    "lon": 0.1843386,
@@ -13409,9 +15410,36 @@
     {
      "id": "datatourisme",
      "url": "https://billetterie.ville-avoine.fr/agenda/92-ORCHESTRE-SYMPHONIQUE-REGION-CENTRE-VAL-DE-LOIRE-TOURS"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/orchestre-symphonique-billet/idmanif/671647/idseance/4406978"
     }
    ],
    "id": "2027-02-15-avoine-concert-de-l-orchestre-symphonique-de-la-region-centre-val-de-loire"
+  },
+  {
+   "title": "MOURIR D'AIMER",
+   "category": "spectacle",
+   "start": "2027-02-16",
+   "end": "2027-02-16",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/mourir-d-aimer-billet/idmanif/670756/idseance/4401034",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/mourir-d-aimer-billet/idmanif/670756/idseance/4401034"
+    }
+   ],
+   "id": "2027-02-16-joue-les-tours-mourir-d-aimer"
   },
   {
    "title": "Exposition Décors d'architecture",
@@ -13434,6 +15462,29 @@
     }
    ],
    "id": "2027-02-16-montlouis-sur-loire-exposition-decors-d-architecture"
+  },
+  {
+   "title": "BOODER",
+   "category": "spectacle",
+   "start": "2027-02-16",
+   "end": "2027-02-16",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/booder-billet/idmanif/671067/idseance/4402106",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/booder-billet/idmanif/671067/idseance/4402106"
+    }
+   ],
+   "id": "2027-02-16-tours-booder"
   },
   {
    "title": "MOMO ou la mystérieuse histoire des voleurs de temps par Natyelli Mora-Cie. Les Apicoles",
@@ -13459,6 +15510,52 @@
     }
    ],
    "id": "2027-02-17-joue-les-tours-momo-ou-la-mysterieuse-histoire-des-voleurs-de-temps-par-natyell"
+  },
+  {
+   "title": "CASSE-NOISETTE - BALLET ET ORCHESTRE - CASSE-NOISETTE",
+   "category": "spectacle",
+   "start": "2027-02-17",
+   "end": "2027-02-17",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/casse-noisette-ballet-et-orchestre-billet/idmanif/648747/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/casse-noisette-ballet-et-orchestre-billet/idmanif/648747/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-17-tours-casse-noisette-ballet-et-orchestre-casse-noisette"
+  },
+  {
+   "title": "THE LOOP",
+   "category": "spectacle",
+   "start": "2027-02-18",
+   "end": "2027-02-18",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/the-loop-billet/idmanif/669249/idseance/4391158",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/the-loop-billet/idmanif/669249/idseance/4391158"
+    }
+   ],
+   "id": "2027-02-18-joue-les-tours-the-loop"
   },
   {
    "title": "Conférence Resistance et résistants en Touraine (1940-1944) : mouvements et réseaux dans la lutte contre l'occupant à Véretz",
@@ -13507,6 +15604,121 @@
     }
    ],
    "id": "2027-02-19-chambray-les-tours-le-petit-nicolas-lectures"
+  },
+  {
+   "title": "SYLVIE VARTAN",
+   "category": "concert",
+   "start": "2027-02-19",
+   "end": "2027-02-19",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/sylvie-vartan-billet/idmanif/669011/idseance/4390366",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/sylvie-vartan-billet/idmanif/669011/idseance/4390366"
+    }
+   ],
+   "id": "2027-02-19-tours-sylvie-vartan"
+  },
+  {
+   "title": "LA REINE DES NEIGES",
+   "category": "spectacle",
+   "start": "2027-02-20",
+   "end": "2027-02-20",
+   "hours": "15:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/la-reine-des-neiges-billet/idmanif/668011/idseance/4385939",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/la-reine-des-neiges-billet/idmanif/668011/idseance/4385939"
+    }
+   ],
+   "id": "2027-02-20-joue-les-tours-la-reine-des-neiges"
+  },
+  {
+   "title": "MICHELE LAROQUE ET KAD MERAD",
+   "category": "spectacle",
+   "start": "2027-02-20",
+   "end": "2027-02-20",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/michele-laroque-et-kad-merad-billet/idmanif/647574/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/michele-laroque-et-kad-merad-billet/idmanif/647574/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-20-tours-michele-laroque-et-kad-merad"
+  },
+  {
+   "title": "CELTIC LEGENDS - Celtic legends - 25th anniversary Tour",
+   "category": "spectacle",
+   "start": "2027-02-21",
+   "end": "2027-02-21",
+   "hours": "15:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/celtic-legends-billet/idmanif/642973/idseance/4219694",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/celtic-legends-billet/idmanif/642973/idseance/4219694"
+    }
+   ],
+   "id": "2027-02-21-tours-celtic-legends-celtic-legends-25th-anniversary-tour"
+  },
+  {
+   "title": "UN SOIR AVEC PIERRE ARDITI",
+   "category": "spectacle",
+   "start": "2027-02-22",
+   "end": "2027-02-22",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/un-soir-avec-pierre-arditi-billet/idmanif/653669/idseance/4301592",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/un-soir-avec-pierre-arditi-billet/idmanif/653669/idseance/4301592"
+    }
+   ],
+   "id": "2027-02-22-joue-les-tours-un-soir-avec-pierre-arditi"
   },
   {
    "title": "Jeu de piste spécial ados à Montlouis-sur-Loire",
@@ -13584,6 +15796,29 @@
     }
    ],
    "id": "2027-02-24-chateau-renault-atelier-batisseurs-du-moyen-age-a-chateau-renault-vacances-des-"
+  },
+  {
+   "title": "LES FO'PLAFONDS",
+   "category": "concert",
+   "start": "2027-02-24",
+   "end": "2027-02-24",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/les-fo-plafonds-billet/idmanif/650968/idseance/4281396",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/les-fo-plafonds-billet/idmanif/650968/idseance/4281396"
+    }
+   ],
+   "id": "2027-02-24-joue-les-tours-les-fo-plafonds"
   },
   {
    "title": "Cinéma Le Petit Nicolas",
@@ -13685,6 +15920,190 @@
    "id": "2027-02-27-tours-street-art-le-street-art-au-sanitas"
   },
   {
+   "title": "NINHO",
+   "category": "concert",
+   "start": "2027-02-27",
+   "end": "2027-02-27",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/ninho-billet/idmanif/664804/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/ninho-billet/idmanif/664804/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-27-tours-ninho"
+  },
+  {
+   "title": "ADOPTE UNE VIEILLE.COM",
+   "category": "spectacle",
+   "start": "2027-02-28",
+   "end": "2027-02-28",
+   "hours": "15:00",
+   "city": "St Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "venue": "LE NOUVEL ATRIUM",
+   "address": "8-10 BOULEVARD PAUL DOUMER",
+   "lat": 47.368439,
+   "lon": 0.7271,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/adopte-une-vieillecom-billet/idmanif/667305/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/adopte-une-vieillecom-billet/idmanif/667305/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-28-st-avertin-adopte-une-vieille-com"
+  },
+  {
+   "title": "MARS ET VENUS TEMPETE AU SEIN DU COUPLE",
+   "category": "spectacle",
+   "start": "2027-02-28",
+   "end": "2027-02-28",
+   "hours": "17:00",
+   "city": "St Avertin",
+   "postcode": "37550",
+   "dept": "37",
+   "venue": "LE NOUVEL ATRIUM",
+   "address": "8-10 BOULEVARD PAUL DOUMER",
+   "lat": 47.368439,
+   "lon": 0.7271,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/mars-et-venus-tempete-au-sein-du-couple-billet/idmanif/667307/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/mars-et-venus-tempete-au-sein-du-couple-billet/idmanif/667307/idtier/18864121"
+    }
+   ],
+   "id": "2027-02-28-st-avertin-mars-et-venus-tempete-au-sein-du-couple"
+  },
+  {
+   "title": "MICHELE TORR",
+   "category": "concert",
+   "start": "2027-03-02",
+   "end": "2027-03-02",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/michele-torr-billet/idmanif/666146/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/michele-torr-billet/idmanif/666146/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-02-joue-les-tours-michele-torr"
+  },
+  {
+   "title": "SHEN YUN",
+   "category": "spectacle",
+   "start": "2027-03-03",
+   "end": "2027-03-03",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175224",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175224"
+    }
+   ],
+   "id": "2027-03-03-tours-shen-yun"
+  },
+  {
+   "title": "GILBERT MONTAGNE",
+   "category": "concert",
+   "start": "2027-03-04",
+   "end": "2027-03-04",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/gilbert-montagne-billet/idmanif/659746/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/gilbert-montagne-billet/idmanif/659746/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-04-joue-les-tours-gilbert-montagne"
+  },
+  {
+   "title": "SHEN YUN",
+   "category": "spectacle",
+   "start": "2027-03-04",
+   "end": "2027-03-04",
+   "hours": "15:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175225",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175225"
+    }
+   ],
+   "id": "2027-03-04-tours-shen-yun"
+  },
+  {
+   "title": "PACKAGE MEET&GREET VALENTINA",
+   "category": "concert",
+   "start": "2027-03-05",
+   "end": "2027-03-05",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/pack/package-meetgreet-valentina-billet/idpack/5644",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/pack/package-meetgreet-valentina-billet/idpack/5644"
+    }
+   ],
+   "id": "2027-03-05-joue-les-tours-package-meet-greet-valentina"
+  },
+  {
    "title": "Défi cinéma en famille avec Bul' de Mômes",
    "category": "spectacle",
    "start": "2027-03-05",
@@ -13722,6 +16141,98 @@
     }
    ],
    "id": "2027-03-05-saint-ouen-les-vignes-defi-cinema-en-famille-avec-bul-de-momes"
+  },
+  {
+   "title": "SHEN YUN",
+   "category": "spectacle",
+   "start": "2027-03-05",
+   "end": "2027-03-05",
+   "hours": "15:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175226",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175226"
+    }
+   ],
+   "id": "2027-03-05-tours-shen-yun"
+  },
+  {
+   "title": "LE ROI SOLEIL",
+   "category": "spectacle",
+   "start": "2027-03-06",
+   "end": "2027-03-06",
+   "hours": "15:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-roi-soleil-billet/idmanif/648057/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-roi-soleil-billet/idmanif/648057/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-06-tours-le-roi-soleil"
+  },
+  {
+   "title": "SHEN YUN",
+   "category": "spectacle",
+   "start": "2027-03-06",
+   "end": "2027-03-06",
+   "hours": "15:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175227",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175227"
+    }
+   ],
+   "id": "2027-03-06-tours-shen-yun"
+  },
+  {
+   "title": "SHEN YUN",
+   "category": "spectacle",
+   "start": "2027-03-07",
+   "end": "2027-03-07",
+   "hours": "14:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175229",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/shen-yun-billet/idmanif/636626/idseance/4175229"
+    }
+   ],
+   "id": "2027-03-07-tours-shen-yun"
   },
   {
    "title": "Conférence \"Le monde du travail au féminin\" à Château-Renault",
@@ -13773,6 +16284,75 @@
    "id": "2027-03-09-chambray-les-tours-cinema-madame-de-sevigne"
   },
   {
+   "title": "LANDING ET WATER",
+   "category": "spectacle",
+   "start": "2027-03-09",
+   "end": "2027-03-09",
+   "hours": "20:30",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/landing-et-water-billet/idmanif/671374/idseance/4405000",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/landing-et-water-billet/idmanif/671374/idseance/4405000"
+    }
+   ],
+   "id": "2027-03-09-montlouis-sur-loire-landing-et-water"
+  },
+  {
+   "title": "K-POP SENSATIONS",
+   "category": "concert",
+   "start": "2027-03-09",
+   "end": "2027-03-09",
+   "hours": "19:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/k-pop-sensations-billet/idmanif/653623/idseance/4301100",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/k-pop-sensations-billet/idmanif/653623/idseance/4301100"
+    }
+   ],
+   "id": "2027-03-09-tours-k-pop-sensations"
+  },
+  {
+   "title": "YOUN SUN NAH",
+   "category": "concert",
+   "start": "2027-03-10",
+   "end": "2027-03-10",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/youn-sun-nah-billet/idmanif/669271/idseance/4391184",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/youn-sun-nah-billet/idmanif/669271/idseance/4391184"
+    }
+   ],
+   "id": "2027-03-10-joue-les-tours-youn-sun-nah"
+  },
+  {
    "title": "Madame de Sévigné : Lectures",
    "category": "conference",
    "start": "2027-03-11",
@@ -13794,6 +16374,29 @@
     }
    ],
    "id": "2027-03-11-chambray-les-tours-madame-de-sevigne-lectures"
+  },
+  {
+   "title": "EN THERAPIE",
+   "category": "spectacle",
+   "start": "2027-03-11",
+   "end": "2027-03-11",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/en-therapie-billet/idmanif/669272/idseance/4391186",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/en-therapie-billet/idmanif/669272/idseance/4391186"
+    }
+   ],
+   "id": "2027-03-11-joue-les-tours-en-therapie"
   },
   {
    "title": "Théâtre : \"Gaslight\"",
@@ -13826,9 +16429,11 @@
    "category": "concert",
    "start": "2027-03-12",
    "end": "2027-03-12",
+   "hours": "20:30",
    "city": "Avoine",
    "postcode": "37420",
    "dept": "37",
+   "venue": "ESPACE CULTUREL",
    "address": "Rue de l'Ardoise",
    "lat": 47.2053966,
    "lon": 0.1843386,
@@ -13839,9 +16444,59 @@
     {
      "id": "datatourisme",
      "url": "https://billetterie.ville-avoine.fr/agenda/97-ANAIS-ROSSO"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/anais-rosso-billet/idmanif/671651/idseance/4406982"
     }
    ],
    "id": "2027-03-12-avoine-concert-d-anais-rosso"
+  },
+  {
+   "title": "ARTURO BRACHETTI",
+   "category": "spectacle",
+   "start": "2027-03-12",
+   "end": "2027-03-12",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/arturo-brachetti-billet/idmanif/674440/idseance/4432759",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/arturo-brachetti-billet/idmanif/674440/idseance/4432759"
+    }
+   ],
+   "id": "2027-03-12-joue-les-tours-arturo-brachetti"
+  },
+  {
+   "title": "CHAMPIONNE EN MEUTE - CHAMPIONNE EN MEUTE - OUPS DANCE COMPANY",
+   "category": "spectacle",
+   "start": "2027-03-12",
+   "end": "2027-03-12",
+   "hours": "20:30",
+   "city": "Rouziers De Touraine",
+   "postcode": "37360",
+   "dept": "37",
+   "venue": "'LES QUATRE VENTS' ESPACE CULTUREL",
+   "address": "LES BLOURDIERS",
+   "lat": 47.517277,
+   "lon": 0.648299,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/championne-en-meute-billet/idmanif/667063/idseance/4380516",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/championne-en-meute-billet/idmanif/667063/idseance/4380516"
+    }
+   ],
+   "id": "2027-03-12-rouziers-de-touraine-championne-en-meute-championne-en-meute-oups-dance-company"
   },
   {
    "title": "Conférence L’Art au féminin",
@@ -13867,6 +16522,29 @@
    "id": "2027-03-13-chambray-les-tours-conference-l-art-au-feminin"
   },
   {
+   "title": "ALDEBERT",
+   "category": "concert",
+   "start": "2027-03-13",
+   "end": "2027-03-13",
+   "hours": "15:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/aldebert-billet/idmanif/647636/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/aldebert-billet/idmanif/647636/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-13-tours-aldebert"
+  },
+  {
    "title": "2ème carte aux professeurs de l'École municipale de musique",
    "category": "concert",
    "start": "2027-03-14",
@@ -13889,6 +16567,29 @@
     }
    ],
    "id": "2027-03-14-chambray-les-tours-2eme-carte-aux-professeurs-de-l-ecole-municipale-de-musique"
+  },
+  {
+   "title": "AMBRE",
+   "category": "concert",
+   "start": "2027-03-14",
+   "end": "2027-03-14",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/ambre-billet/idmanif/666760/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/ambre-billet/idmanif/666760/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-14-tours-ambre"
   },
   {
    "title": "Visite guidée de l'église Saint-Denis d'Amboise",
@@ -13918,6 +16619,75 @@
    "id": "2027-03-17-amboise-visite-guidee-de-l-eglise-saint-denis-d-amboise"
   },
   {
+   "title": "ABD AL MALIK",
+   "category": "concert",
+   "start": "2027-03-18",
+   "end": "2027-03-18",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/abd-al-malik-billet/idmanif/669216/idseance/4391093",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/abd-al-malik-billet/idmanif/669216/idseance/4391093"
+    }
+   ],
+   "id": "2027-03-18-joue-les-tours-abd-al-malik"
+  },
+  {
+   "title": "NACH",
+   "category": "concert",
+   "start": "2027-03-18",
+   "end": "2027-03-18",
+   "hours": "19:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "LE BATEAU IVRE",
+   "address": "146, RUE EDOUARD VAILLANT",
+   "lat": 47.384317,
+   "lon": 0.701169,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/nach-billet/idmanif/676881/idseance/4445429",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/nach-billet/idmanif/676881/idseance/4445429"
+    }
+   ],
+   "id": "2027-03-18-tours-nach"
+  },
+  {
+   "title": "NI VUES NI CONNUES",
+   "category": "spectacle",
+   "start": "2027-03-19",
+   "end": "2027-03-19",
+   "hours": "20:30",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/ni-vues-ni-connues-billet/idmanif/671375/idseance/4405001",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/ni-vues-ni-connues-billet/idmanif/671375/idseance/4405001"
+    }
+   ],
+   "id": "2027-03-19-montlouis-sur-loire-ni-vues-ni-connues"
+  },
+  {
    "title": "Visite guidée : Le quartier Sainte-Radegonde",
    "category": "visite",
    "start": "2027-03-19",
@@ -13942,6 +16712,121 @@
     }
    ],
    "id": "2027-03-19-tours-visite-guidee-le-quartier-sainte-radegonde"
+  },
+  {
+   "title": "VERINO",
+   "category": "spectacle",
+   "start": "2027-03-19",
+   "end": "2027-03-19",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/verino-billet/idmanif/663726/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/verino-billet/idmanif/663726/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-19-tours-verino"
+  },
+  {
+   "title": "Béatrice de la Boulaye",
+   "category": "spectacle",
+   "start": "2027-03-19",
+   "end": "2027-03-19",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/beatrice-de-la-boulaye-billet/idmanif/659969/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/beatrice-de-la-boulaye-billet/idmanif/659969/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-19-tours-beatrice-de-la-boulaye"
+  },
+  {
+   "title": "ANNE ROUMANOFF",
+   "category": "spectacle",
+   "start": "2027-03-20",
+   "end": "2027-03-20",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/anne-roumanoff-billet/idmanif/660445/idseance/4343144",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/anne-roumanoff-billet/idmanif/660445/idseance/4343144"
+    }
+   ],
+   "id": "2027-03-20-joue-les-tours-anne-roumanoff"
+  },
+  {
+   "title": "LILIANE BLANCO-BINETTE",
+   "category": "spectacle",
+   "start": "2027-03-20",
+   "end": "2027-03-20",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/liliane-blanco-binette-billet/idmanif/641919/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/liliane-blanco-binette-billet/idmanif/641919/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-20-tours-liliane-blanco-binette"
+  },
+  {
+   "title": "GAEL LE MAGICIEN",
+   "category": "spectacle",
+   "start": "2027-03-20",
+   "end": "2027-03-20",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/gael-le-magicien-billet/idmanif/657243/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/gael-le-magicien-billet/idmanif/657243/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-20-tours-gael-le-magicien"
   },
   {
    "title": "Fête du court métrage",
@@ -13971,9 +16856,11 @@
    "category": "concert",
    "start": "2027-03-26",
    "end": "2027-03-26",
+   "hours": "20:30",
    "city": "Avoine",
    "postcode": "37420",
    "dept": "37",
+   "venue": "ESPACE CULTUREL",
    "address": "Rue de l'Ardoise",
    "lat": 47.2053966,
    "lon": 0.1843386,
@@ -13987,9 +16874,59 @@
     {
      "id": "datatourisme",
      "url": "https://billetterie.ville-avoine.fr/agenda/93-LOUMANB-GABRIEL-SAGLIO"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/loumanb-gabriel-saglio-billet/idmanif/671657/idseance/4406990"
     }
    ],
    "id": "2027-03-26-avoine-concert-de-chansons-metissees-par-loumanb-et-gabriel-saglio"
+  },
+  {
+   "title": "4211 KM",
+   "category": "spectacle",
+   "start": "2027-03-26",
+   "end": "2027-03-26",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/4211-km-billet/idmanif/669215/idseance/4391092",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/4211-km-billet/idmanif/669215/idseance/4391092"
+    }
+   ],
+   "id": "2027-03-26-joue-les-tours-4211-km"
+  },
+  {
+   "title": "ZAZIE",
+   "category": "concert",
+   "start": "2027-03-26",
+   "end": "2027-03-26",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/zazie-billet/idmanif/663340/idseance/4360152",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/zazie-billet/idmanif/663340/idseance/4360152"
+    }
+   ],
+   "id": "2027-03-26-tours-zazie"
   },
   {
    "title": "Théâtre : \"Fiesta\"",
@@ -14018,6 +16955,29 @@
    "id": "2027-03-27-amboise-theatre-fiesta"
   },
   {
+   "title": "MADAGASCAR UNE AVENTURE MUSICALE - MADAGASCAR",
+   "category": "spectacle",
+   "start": "2027-03-27",
+   "end": "2027-03-27",
+   "hours": "14:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/madagascar-une-aventure-musicale-billet/idmanif/632651/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/madagascar-une-aventure-musicale-billet/idmanif/632651/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-27-joue-les-tours-madagascar-une-aventure-musicale-madagascar"
+  },
+  {
    "title": "Weekend de Pâques",
    "category": "spectacle",
    "start": "2027-03-27",
@@ -14043,6 +17003,75 @@
     }
    ],
    "id": "2027-03-27-lemere-weekend-de-paques"
+  },
+  {
+   "title": "EDGAR YVES JR.",
+   "category": "spectacle",
+   "start": "2027-03-27",
+   "end": "2027-03-27",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/edgar-yves-jr-billet/idmanif/641730/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/edgar-yves-jr-billet/idmanif/641730/idtier/18864121"
+    }
+   ],
+   "id": "2027-03-27-tours-edgar-yves-jr"
+  },
+  {
+   "title": "LA BAJON",
+   "category": "spectacle",
+   "start": "2027-03-28",
+   "end": "2027-03-28",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/la-bajon-billet/idmanif/673930/idseance/4429334",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/la-bajon-billet/idmanif/673930/idseance/4429334"
+    }
+   ],
+   "id": "2027-03-28-tours-la-bajon"
+  },
+  {
+   "title": "STAR ACADEMY TOUR 2027",
+   "category": "concert",
+   "start": "2027-03-28",
+   "end": "2027-03-28",
+   "hours": "19:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PARC EXPO DE TOURS",
+   "address": "Avenue Camille Chautemps",
+   "lat": 47.376977,
+   "lon": 0.725643,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/star-academy-tour-2027-billet/idmanif/674657/idseance/4433730",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/star-academy-tour-2027-billet/idmanif/674657/idseance/4433730"
+    }
+   ],
+   "id": "2027-03-28-tours-star-academy-tour-2027"
   },
   {
    "title": "Ciné-Mémoire Souvenirs d'enfance et d'école - projection de films",
@@ -14090,6 +17119,52 @@
     }
    ],
    "id": "2027-03-31-amboise-atelier-theatre-par-la-compagnie-des-trois-clous"
+  },
+  {
+   "title": "LAURENT BAFFIE",
+   "category": "spectacle",
+   "start": "2027-04-03",
+   "end": "2027-04-03",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/laurent-baffie-billet/idmanif/652002/idseance/4290575",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/laurent-baffie-billet/idmanif/652002/idseance/4290575"
+    }
+   ],
+   "id": "2027-04-03-joue-les-tours-laurent-baffie"
+  },
+  {
+   "title": "LE LOUP QUI VOULAIT FAIRE DE LA MUSIQUE",
+   "category": "concert",
+   "start": "2027-04-04",
+   "end": "2027-04-04",
+   "hours": "14:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-loup-qui-voulait-faire-de-la-musique-billet/idmanif/663832/idseance/4361805",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-loup-qui-voulait-faire-de-la-musique-billet/idmanif/663832/idseance/4361805"
+    }
+   ],
+   "id": "2027-04-04-joue-les-tours-le-loup-qui-voulait-faire-de-la-musique"
   },
   {
    "title": "Spectacle humoristique : \"Les gros patinent bien\"",
@@ -14141,6 +17216,121 @@
    "id": "2027-04-06-chambray-les-tours-le-boudoir-par-la-tite-compagnie-les-femmes-dans-la-litterat"
   },
   {
+   "title": "POTICHE",
+   "category": "spectacle",
+   "start": "2027-04-06",
+   "end": "2027-04-06",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/potiche-billet/idmanif/669214/idseance/4391091",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/potiche-billet/idmanif/669214/idseance/4391091"
+    }
+   ],
+   "id": "2027-04-06-joue-les-tours-potiche"
+  },
+  {
+   "title": "Blandine Lehout",
+   "category": "spectacle",
+   "start": "2027-04-07",
+   "end": "2027-04-07",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/blandine-lehout-billet/idmanif/642532/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/blandine-lehout-billet/idmanif/642532/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-07-joue-les-tours-blandine-lehout"
+  },
+  {
+   "title": "FABRICE EBOUE",
+   "category": "spectacle",
+   "start": "2027-04-07",
+   "end": "2027-04-07",
+   "hours": "20:30",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/fabrice-eboue-billet/idmanif/666368/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/fabrice-eboue-billet/idmanif/666368/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-07-tours-fabrice-eboue"
+  },
+  {
+   "title": "DANY BOON",
+   "category": "spectacle",
+   "start": "2027-04-08",
+   "end": "2027-04-08",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/dany-boon-billet/idmanif/645480/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/dany-boon-billet/idmanif/645480/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-08-tours-dany-boon"
+  },
+  {
+   "title": "LE LAC DES CYGNES - BALLET ET ORCHESTRE - LE LAC DES CYGNES",
+   "category": "spectacle",
+   "start": "2027-04-09",
+   "end": "2027-04-09",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-lac-des-cygnes-ballet-et-orchestre-billet/idmanif/654954/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-lac-des-cygnes-ballet-et-orchestre-billet/idmanif/654954/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-09-tours-le-lac-des-cygnes-ballet-et-orchestre-le-lac-des-cygnes"
+  },
+  {
    "title": "Conférence-spectacle : \"Le problème lapin\"",
    "category": "spectacle",
    "start": "2027-04-10",
@@ -14165,6 +17355,190 @@
     }
    ],
    "id": "2027-04-10-amboise-conference-spectacle-le-probleme-lapin"
+  },
+  {
+   "title": "PEPINE",
+   "category": "concert",
+   "start": "2027-04-10",
+   "end": "2027-04-10",
+   "hours": "20:00",
+   "city": "Montlouis Sur Loire",
+   "postcode": "37270",
+   "dept": "37",
+   "venue": "ESPACE LIGERIA",
+   "address": "9 RUE DE LA CROIX BLANCHE",
+   "lat": 47.383159,
+   "lon": 0.838153,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/pepine-billet/idmanif/671376/idseance/4405032",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/pepine-billet/idmanif/671376/idseance/4405032"
+    }
+   ],
+   "id": "2027-04-10-montlouis-sur-loire-pepine"
+  },
+  {
+   "title": "MESSMER - 13Hz",
+   "category": "spectacle",
+   "start": "2027-04-10",
+   "end": "2027-04-10",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/messmer-13hz-billet/idmanif/648550/idseance/4262035",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/messmer-13hz-billet/idmanif/648550/idseance/4262035"
+    }
+   ],
+   "id": "2027-04-10-tours-messmer-13hz"
+  },
+  {
+   "title": "LEANDRE",
+   "category": "spectacle",
+   "start": "2027-04-10",
+   "end": "2027-04-10",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/leandre-billet/idmanif/641835/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/leandre-billet/idmanif/641835/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-10-tours-leandre"
+  },
+  {
+   "title": "CATHERINE LARA",
+   "category": "concert",
+   "start": "2027-04-11",
+   "end": "2027-04-11",
+   "hours": "17:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/catherine-lara-billet/idmanif/664269/idseance/4364911",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/catherine-lara-billet/idmanif/664269/idseance/4364911"
+    }
+   ],
+   "id": "2027-04-11-joue-les-tours-catherine-lara"
+  },
+  {
+   "title": "PV",
+   "category": "spectacle",
+   "start": "2027-04-11",
+   "end": "2027-04-11",
+   "hours": "18:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/pv-billet/idmanif/661232/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/pv-billet/idmanif/661232/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-11-tours-pv"
+  },
+  {
+   "title": "MICHEL LEEB",
+   "category": "spectacle",
+   "start": "2027-04-13",
+   "end": "2027-04-13",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/michel-leeb-billet/idmanif/659378/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/michel-leeb-billet/idmanif/659378/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-13-tours-michel-leeb"
+  },
+  {
+   "title": "LA MUSIQUE DU ROI LION",
+   "category": "spectacle",
+   "start": "2027-04-14",
+   "end": "2027-04-14",
+   "hours": "16:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/la-musique-du-roi-lion-billet/idmanif/659732/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/la-musique-du-roi-lion-billet/idmanif/659732/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-14-joue-les-tours-la-musique-du-roi-lion"
+  },
+  {
+   "title": "The Music of Hans Zimmer & Others",
+   "category": "spectacle",
+   "start": "2027-04-14",
+   "end": "2027-04-14",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/the-music-of-hans-zimmer-others-billet/idmanif/660598/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/the-music-of-hans-zimmer-others-billet/idmanif/660598/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-14-joue-les-tours-the-music-of-hans-zimmer-others"
   },
   {
    "title": "Sur la nappe par Tilt Prod",
@@ -14192,6 +17566,52 @@
    "id": "2027-04-14-joue-les-tours-sur-la-nappe-par-tilt-prod"
   },
   {
+   "title": "Le Seigneur des Anneaux & Le Hobbit",
+   "category": "spectacle",
+   "start": "2027-04-15",
+   "end": "2027-04-15",
+   "hours": "16:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/le-seigneur-des-anneaux-le-hobbit-billet/idmanif/643062/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/le-seigneur-des-anneaux-le-hobbit-billet/idmanif/643062/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-15-joue-les-tours-le-seigneur-des-anneaux-le-hobbit"
+  },
+  {
+   "title": "The Dark Side of The Moon",
+   "category": "spectacle",
+   "start": "2027-04-15",
+   "end": "2027-04-15",
+   "hours": "20:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/the-dark-side-of-the-moon-billet/idmanif/660606/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/the-dark-side-of-the-moon-billet/idmanif/660606/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-15-joue-les-tours-the-dark-side-of-the-moon"
+  },
+  {
    "title": "Conférence \"Architecture et décors de terre cuite\" à Nazelles-Négron",
    "category": "conference",
    "start": "2027-04-15",
@@ -14215,13 +17635,38 @@
    "id": "2027-04-15-nazelles-negron-conference-architecture-et-decors-de-terre-cuite-a-nazelles-neg"
   },
   {
+   "title": "DOMINIQUE A",
+   "category": "concert",
+   "start": "2027-04-16",
+   "end": "2027-04-16",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/dominique-a-billet/idmanif/669212/idseance/4391088",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/dominique-a-billet/idmanif/669212/idseance/4391088"
+    }
+   ],
+   "id": "2027-04-16-joue-les-tours-dominique-a"
+  },
+  {
    "title": "Concert d'Esther Abrami",
    "category": "concert",
    "start": "2027-04-17",
    "end": "2027-04-17",
+   "hours": "20:30",
    "city": "Avoine",
    "postcode": "37420",
    "dept": "37",
+   "venue": "ESPACE CULTUREL",
    "address": "Rue de l'Ardoise",
    "lat": 47.2053966,
    "lon": 0.1843386,
@@ -14235,9 +17680,36 @@
     {
      "id": "datatourisme",
      "url": "https://billetterie.ville-avoine.fr/agenda/95-ESTHER-ABRAMI"
+    },
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/esther-abrami-billet/idmanif/671667/idseance/4407002"
     }
    ],
    "id": "2027-04-17-avoine-concert-d-esther-abrami"
+  },
+  {
+   "title": "MARC ANTOINE LE BRET",
+   "category": "concert",
+   "start": "2027-04-17",
+   "end": "2027-04-17",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/marc-antoine-le-bret-billet/idmanif/666194/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/marc-antoine-le-bret-billet/idmanif/666194/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-17-joue-les-tours-marc-antoine-le-bret"
   },
   {
    "title": "Exposition \"Décors d'architecture\"",
@@ -14299,6 +17771,52 @@
    "id": "2027-04-19-saint-martin-le-beau-atelier-decors-d-architecture-a-saint-martin-le-beau"
   },
   {
+   "title": "SARAH SCHWAB",
+   "category": "spectacle",
+   "start": "2027-04-20",
+   "end": "2027-04-20",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/sarah-schwab-billet/idmanif/663678/idseance/4361306",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/sarah-schwab-billet/idmanif/663678/idseance/4361306"
+    }
+   ],
+   "id": "2027-04-20-tours-sarah-schwab"
+  },
+  {
+   "title": "AMINE RADI",
+   "category": "spectacle",
+   "start": "2027-04-21",
+   "end": "2027-04-21",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/amine-radi-billet/idmanif/666903/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/amine-radi-billet/idmanif/666903/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-21-joue-les-tours-amine-radi"
+  },
+  {
    "title": "Exposition Richard Biddiscombe - Carroi des Arts",
    "category": "exposition",
    "start": "2027-04-21",
@@ -14348,6 +17866,121 @@
    "id": "2027-04-22-saint-laurent-en-gatines-chasse-au-tresor-a-saint-laurent-en-gatines-les-petits"
   },
   {
+   "title": "ALEXIS LE ROSSIGNOL",
+   "category": "spectacle",
+   "start": "2027-04-23",
+   "end": "2027-04-23",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/alexis-le-rossignol-billet/idmanif/660443/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/alexis-le-rossignol-billet/idmanif/660443/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-23-joue-les-tours-alexis-le-rossignol"
+  },
+  {
+   "title": "Philippe Caverivière",
+   "category": "spectacle",
+   "start": "2027-04-23",
+   "end": "2027-04-23",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/philippe-caveriviere-billet/idmanif/646700/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/philippe-caveriviere-billet/idmanif/646700/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-23-tours-philippe-caveriviere"
+  },
+  {
+   "title": "SHOW DANCE - ALEXISE PINEAUD ET NICOLAS",
+   "category": "spectacle",
+   "start": "2027-04-24",
+   "end": "2027-04-24",
+   "hours": "20:30",
+   "city": "Rouziers De Touraine",
+   "postcode": "37360",
+   "dept": "37",
+   "venue": "'LES QUATRE VENTS' ESPACE CULTUREL",
+   "address": "LES BLOURDIERS",
+   "lat": 47.517277,
+   "lon": 0.648299,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/show-dance-alexise-pineaud-et-nicolas-billet/idmanif/667109/idseance/4381048",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/show-dance-alexise-pineaud-et-nicolas-billet/idmanif/667109/idseance/4381048"
+    }
+   ],
+   "id": "2027-04-24-rouziers-de-touraine-show-dance-alexise-pineaud-et-nicolas"
+  },
+  {
+   "title": "ELIES ZOGHLAMI",
+   "category": "spectacle",
+   "start": "2027-04-24",
+   "end": "2027-04-24",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - RONSARD",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/elies-zoghlami-billet/idmanif/658499/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/elies-zoghlami-billet/idmanif/658499/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-24-tours-elies-zoghlami"
+  },
+  {
+   "title": "CHARLIE HAID",
+   "category": "spectacle",
+   "start": "2027-04-25",
+   "end": "2027-04-25",
+   "hours": "18:00",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/charlie-haid-billet/idmanif/657049/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/charlie-haid-billet/idmanif/657049/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-25-joue-les-tours-charlie-haid"
+  },
+  {
    "title": "Cinéma - La fabuleuse histoire de Léonard de Vinci",
    "category": "spectacle",
    "start": "2027-04-29",
@@ -14369,6 +18002,29 @@
     }
    ],
    "id": "2027-04-29-chambray-les-tours-cinema-la-fabuleuse-histoire-de-leonard-de-vinci"
+  },
+  {
+   "title": "LES HOMMES VIENNENT DE MARS",
+   "category": "spectacle",
+   "start": "2027-04-29",
+   "end": "2027-04-29",
+   "hours": "20:30",
+   "city": "Joue Les Tours",
+   "postcode": "37300",
+   "dept": "37",
+   "venue": "AUDITORIUM ESPACE MALRAUX",
+   "address": "PARC DES BRETONNIERES",
+   "lat": 47.34412,
+   "lon": 0.660913,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/les-hommes-viennent-de-mars-billet/idmanif/652413/idtier/18864121",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/les-hommes-viennent-de-mars-billet/idmanif/652413/idtier/18864121"
+    }
+   ],
+   "id": "2027-04-29-joue-les-tours-les-hommes-viennent-de-mars"
   },
   {
    "title": "Visite et atelier - Cher poisson à Larçay",
@@ -14396,6 +18052,29 @@
     }
    ],
    "id": "2027-04-29-larcay-visite-et-atelier-cher-poisson-a-larcay"
+  },
+  {
+   "title": "CHRISTOPHE WILLEM 2027",
+   "category": "concert",
+   "start": "2027-04-29",
+   "end": "2027-04-29",
+   "hours": "20:00",
+   "city": "Tours",
+   "postcode": "37000",
+   "dept": "37",
+   "venue": "PALAIS DES CONGRES TOURS - FRANCOIS 1ER",
+   "address": "26 BOULEVARD HEURTELOUP",
+   "lat": 47.391014,
+   "lon": 0.693506,
+   "url": "https://www.ticketmaster.fr/fr/manifestation/christophe-willem-2027-billet/idmanif/672322/idseance/4414033",
+   "credit": "Ticketmaster",
+   "sources": [
+    {
+     "id": "ticketmaster",
+     "url": "https://www.ticketmaster.fr/fr/manifestation/christophe-willem-2027-billet/idmanif/672322/idseance/4414033"
+    }
+   ],
+   "id": "2027-04-29-tours-christophe-willem-2027"
   }
  ]
 }
