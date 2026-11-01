@@ -18,7 +18,7 @@ const DEPT_NAMES = { '37': 'Indre-et-Loire' };
 const SOURCE_NAMES = {
   datatourisme: 'DATAtourisme', openagenda: 'OpenAgenda', manual: 'ajout manuel', ticketmaster: 'Ticketmaster',
   museofile: 'Musées de France', festivals: 'Liste des festivals', 'datatourisme-lieux': 'DATAtourisme (lieux)',
-  'datatourisme-itineraires': 'DATAtourisme (itinéraires)',
+  'datatourisme-itineraires': 'DATAtourisme (itinéraires)', 'osm-itineraires': 'OpenStreetMap',
 };
 const KINDS = {
   musee: 'Musées', chateau: 'Châteaux', patrimoine: 'Patrimoine', jardin: 'Parcs & jardins', nature: 'Nature',
@@ -185,17 +185,26 @@ function placeIcon(kind) {
 const kbadge = (p) => `<span class="badge" style="background:${kcolor(p.kind)}">${esc(KINDS[p.kind] ?? p.kind)}</span>`;
 
 function placePopup(p) {
+  const isRoute = p.kind === 'rando' || p.kind === 'velo';
   const route = `https://www.openstreetmap.org/directions?to=${p.lat},${p.lon}`;
-  const facts = [p.distanceKm ? `${String(p.distanceKm).replace('.', ',')} km` : '', p.duration ?? '', p.period ?? '', p.discipline ?? ''].filter(Boolean);
+  const km = p.distanceKm ? `${String(p.distanceKm).replace('.', ',')} km${p.partial ? ' dans le département' : ''}` : '';
+  const facts = [km, p.duration ?? '', p.network ?? '', p.period ?? '', p.discipline ?? ''].filter(Boolean);
   const sources = (p.sources ?? []).map((s) => (s.url
     ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(SOURCE_NAMES[s.id] ?? s.id)}</a>` : esc(SOURCE_NAMES[s.id] ?? s.id))).join(' · ');
+  const place = [p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', ');
+  const links = [
+    p.routeUrl ? `<a href="${esc(p.routeUrl)}" target="_blank" rel="noopener"><strong>Voir l'itinéraire</strong></a>` : '',
+    p.gpx ? `<a href="${esc(p.gpx)}" target="_blank" rel="noopener">Trace GPX</a>` : '',
+    p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">Site</a>` : '',
+    `<a href="${route}" target="_blank" rel="noopener">${isRoute ? 'Aller au départ' : 'Itinéraire'}</a>`,
+  ].filter(Boolean).join('');
   return `<div class="popup">
     <h3>${esc(p.name)}</h3>
     <p>${kbadge(p)}</p>
-    <p class="muted">${esc([p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', '))}</p>
+    ${place ? `<p class="muted">${isRoute ? `${p.partial ? 'Entrée dans le département' : 'Départ'} : ` : ''}${esc(place)}</p>` : ''}
     ${facts.length ? `<p class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</p>` : ''}
     ${p.description ? `<p class="muted">${esc(p.description.slice(0, 240))}${p.description.length > 240 ? '…' : ''}</p>` : ''}
-    <div class="links"><a href="${route}" target="_blank" rel="noopener">Itinéraire</a>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">Site</a>` : ''}</div>
+    <div class="links">${links}</div>
     <p class="muted small">Source : ${sources}${p.credit ? ` · ${esc(p.credit)}` : ''}</p>
   </div>`;
 }
@@ -224,7 +233,7 @@ function renderPlaces() {
   for (const p of list.slice(0, 500)) {
     const li = document.createElement('li');
     const d = distanceKm(p);
-    const facts = [p.distanceKm ? `${String(p.distanceKm).replace('.', ',')} km` : '', p.period ?? ''].filter(Boolean).join(' · ');
+    const facts = [p.distanceKm ? `${String(p.distanceKm).replace('.', ',')} km` : '', p.network ?? '', p.period ?? ''].filter(Boolean).join(' · ');
     li.innerHTML = `<button class="item" data-id="${esc(p.id)}">
       <div class="title">${esc(p.name)}</div>
       <div class="where">${kbadge(p)} ${esc(p.city ?? '')}${d != null ? ` · ${d.toFixed(0)} km` : ''}${facts ? ` · ${esc(facts)}` : ''}</div>
@@ -517,7 +526,7 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
     ? `Mis à jour le ${new Date(data.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. `
     : 'Données de démonstration. ')
     + `Données : ${srcs.length ? srcs.map((s) => esc(SOURCE_NAMES[s] ?? s)).join(', ') : '—'}`
-    + ' — <a href="https://www.datatourisme.fr" target="_blank" rel="noopener">DATAtourisme</a> et OpenAgenda sous Licence Ouverte (Etalab 2.0), producteurs cités sur chaque fiche ; lieux à visiter : DATAtourisme et ministère de la Culture (Muséofile, Liste des festivals) ; noms de lieux complétés avec © les contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL).';
+    + ' — <a href="https://www.datatourisme.fr" target="_blank" rel="noopener">DATAtourisme</a> et OpenAgenda sous Licence Ouverte (Etalab 2.0), producteurs cités sur chaque fiche ; lieux à visiter : DATAtourisme et ministère de la Culture (Liste des festivals) ; itinéraires balisés et noms de lieux © les contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL).';
 
   render();
   if (events.length) {

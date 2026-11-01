@@ -15,6 +15,7 @@ import { createGeocoder } from './lib/geocode.mjs';
 import { cleanText, deptFromPostcode, slug } from './lib/normalize.mjs';
 import { splitVenue } from './lib/venues.mjs';
 import { fr, get, listOf } from './sources/datatourisme.mjs';
+import { loadRoutes } from './lib/routes.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const OUT = join(ROOT, '..', 'public', 'data', 'places.json');
@@ -107,7 +108,7 @@ async function datatourismePlaces() {
 }
 
 async function datatourismeTours() {
-  const items = await dtFetchAll('tour', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName,tourDistance,duration,hasTheme');
+  const items = await dtFetchAll('tour', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName,tourDistance,duration,hasTheme,hasRepresentation');
   return items.map((n) => {
     const c = dtCommon(n);
     const dist = Number(fr(get(n, 'tourDistance')));
@@ -117,6 +118,8 @@ async function datatourismeTours() {
       ...c,
       kind: velo ? 'velo' : 'rando',
       distanceKm: Number.isFinite(dist) && dist > 0 ? Math.round(dist / 100) / 10 : null,
+      // trace GPX/KML fournie par l'office de tourisme (lien direct vers son fichier)
+      gpx: JSON.stringify(get(n, 'hasRepresentation') ?? '').match(/https?:[^"\\]+\.(gpx|kml)\b[^"\\]*/i)?.[0] ?? null,
       duration: dur && /^\d+$/.test(dur) ? `${Math.floor(+dur / 60)} h ${String(+dur % 60).padStart(2, '0')}` : null,
       source: 'datatourisme',
     };
@@ -243,6 +246,40 @@ async function festivals() {
   }).filter((p) => p?.name);
 }
 
+// ---------- Itinéraires OpenStreetMap ----------
+const reverseCache = await readFile(join(ROOT, 'cache', 'reverse.json'), 'utf8').then(JSON.parse).catch(() => ({}));
+async function communeOf(lat, lon) {
+  const k = `${lat.toFixed(3)},${lon.toFixed(3)}`;
+  if (k in reverseCache) return reverseCache[k];
+  try {
+    const d = await fetchText(`https://api-adresse.data.gouv.fr/reverse/?lat=${lat}&lon=${lon}&type=municipality`, { json: true, checkRobots: false, delayMs: 100 });
+    const f = d.features?.[0]?.properties;
+    reverseCache[k] = f ? { city: f.city, postcode: f.postcode } : null;
+  } catch {
+    return null;
+  }
+  return reverseCache[k];
+}
+
+async function osmRoutes() {
+  const out = [];
+  for (const dept of departments) {
+    for (const r of await loadRoutes(dept, join(ROOT, 'cache'), log)) {
+      const c = await communeOf(r.lat, r.lon);
+      out.push({
+        ...r,
+        city: c?.city ?? null,
+        postcode: c?.postcode ?? null,
+        source: 'osm-itineraires',
+        sourceUrl: `https://www.openstreetmap.org/relation/${r.osmId}`,
+        credit: '© contributeurs OpenStreetMap',
+      });
+    }
+  }
+  await writeFile(join(ROOT, 'cache', 'reverse.json'), JSON.stringify(reverseCache));
+  return out;
+}
+
 // ---------- Assemblage ----------
 const report = {};
 async function collect(id, fn) {
@@ -262,6 +299,7 @@ async function collect(id, fn) {
 const all = [
   ...(await collect('datatourisme-lieux', datatourismePlaces)),
   ...(await collect('datatourisme-itineraires', datatourismeTours)),
+  ...(await collect('osm-itineraires', osmRoutes)),
   ...(await collect('museofile', museofile)),
   ...(await collect('festivals', festivals)),
 ];
@@ -289,7 +327,7 @@ const kept = [];
 for (const p of places) {
   const twin = kept.find((q) => near(p, q) && (key(q.name).includes(key(p.name)) || key(p.name).includes(key(q.name))));
   if (twin) {
-    for (const k of ['url', 'address', 'description', 'period', 'discipline']) twin[k] ??= p[k];
+    for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network']) twin[k] ??= p[k];
     twin.sources.push({ id: p.source, url: p.sourceUrl ?? null });
     continue;
   }
@@ -298,8 +336,8 @@ for (const p of places) {
 
 const out = kept.map((p, i) => {
   const o = { id: `${p.kind}-${slug(p.name).slice(0, 50)}-${i}` };
-  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'description', 'distanceKm', 'duration', 'period', 'discipline', 'credit', 'sources']) {
-    if (p[k] != null && p[k] !== '') o[k] = p[k];
+  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'description', 'distanceKm', 'partial', 'duration', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
+    if (p[k] != null && p[k] !== '' && p[k] !== false) o[k] = p[k];
   }
   return o;
 });
