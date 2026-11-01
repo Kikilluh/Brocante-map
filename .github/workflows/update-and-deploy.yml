@@ -54,6 +54,13 @@ jobs:
             done
           fi
 
+      - name: Vérifier la clé Firebase (projet et compte, sans secret)
+        if: env.HAS_FIREBASE == 'true'
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$SA" | jq -r '"project_id de la clé : \(.project_id)\ncompte de service : \(.client_email)"' || echo "La clé n'est pas un JSON valide"
+
       - name: Déploiement Firebase Hosting
         if: env.HAS_FIREBASE == 'true'
         uses: FirebaseExtended/action-hosting-deploy@v0
