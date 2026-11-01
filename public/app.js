@@ -9,11 +9,19 @@ const CATS = {
   fete: 'Fêtes & festivals', marche: 'Marchés & salons', conference: 'Conférences', autre: 'Autres',
 };
 const ALL = Object.keys(CATS);
+const CAT_ICONS = {
+  brocante: '🏺', concert: '🎵', spectacle: '🎭', exposition: '🖼️', visite: '🏰', atelier: '🎨',
+  rando: '🥾', sport: '⚽', fete: '🎉', marche: '🧺', conference: '🎤', autre: '📍',
+};
 const KINDS = {
   activite: 'Activités & cours', musee: 'Musées', chateau: 'Châteaux', patrimoine: 'Patrimoine', jardin: 'Parcs & jardins',
   nature: 'Nature', rando: 'Randonnées', velo: 'Vélo', loisir: 'Loisirs', festival: 'Festivals',
 };
 const KALL = Object.keys(KINDS);
+const KIND_ICONS = {
+  activite: '🤸', musee: '🏛️', chateau: '🏰', patrimoine: '⛪', jardin: '🌳', nature: '🌿',
+  rando: '🥾', velo: '🚲', loisir: '🎡', festival: '🎪',
+};
 // Envies du groupe → catégories de sorties et types de lieux
 const ENVIES = {
   culture: { label: 'Culture', cats: ['exposition', 'visite', 'spectacle', 'conference'], kinds: ['musee', 'chateau', 'patrimoine'] },
@@ -161,9 +169,9 @@ let meMarker = null;
 map.on('click', () => { if (isMobile() && !state.selected) setSheet('peek'); });
 
 const icons = {};
-const pinIcon = (cat) => (icons[cat] ??= L.divIcon({ className: '', html: `<div class="pin" style="background:${color(cat)}"></div>`, iconSize: [24, 24], iconAnchor: [12, 24] }));
+const pinIcon = (cat) => (icons[cat] ??= L.divIcon({ className: '', html: `<div class="mk" style="--c:${color(cat)}"><span>${CAT_ICONS[cat] ?? '📍'}</span></div>`, iconSize: [34, 41], iconAnchor: [17, 41], popupAnchor: [0, -38] }));
 const picons = {};
-const placeIcon = (k) => (picons[k] ??= L.divIcon({ className: '', html: `<div class="pin place" style="background:${kcolor(k)}"></div>`, iconSize: [20, 20], iconAnchor: [10, 10] }));
+const placeIcon = (k) => (picons[k] ??= L.divIcon({ className: '', html: `<div class="mk sq" style="--c:${kcolor(k)}"><span>${KIND_ICONS[k] ?? '📍'}</span></div>`, iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] }));
 
 function distFrom(ref, x) {
   return ref ? map.distance([ref.lat, ref.lon], [x.lat, x.lon]) / 1000 : null;
@@ -266,7 +274,9 @@ function filteredPlaces() {
 }
 
 // ---------- Rendu de la liste ----------
-const badge = (label, col) => `<span class="badge" style="background:${col}">${esc(label)}</span>`;
+const badge = (label, col, ico = '') => `<span class="badge" style="background:${col}">${ico ? `${ico} ` : ''}${esc(label)}</span>`;
+const evBadge = (ev) => badge(CATS[ev.category], color(ev.category), CAT_ICONS[ev.category]);
+const plBadge = (p) => badge(KINDS[p.kind] ?? p.kind, kcolor(p.kind), KIND_ICONS[p.kind]);
 
 function render() {
   document.body.className = `mode-${state.mode}`;
@@ -280,7 +290,7 @@ function render() {
   markers.clear();
   layer.addLayers(list.map((x) => {
     const m = L.marker([x.lat, x.lon], { icon: isEv ? pinIcon(x.category) : placeIcon(x.kind), title: x.title ?? x.name });
-    m.on('click', () => select(state.mode, x.id, { fromMap: true }));
+    m.bindPopup(() => popupHtml(x, isEv), { maxWidth: 290, minWidth: 250, className: 'pop', autoPanPaddingTopLeft: [12, isMobile() ? 175 : 70], autoPanPaddingBottomRight: [12, isMobile() ? 120 : 20] });
     markers.set(x.id, m);
     return m;
   }));
@@ -315,6 +325,7 @@ function renderList() {
   const total = current.length;
   const noun = isEv ? `sortie${n > 1 ? 's' : ''}` : `lieu${n > 1 ? 'x' : ''} et activité${n > 1 ? 's' : ''}`;
   $('count').textContent = n === total ? `${n} ${noun}` : `${n} ${noun} ici · ${total} au total`;
+  $('listCount').textContent = n;
   const ol = $('list');
   if (!total) {
     ol.innerHTML = `<li class="empty">Rien ne correspond à ces critères.<br><button class="btn small" id="widen">Élargir la recherche</button></li>`;
@@ -332,7 +343,7 @@ map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(render
 function eventItem(ev) {
   const facts = [priceLabel(ev), ageLabel(ev), ev._dist != null ? km(ev._dist) : ''].filter(Boolean).join(' · ');
   return `<li><button class="item" data-id="${esc(ev.id)}">
-    <span class="stripe" style="background:${color(ev.category)}"></span>
+    <span class="ico" style="background:${color(ev.category)}" aria-hidden="true">${CAT_ICONS[ev.category]}</span>
     <span class="body">
       <span class="when">${esc(occLabel(ev._next))}${ev._next.hours ? ` · ${esc(ev._next.hours)}` : ''}</span>
       <span class="title" style="display:block">${esc(ev.title)}</span>
@@ -344,10 +355,10 @@ function eventItem(ev) {
 function placeItem(p) {
   const facts = [p.distanceKm ? km(p.distanceKm) : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
   return `<li><button class="item" data-id="${esc(p.id)}">
-    <span class="stripe" style="background:${kcolor(p.kind)}"></span>
+    <span class="ico sq" style="background:${kcolor(p.kind)}" aria-hidden="true">${KIND_ICONS[p.kind]}</span>
     <span class="body">
       <span class="title" style="display:block">${esc(p.name)}</span>
-      <span class="where" style="display:block">${badge(KINDS[p.kind] ?? p.kind, kcolor(p.kind))} ${esc(p.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
+      <span class="where" style="display:block">${esc(p.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
     </span>${thumb(p)}</button></li>`;
 }
 
@@ -367,7 +378,7 @@ function eventDetail(ev) {
   const others = ev.occurrences.filter((o) => o !== next && o.end >= iso(new Date())).slice(0, 8);
   const where = [ev.address, ev.postcode && ev.city ? `${ev.postcode} ${ev.city}` : ev.city].filter(Boolean).join(', ');
   return `<button class="back" data-back>← Retour à la liste</button>
-    <div>${badge(CATS[ev.category], color(ev.category))}</div>
+    <div>${evBadge(ev)}</div>
     <h2>${esc(ev.title)}</h2>
     <p class="when">${esc(occLabel(next))}${next.hours ? ` · ${esc(next.hours)}` : ''}</p>
     ${ev.venue ? `<p class="venue">${esc(ev.venue)}</p>` : ''}
@@ -391,7 +402,7 @@ function placeDetail(p) {
   const facts = [p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.duration ?? '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
   const where = [p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', ');
   return `<button class="back" data-back>← Retour à la liste</button>
-    <div>${badge(KINDS[p.kind] ?? p.kind, kcolor(p.kind))}</div>
+    <div>${plBadge(p)}</div>
     <h2>${esc(p.name)}</h2>
     ${where ? `<p class="muted">${isRoute ? (p.partial ? 'Entrée dans le département : ' : 'Départ : ') : ''}${esc(where)}</p>` : ''}
     ${facts.length ? `<div class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</div>` : ''}
@@ -407,7 +418,46 @@ function placeDetail(p) {
     ${sourcesLine(p)}`;
 }
 
-function select(type, id, { fromMap = false } = {}) {
+function popupHtml(x, isEv) {
+  x._dist = distFrom(refPoint(), x);
+  const next = isEv ? (x._next ?? nextIn(x) ?? x.occurrences[0]) : null;
+  const facts = isEv
+    ? [priceLabel(x), ageLabel(x), x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean)
+    : [x.distanceKm ? km(x.distanceKm) : '', x.duration ?? '', x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
+  const main = isEv
+    ? (x.url ? link(x.url, x.sources?.some((s) => s.id === 'ticketmaster') ? 'Billets' : 'Site', 'primary') : '')
+    : (x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
+  return `<div class="popcard">
+    ${x.image ? `<img class="popimg" src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
+    <div class="popbody">
+      ${isEv ? evBadge(x) : plBadge(x)}
+      <strong class="poptitle">${esc(x.title ?? x.name)}</strong>
+      ${isEv ? `<span class="popwhen">${esc(occLabel(next))}${next.hours ? ` · ${esc(next.hours)}` : ''}</span>` : ''}
+      <span class="popwhere">${esc([x.venue, x.city].filter(Boolean).join(' · '))}</span>
+      ${facts.length ? `<span class="popfacts">${esc(facts.join(' · '))}</span>` : ''}
+      ${isEv && x._notes?.length && state.group.set ? `<span class="fit">${esc(x._notes[0])}</span>` : ''}
+    </div>
+    <div class="popactions">
+      ${main}
+      ${link(`https://www.openstreetmap.org/directions?to=${x.lat},${x.lon}`, 'Itinéraire')}
+      <button type="button" data-more="${esc(x.id)}">Plus d'infos</button>
+    </div>
+  </div>`;
+}
+$('map').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-more]');
+  if (!b) return;
+  map.closePopup();
+  select(state.mode, b.dataset.more, { fromMap: true, open: true });
+});
+/** Centre la carte sur un élément et ouvre sa bulle. */
+function showOnMap(id) {
+  const m = markers.get(id);
+  if (!m) return;
+  (state.mode === 'events' ? cluster : placeCluster).zoomToShowLayer(m, () => m.openPopup());
+}
+
+function select(type, id, { fromMap = false, open = false } = {}) {
   const item = (type === 'events' ? events : places).find((x) => x.id === id);
   if (!item) return;
   state.selected = { type, id };
@@ -421,7 +471,8 @@ function select(type, id, { fromMap = false } = {}) {
   const m = markers.get(id);
   if (m && !fromMap) (type === 'events' ? cluster : placeCluster).zoomToShowLayer(m, () => map.panTo(m.getLatLng()));
   else if (m) map.panTo(m.getLatLng());
-  if (isMobile()) setSheet('half');
+  if (isMobile()) setSheet(open ? 'full' : 'half');
+  else setListOpen(true);
   writeHash();
 }
 function unselect() {
@@ -443,8 +494,17 @@ $('detail').addEventListener('click', async (e) => {
 });
 $('list').addEventListener('click', (e) => {
   const b = e.target.closest('.item');
-  if (b) select(state.mode, b.dataset.id);
+  if (!b) return;
+  if (isMobile()) setSheet('peek');
+  showOnMap(b.dataset.id);
 });
+// Liste repliée par défaut (PC) : bouton pour l'ouvrir
+function setListOpen(open) {
+  document.documentElement.classList.toggle('list-open', open);
+  $('listToggle').setAttribute('aria-expanded', String(open));
+  setTimeout(() => { map.invalidateSize(); renderList(); }, 260);
+}
+$('listToggle').addEventListener('click', () => setListOpen(!document.documentElement.classList.contains('list-open')));
 
 // ---------- Panneau du bas (mobile) ----------
 function setSheet(s) { $('sheet').dataset.state = s; setTimeout(renderList, 300); }
@@ -518,11 +578,11 @@ function groupSummary() {
 }
 function saveGroup() { store.set('groupe', state.group); }
 
-function chipsHtml(map, colorVar, attr) {
-  return Object.entries(map).map(([k, v]) => `<button type="button" class="chip type" data-${attr}="${k}"><span class="dot" style="background:var(--${colorVar}-${k})"></span>${v}</button>`).join('');
+function chipsHtml(map, colorVar, attr, icons) {
+  return Object.entries(map).map(([k, v]) => `<button type="button" class="chip type" data-${attr}="${k}"><span class="cico" style="background:var(--${colorVar}-${k})" aria-hidden="true">${icons[k]}</span>${v}</button>`).join('');
 }
-$$('[data-types-container]').forEach((el) => { el.innerHTML = chipsHtml(CATS, 'c', 'type'); });
-$$('[data-kinds-container]').forEach((el) => { el.innerHTML = chipsHtml(KINDS, 'k', 'kind'); });
+$$('[data-types-container]').forEach((el) => { el.innerHTML = chipsHtml(CATS, 'c', 'type', CAT_ICONS); });
+$$('[data-kinds-container]').forEach((el) => { el.innerHTML = chipsHtml(KINDS, 'k', 'kind', KIND_ICONS); });
 $$('[data-presets-copy]').forEach((el) => { el.innerHTML = PRESETS.map(([k, v]) => `<button type="button" class="chip" data-preset="${k}">${v}</button>`).join(''); });
 
 function toggleIn(set, all, k) {
@@ -730,7 +790,7 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
 
   drawCenter();
   render();
-  if (state.selected) select(state.selected.type, state.selected.id);
+  if (state.selected) { const { id } = state.selected; state.selected = null; setTimeout(() => showOnMap(id), 300); }
   else if (state.group.set && state.group.center) map.setView([state.group.center.lat, state.group.center.lon], 10);
   else if (events.length) map.fitBounds(L.latLngBounds(events.map((e) => [e.lat, e.lon])).pad(0.05), { maxZoom: 11 });
   // Par défaut : carte centrée sur la position de l'utilisateur, s'il l'autorise

@@ -152,7 +152,8 @@ button { cursor: pointer; }
 .list li { border-top: 1px solid var(--border); }
 .item { display: flex; gap: 12px; width: 100%; text-align: left; background: none; border: 0; padding: 12px 16px; align-items: flex-start; }
 .item:hover, .item.active { background: var(--surface-2); }
-.item .stripe { flex: none; width: 4px; align-self: stretch; border-radius: 2px; }
+.item .ico { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 19px; }
+.item .ico.sq { border-radius: 11px; }
 .item .body { flex: 1; min-width: 0; }
 .item .when { font-size: 13px; color: var(--accent-strong); font-weight: 600; }
 .item .when::first-letter { text-transform: uppercase; }
@@ -256,7 +257,7 @@ button { cursor: pointer; }
   .layout { display: flex; }
   #map { position: relative; flex: 1; inset: auto; }
   .locate-btn { right: auto; left: 12px; top: 90px; }
-  .map-pills { left: 60px; right: 440px; }
+  .map-pills { left: 60px; }
   .sheet {
     position: relative; transform: none !important; width: 420px; height: auto; border-radius: 0;
     box-shadow: none; border-left: 1px solid var(--border);
@@ -266,6 +267,13 @@ button { cursor: pointer; }
   .sheet[data-state="peek"] .sheet-body { overflow-y: auto; }
   .modal { width: min(560px, 92vw); height: auto; max-height: 86vh; margin: auto; border-radius: 18px; box-shadow: var(--shadow); }
   .modal-inner { max-height: 86vh; }
+  /* Liste repliée par défaut sur PC */
+  .sheet { width: 0; border-left: 0; overflow: hidden; transition: width .25s ease; }
+  .list-open .sheet { width: 420px; border-left: 1px solid var(--border); }
+  .list-toggle { display: inline-flex; }
+  .list-open .list-toggle { right: 432px; }
+  .map-pills { right: 170px; }
+  .list-open .map-pills { right: 590px; }
 }
 
 /* Images */
@@ -279,3 +287,50 @@ button { cursor: pointer; }
 .modal.small .howto { padding-left: 20px; }
 .modal.small .howto li { margin: 6px 0; }
 .ios-share { display: inline-block; border: 1.5px solid currentColor; border-radius: 4px; padding: 0 3px; font-size: 12px; }
+
+/* Icônes par type : marqueurs, puces de filtre, liste */
+.mk {
+  position: relative; width: 34px; height: 34px; border-radius: 50%; background: var(--c);
+  border: 2px solid var(--pin-border); box-shadow: 0 2px 6px rgba(60,40,60,.35);
+  display: grid; place-items: center; font-size: 17px; line-height: 1;
+}
+.mk::after {
+  content: ""; position: absolute; left: 50%; bottom: -8px; margin-left: -6px;
+  border: 6px solid transparent; border-top: 7px solid var(--pin-border); border-bottom: 0;
+}
+.mk.sq { width: 32px; height: 32px; border-radius: 10px; font-size: 16px; }
+.mk.sq::after { display: none; }
+.chip .cico { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; margin: -3px 7px -3px -5px; font-size: 13px; }
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: rgba(242,164,139,.35) !important; }
+.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background: #f6b49d !important; color: #3a1f17; font-weight: 700; }
+
+/* Bulles sur la carte */
+.pop .leaflet-popup-content-wrapper { padding: 0; border-radius: 16px; overflow: hidden; background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+.pop .leaflet-popup-content { margin: 0; width: auto !important; min-width: 250px; }
+.pop .leaflet-popup-tip { background: var(--surface); }
+.pop a.leaflet-popup-close-button { top: 6px; right: 6px; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.85); color: #333; font: 20px/26px system-ui; text-align: center; }
+.popcard { display: flex; flex-direction: column; font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.popimg { width: 100%; height: 120px; object-fit: cover; display: block; background: var(--surface-2); }
+.popbody { display: flex; flex-direction: column; gap: 3px; padding: 10px 14px 4px; }
+.popbody .badge { align-self: flex-start; }
+.poptitle { font-size: 15.5px; line-height: 1.3; margin-top: 2px; }
+.popwhen { color: var(--accent-strong); font-weight: 600; font-size: 13.5px; }
+.popwhen::first-letter { text-transform: uppercase; }
+.popwhere { font-weight: 600; font-size: 13.5px; }
+.popfacts { color: var(--muted); font-size: 13px; }
+.popbody .fit { align-self: flex-start; font-size: 12.5px; color: var(--ok-ink); background: var(--ok-bg); border-radius: 999px; padding: 1px 8px; font-weight: 600; }
+.popactions { display: flex; gap: 6px; padding: 10px 12px 12px; }
+.popactions a, .popactions button {
+  flex: 1; display: flex; align-items: center; justify-content: center; min-height: 40px; padding: 6px 8px;
+  border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text) !important;
+  text-decoration: none; font-weight: 600; font-size: 13.5px; text-align: center; white-space: nowrap;
+}
+.popactions .primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink) !important; }
+
+/* Bouton Liste (PC) */
+.list-toggle {
+  display: none; position: absolute; top: 10px; right: 10px; z-index: 960; height: 40px; padding: 0 14px;
+  align-items: center; gap: 4px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); font-weight: 600; box-shadow: var(--shadow); transition: right .25s ease;
+}
+@media (min-width: 761px) { .list-toggle { display: inline-flex; } }
