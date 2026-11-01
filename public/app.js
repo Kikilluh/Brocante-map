@@ -731,6 +731,31 @@ $('groupForm').addEventListener('change', (e) => {
   if (e.target.dataset.kid != null) draft.kids[+e.target.dataset.kid] = +e.target.value;
   if (e.target.name === 'budgetMode') draft.budgetMode = e.target.value;
 });
+// Balayer à gauche / à droite pour passer d'une étape à l'autre
+{
+  let sx = null, sy = 0;
+  const body = $('groupDialog').querySelector('.modal-body');
+  body.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1 || e.target.closest('input, select, textarea, .suggest')) { sx = null; return; }
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+  }, { passive: true });
+  body.addEventListener('touchend', (e) => {
+    if (sx == null) return;
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    sx = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const next = Math.max(0, Math.min(3, step + (dx < 0 ? 1 : -1)));
+    if (next === step) return;
+    const dir = next > step ? 'left' : 'right';
+    step = next;
+    renderGroup();
+    const sec = $('groupDialog').querySelector(`.step[data-step="${step}"]`);
+    sec.classList.remove('from-left', 'from-right');
+    void sec.offsetWidth;
+    sec.classList.add(dir === 'left' ? 'from-right' : 'from-left');
+  }, { passive: true });
+}
 $('groupPrev').addEventListener('click', () => { step = Math.max(0, step - 1); renderGroup(); });
 $('groupNext').addEventListener('click', () => {
   if (step < 3) { step++; renderGroup(); return; }

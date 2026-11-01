@@ -393,3 +393,10 @@ button { cursor: pointer; }
 }
 @keyframes sheet-up { from { transform: translateY(40px); opacity: .6; } }
 @media (prefers-reduced-motion: reduce) { .modal[open] { animation: none; } }
+/* Assistant groupe : glissement entre étapes */
+.step.from-right { animation: step-in-r .22s ease-out; }
+.step.from-left { animation: step-in-l .22s ease-out; }
+@keyframes step-in-r { from { transform: translateX(40px); opacity: 0; } }
+@keyframes step-in-l { from { transform: translateX(-40px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .step.from-right, .step.from-left { animation: none; } }
+#groupDialog .modal-body { overflow-x: hidden; touch-action: pan-y; }
