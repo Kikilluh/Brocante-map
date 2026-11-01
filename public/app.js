@@ -508,13 +508,32 @@ $('listToggle').addEventListener('click', () => setListOpen(!document.documentEl
 
 // ---------- Panneau du bas (mobile) ----------
 function setSheet(s) { $('sheet').dataset.state = s; setTimeout(renderList, 300); }
+// Glisser la carte quand le panneau est à moitié ouvert : il se replie pour libérer la carte
+map.on('dragstart', () => { if (isMobile() && $('sheet').dataset.state === 'half') setSheet('peek'); });
+// Bouton ⌄ pour réduire d'un cran
+$('sheetDown').addEventListener('click', (e) => {
+  e.stopPropagation();
+  setSheet($('sheet').dataset.state === 'full' ? 'half' : 'peek');
+});
+// Balayer vers le bas depuis le contenu (quand il est déjà tout en haut) réduit aussi le panneau
+(() => {
+  const body = $('sheetBody');
+  let y0 = null; let top0 = 0;
+  body.addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; top0 = body.scrollTop; }, { passive: true });
+  body.addEventListener('touchend', (e) => {
+    if (y0 == null || !isMobile()) return;
+    const dy = e.changedTouches[0].clientY - y0;
+    y0 = null;
+    if (top0 <= 0 && dy > 60) setSheet($('sheet').dataset.state === 'full' ? 'half' : 'peek');
+  }, { passive: true });
+})();
 (() => {
   const sheet = $('sheet');
   const handle = $('sheetHandle');
   let y0 = null; let t0 = 0; let base = 0; let moved = false;
   const order = ['peek', 'half', 'full'];
   handle.addEventListener('pointerdown', (e) => {
-    if (!isMobile() || e.target.closest('select')) return;
+    if (!isMobile() || e.target.closest('select, button')) return;
     y0 = e.clientY; t0 = Date.now(); moved = false;
     base = sheet.getBoundingClientRect().top - sheet.parentElement.getBoundingClientRect().top;
     sheet.classList.add('dragging');
@@ -533,9 +552,10 @@ function setSheet(s) { $('sheet').dataset.state = s; setTimeout(renderList, 300)
     const dy = e.clientY - y0;
     const fast = Math.abs(dy) / Math.max(1, Date.now() - t0) > 0.5;
     const i = order.indexOf(sheet.dataset.state);
-    if (!moved) setSheet(order[(i + 1) % order.length]);
-    else if (dy < -40 || (fast && dy < 0)) setSheet(order[Math.min(2, i + 1)]);
-    else if (dy > 40 || (fast && dy > 0)) setSheet(order[Math.max(0, i - 1)]);
+    // Toucher : ouvre si replié, sinon réduit d'un cran ; glisser : suit le sens du geste
+    if (!moved) setSheet(i === 0 ? 'half' : order[i - 1]);
+    else if (dy < -25 || (fast && dy < 0)) setSheet(order[Math.min(2, i + 1)]);
+    else if (dy > 25 || (fast && dy > 0)) setSheet(order[Math.max(0, i - 1)]);
     y0 = null;
   };
   handle.addEventListener('pointerup', end);

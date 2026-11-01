@@ -334,3 +334,13 @@ button { cursor: pointer; }
   color: var(--text); font-weight: 600; box-shadow: var(--shadow); transition: right .25s ease;
 }
 @media (min-width: 761px) { .list-toggle { display: inline-flex; } }
+
+/* Bouton pour réduire le panneau (mobile, quand il est ouvert) */
+.sheet-down { display: none; order: 3; font-size: 24px; line-height: 1; color: var(--text); background: var(--surface-2) !important; border: 1px solid var(--border) !important; }
+.sheet[data-state="half"] .sheet-down, .sheet[data-state="full"] .sheet-down { display: grid; }
+.sheet-head { flex-wrap: nowrap; }
+.sheet-head .sort { margin-left: auto; }
+@media (min-width: 761px) { .sheet-down { display: none !important; } }
+/* Poignée plus grande, plus facile à attraper */
+.sheet-handle { padding-top: 10px; }
+.grip { width: 48px; height: 6px; }
