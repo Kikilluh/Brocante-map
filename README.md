@@ -62,12 +62,14 @@ Si toutes les sources échouent, les données précédentes encore à venir sont
 
 ## Déploiement Firebase
 
-1. Créer un projet sur [console.firebase.google.com](https://console.firebase.google.com) et activer Hosting.
-2. Mettre son ID dans `.firebaserc`, ou dans la variable GitHub `FIREBASE_PROJECT_ID`.
-3. En local : `npx firebase-tools init hosting:github`. Cette commande crée le compte de service et le secret GitHub `FIREBASE_SERVICE_ACCOUNT`. Sinon, on peut créer une clé de compte de service avec le rôle *Firebase Hosting Admin* et la coller dans ce secret.
-4. Fusionner dans `main`. Le workflow `update-and-deploy.yml` tourne chaque jour vers 5 h ; il se lance aussi à la main (onglet *Actions* → *Run workflow*) et à chaque push sur `main`. Il collecte les données, commite le JSON et déploie.
+Site en ligne : **https://brocante-map.web.app** (projet Firebase `brocante-map`).
 
-Déploiement manuel : `npm run deploy`.
+- Le secret GitHub `FIREBASE_SERVICE_ACCOUNT` contient la clé JSON du compte `github@brocante-map-513408.iam.gserviceaccount.com`.
+  Ce compte vit dans le projet Google Cloud `brocante-map-513408` (à conserver) et a reçu, dans l'IAM du projet `brocante-map`,
+  les rôles *Administrateur Firebase Hosting*, *Consommateur Service Usage*, *Lecteur de clés API* et *Lecteur Cloud Run*.
+- Les API *Firebase Management* et *Firebase Hosting* doivent être activées dans `brocante-map-513408`.
+- Le workflow `update-and-deploy.yml` tourne chaque jour vers 5 h, à chaque push sur `main`, ou à la main (Actions → Run workflow).
+- Pour viser un autre projet : variable GitHub `FIREBASE_PROJECT_ID`.
 
 ## Passage à la France entière
 

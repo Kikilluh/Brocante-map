@@ -54,17 +54,6 @@ jobs:
             done
           fi
 
-      - name: Lire le projet de la clé Firebase
-        id: sa
-        if: env.HAS_FIREBASE == 'true'
-        env:
-          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          pid=$(echo "$SA" | jq -r .project_id)
-          echo "project_id de la clé : $pid"
-          echo "compte de service : $(echo "$SA" | jq -r .client_email)"
-          echo "project_id=$pid" >> "$GITHUB_OUTPUT"
-
       - name: Déploiement Firebase Hosting
         if: env.HAS_FIREBASE == 'true'
         uses: FirebaseExtended/action-hosting-deploy@v0
