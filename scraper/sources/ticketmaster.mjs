@@ -59,6 +59,9 @@ export function mapEvent(ev) {
     ageMin: ev.ageRestrictions?.legalAgeEnforced ? 18 : null,
     url: ev.url ?? null,
     credit: 'Ticketmaster',
+    // image 16:9 d'environ 640 px de large
+    image: [...(ev.images ?? [])].filter((i) => i.ratio === '16_9').sort((x, y) => Math.abs(x.width - 640) - Math.abs(y.width - 640))[0]?.url ?? ev.images?.[0]?.url ?? null,
+    imageCredit: 'Ticketmaster',
   };
 }
 

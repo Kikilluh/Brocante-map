@@ -55,6 +55,8 @@ export function mapEvent(ev, uid) {
     ageMax: ev.age?.max ?? null,
     url: ev.canonicalUrl ?? `https://openagenda.com/agendas/${uid}/events/${ev.slug ?? ev.uid}`,
     credit: ev.rights?.licensor?.name ?? null,
+    image: ev.image?.base && ev.image?.filename ? `${ev.image.base}${ev.image.filename}` : null,
+    imageCredit: tr(ev.imageCredits) ?? null,
   };
 }
 

@@ -200,6 +200,8 @@ export function makeEvent(raw, source) {
     url: raw.url || null,
     credit: raw.credit || null,
     audience: raw.audience || null,
+    image: raw.image || null,
+    imageCredit: raw.imageCredit ? cleanText(raw.imageCredit).slice(0, 120) : null,
     sources: [{ id: source, url: raw.url || null }],
   };
 }

@@ -72,3 +72,11 @@ test('nom du lieu tiré de l\'adresse', async () => {
   assert.equal(ev.address, '45 rue des Martyrs');
   assert.equal(ev.organizer, 'Asso Rock');
 });
+
+test('image principale et crédits (droits expirés ignorés)', async () => {
+  const { readImage } = await import('../sources/datatourisme.mjs');
+  const n = { hasMainRepresentation: [{ hasAnnotation: [{ credits: ['© OT Amboise'] }], hasRelatedResource: [{ locator: ['https://static.example/photo.jpg'], hasMimeType: [{ label: { '@fr': 'image/jpeg' } }] }] }] };
+  assert.deepEqual(readImage(n), { image: 'https://static.example/photo.jpg', imageCredit: '© OT Amboise' });
+  const old = { hasMainRepresentation: [{ hasAnnotation: [{ rightsEndDate: '2020-01-01' }], hasRelatedResource: [{ locator: ['https://x/y.jpg'] }] }] };
+  assert.deepEqual(readImage(old), {});
+});

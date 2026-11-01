@@ -177,7 +177,7 @@ function drawCenter() {
   if (!c) return;
   centerLayer = L.layerGroup([
     L.marker([c.lat, c.lon], { icon: L.divIcon({ className: '', html: '<div class="center-mark"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }), interactive: false }),
-    ...(state.group.radius ? [L.circle([c.lat, c.lon], { radius: state.group.radius * 1000, color: '#2563eb', weight: 1.5, fillOpacity: 0.05, interactive: false })] : []),
+    ...(state.group.radius ? [L.circle([c.lat, c.lon], { radius: state.group.radius * 1000, color: '#7d9fe0', weight: 2, fillOpacity: 0.06, interactive: false })] : []),
   ]).addTo(map);
 }
 
@@ -285,18 +285,49 @@ function render() {
     return m;
   }));
 
-  const n = list.length;
-  $('count').textContent = isEv ? `${n} sortie${n > 1 ? 's' : ''}` : `${n} lieu${n > 1 ? 'x' : ''} et activité${n > 1 ? 's' : ''}`;
-  const ol = $('list');
-  if (!n) {
-    ol.innerHTML = `<li class="empty">Rien ne correspond à ces critères.<br><button class="btn small" id="widen">Élargir la recherche</button></li>`;
-    $('widen').onclick = () => { state.preset = 'all'; [state.from, state.to] = presetRange('all'); state.unknown = true; state.q = ''; $('q').value = ''; if (state.group.radius) state.group.radius = 0; saveGroup(); render(); };
-  } else {
-    ol.innerHTML = list.slice(0, 400).map((x) => (isEv ? eventItem(x) : placeItem(x))).join('');
-  }
+  current = list;
+  renderList();
   syncControls();
   writeHash();
 }
+
+// La liste ne montre que ce qui est visible sur la carte ; elle se met à jour quand on la déplace.
+let current = [];
+function visibleBounds() {
+  if (!map.getBounds || typeof map.getBounds !== 'function') return null;
+  try {
+    const b = map.getBounds();
+    // Sur mobile, le bas de la carte est caché par le panneau : on ne compte que la partie visible
+    // (en plein écran, la carte est cachée : on garde toute la zone qu'elle montrait)
+    if (isMobile() && $('sheet').dataset.state === 'half') {
+      const sheetTop = $('sheet').getBoundingClientRect().top - $('map').getBoundingClientRect().top;
+      const p = map.containerPointToLatLng([0, Math.max(40, sheetTop)]);
+      return L.latLngBounds([p.lat, b.getWest()], b.getNorthEast());
+    }
+    return b;
+  } catch { return null; }
+}
+function renderList() {
+  const isEv = state.mode === 'events';
+  const b = visibleBounds();
+  const inView = b?.contains ? current.filter((x) => b.contains([x.lat, x.lon])) : current;
+  const n = inView.length;
+  const total = current.length;
+  const noun = isEv ? `sortie${n > 1 ? 's' : ''}` : `lieu${n > 1 ? 'x' : ''} et activité${n > 1 ? 's' : ''}`;
+  $('count').textContent = n === total ? `${n} ${noun}` : `${n} ${noun} ici · ${total} au total`;
+  const ol = $('list');
+  if (!total) {
+    ol.innerHTML = `<li class="empty">Rien ne correspond à ces critères.<br><button class="btn small" id="widen">Élargir la recherche</button></li>`;
+    $('widen').onclick = () => { state.preset = 'all'; [state.from, state.to] = presetRange('all'); state.unknown = true; state.q = ''; $('q').value = ''; if (state.group.radius) state.group.radius = 0; saveGroup(); render(); };
+  } else if (!n) {
+    ol.innerHTML = `<li class="empty">Rien dans cette partie de la carte.<br><button class="btn small" id="zoomOut">Voir tout</button></li>`;
+    $('zoomOut').onclick = () => map.fitBounds(L.latLngBounds(current.map((x) => [x.lat, x.lon])).pad(0.05), { maxZoom: 12 });
+  } else {
+    ol.innerHTML = inView.slice(0, 300).map((x) => (isEv ? eventItem(x) : placeItem(x))).join('');
+  }
+}
+let moveTimer;
+map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(renderList, 120); });
 
 function eventItem(ev) {
   const facts = [priceLabel(ev), ageLabel(ev), ev._dist != null ? km(ev._dist) : ''].filter(Boolean).join(' · ');
@@ -308,7 +339,7 @@ function eventItem(ev) {
       ${ev.venue ? `<span class="venue" style="display:block">${esc(ev.venue)}</span>` : ''}
       <span class="where" style="display:block">${esc(ev.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
       ${ev._notes?.length ? `<span class="fit">${esc(ev._notes[0])}</span>` : ''}
-    </span></button></li>`;
+    </span>${thumb(ev)}</button></li>`;
 }
 function placeItem(p) {
   const facts = [p.distanceKm ? km(p.distanceKm) : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
@@ -317,8 +348,11 @@ function placeItem(p) {
     <span class="body">
       <span class="title" style="display:block">${esc(p.name)}</span>
       <span class="where" style="display:block">${badge(KINDS[p.kind] ?? p.kind, kcolor(p.kind))} ${esc(p.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
-    </span></button></li>`;
+    </span>${thumb(p)}</button></li>`;
 }
+
+const thumb = (x) => (x.image ? `<img class="thumb" src="${esc(x.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">` : '');
+const hero = (x) => (x.image ? `<figure class="hero"><img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">${x.imageCredit ? `<figcaption>${esc(x.imageCredit)}</figcaption>` : ''}</figure>` : '');
 
 // ---------- Fiche détaillée ----------
 const link = (href, label, cls = '') => `<a class="${cls}" href="${esc(href)}" target="_blank" rel="noopener">${label}</a>`;
@@ -342,11 +376,12 @@ function eventDetail(ev) {
     ${facts.length ? `<div class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</div>` : ''}
     ${state.group.set && notes.length ? `<p class="fitline">${notes.map(esc).join(' · ')}</p>` : ''}
     ${state.group.set && ev.priceMin == null && ev.free == null ? '<p class="fitline warn">Prix non précisé : vérifiez auprès de l\'organisateur.</p>' : ''}
-    <div class="actions">
+    <div class="actions sticky">
       ${ev.url ? link(ev.url, ev.sources?.some((s) => s.id === 'ticketmaster') ? 'Billets' : 'Site / infos', 'primary') : ''}
       ${link(`https://www.openstreetmap.org/directions?to=${ev.lat},${ev.lon}`, 'Itinéraire')}
       <button data-share>Partager</button>
     </div>
+    ${hero(ev)}
     ${others.length ? `<details><summary>${others.length} autre${others.length > 1 ? 's' : ''} date${others.length > 1 ? 's' : ''}</summary><ul class="dates">${others.map((o) => `<li>${esc(occLabel(o))}${o.hours ? ` · ${esc(o.hours)}` : ''}</li>`).join('')}</ul></details>` : ''}
     ${ev.description ? `<p class="desc">${esc(ev.description)}</p>` : ''}
     ${sourcesLine(ev)}`;
@@ -360,13 +395,14 @@ function placeDetail(p) {
     <h2>${esc(p.name)}</h2>
     ${where ? `<p class="muted">${isRoute ? (p.partial ? 'Entrée dans le département : ' : 'Départ : ') : ''}${esc(where)}</p>` : ''}
     ${facts.length ? `<div class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</div>` : ''}
-    <div class="actions">
+    <div class="actions sticky">
       ${p.routeUrl ? link(p.routeUrl, "Voir l'itinéraire", 'primary') : p.url ? link(p.url, 'Site / infos', 'primary') : ''}
       ${p.gpx ? link(p.gpx, 'Trace GPX') : ''}
       ${p.routeUrl && p.url ? link(p.url, 'Site') : ''}
       ${link(`https://www.openstreetmap.org/directions?to=${p.lat},${p.lon}`, isRoute ? 'Aller au départ' : 'Itinéraire')}
       <button data-share>Partager</button>
     </div>
+    ${hero(p)}
     ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ''}
     ${sourcesLine(p)}`;
 }
@@ -411,7 +447,7 @@ $('list').addEventListener('click', (e) => {
 });
 
 // ---------- Panneau du bas (mobile) ----------
-function setSheet(s) { $('sheet').dataset.state = s; }
+function setSheet(s) { $('sheet').dataset.state = s; setTimeout(renderList, 300); }
 (() => {
   const sheet = $('sheet');
   const handle = $('sheetHandle');
@@ -550,7 +586,7 @@ function locateMe(then, silent = false) {
   navigator.geolocation.getCurrentPosition((pos) => {
     state.me = { lat: pos.coords.latitude, lon: pos.coords.longitude };
     meMarker?.remove();
-    meMarker = L.circleMarker([state.me.lat, state.me.lon], { radius: 7, color: '#fff', weight: 2, fillColor: '#2563eb', fillOpacity: 1 }).addTo(map);
+    meMarker = L.circleMarker([state.me.lat, state.me.lon], { radius: 7, color: '#fff', weight: 2, fillColor: '#5b8def', fillOpacity: 1 }).addTo(map);
     then ? then(state.me) : (map.setView([state.me.lat, state.me.lon], 12), render());
   }, () => { if (!silent) alert('Impossible de vous localiser (autorisation refusée ?).'); }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
 }
@@ -690,7 +726,7 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
   $('zone').textContent = depts.map((d) => DEPT_NAMES[d] ?? `Département ${d}`).join(', ');
   $('meta').innerHTML = `${data.generatedAt ? `Mis à jour le ${new Date(data.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. ` : ''}`
     + 'Données : DATAtourisme et OpenAgenda (Licence Ouverte), Ticketmaster, ministère de la Culture, © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). '
-    + '<a href="mentions-legales.html">Mentions légales et confidentialité</a>';
+    + '<a href="mentions-legales.html">Mentions légales et confidentialité</a> · <a href="#" data-install>📲 Installer l\'appli</a>';
 
   drawCenter();
   render();
@@ -704,6 +740,37 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
 })();
 
 // ---------- Application installable (PWA) ----------
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let installEvent = null;
+function updateInstallPill() {
+  const later = store.get('installPlusTard');
+  const snoozed = later && Date.now() - later < 14 * 864e5;
+  $('installPill').hidden = isStandalone() || snoozed || !(installEvent || isIOS() || isMobile());
+}
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvent = e; updateInstallPill(); });
+window.addEventListener('appinstalled', () => { installEvent = null; $('installPill').hidden = true; });
+function openInstall() {
+  const ios = isIOS();
+  $('installIOS').hidden = !ios && isMobile();
+  $('installAndroid').hidden = ios;
+  $('installDesktop').hidden = isMobile();
+  $('installNow').hidden = !installEvent;
+  $('installDialog').showModal();
+}
+$('installPill').addEventListener('click', openInstall);
+$('installNow').addEventListener('click', async () => {
+  if (!installEvent) return;
+  installEvent.prompt();
+  await installEvent.userChoice.catch(() => null);
+  installEvent = null;
+  $('installDialog').close();
+  updateInstallPill();
+});
+$('installLater').addEventListener('click', () => { store.set('installPlusTard', Date.now()); updateInstallPill(); });
+document.addEventListener('click', (e) => { if (e.target.closest('[data-install]')) { e.preventDefault(); openInstall(); } });
+updateInstallPill();
+
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }

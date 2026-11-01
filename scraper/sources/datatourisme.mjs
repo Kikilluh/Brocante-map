@@ -91,6 +91,24 @@ function readAudience(n) {
   };
 }
 
+/** Image principale (hasMainRepresentation) avec ses crédits ; ignorée si ses droits ont expiré. */
+export function readImage(n) {
+  const today = new Date().toISOString().slice(0, 10);
+  for (const rep of arr(get(n, 'hasMainRepresentation'))) {
+    const ann = arr(get(rep, 'hasAnnotation'))[0] ?? {};
+    const end = fr(get(ann, 'rightsEndDate'));
+    if (end && end.slice(0, 10) < today) continue;
+    for (const res of arr(get(rep, 'hasRelatedResource'))) {
+      const url = arr(get(res, 'locator')).map(fr).find((u) => /^https?:\/\//.test(u ?? ''));
+      const mime = fr(get(arr(get(res, 'hasMimeType'))[0] ?? {}, 'label')) ?? '';
+      if (url && (/image/i.test(mime) || /\.(jpe?g|png|webp|gif)(\?|$)/i.test(url))) {
+        return { image: url, imageCredit: fr(get(ann, 'credits')) };
+      }
+    }
+  }
+  return {};
+}
+
 /** Convertit un objet DATAtourisme en un événement "brut" (avec toutes ses dates). */
 export function mapNode(n) {
   const title = fr(get(n, 'label', 'name', 'title'));
@@ -145,6 +163,7 @@ export function mapNode(n) {
       credit,
       ...readPrices(n),
       ...readAudience(n),
+      ...readImage(n),
     },
   ];
 }
@@ -158,7 +177,7 @@ export function listOf(data) {
 
 const FIELDS = [
   'uuid', 'label', 'type', 'isLocatedAt.geo', 'isLocatedAt.address', 'takesPlaceAt', 'offers', 'hasDescription',
-  'hasContact.homepage', 'hasContact.legalName', 'hasClientTarget', 'allowedPersons', 'hasTheme', 'hasBeenCreatedBy.legalName',
+  'hasContact.homepage', 'hasContact.legalName', 'hasMainRepresentation', 'hasClientTarget', 'allowedPersons', 'hasTheme', 'hasBeenCreatedBy.legalName',
 ].join(',');
 
 async function runApi(source, { departments, log }) {

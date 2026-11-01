@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Brocante Map – sorties en Touraine</title>
   <meta name="description" content="Que faire en Indre-et-Loire avec votre groupe ? Concerts, spectacles, expos, brocantes, ateliers, randonnées et lieux à visiter, filtrés selon votre groupe : âges, budget, distance.">
-  <meta name="theme-color" content="#c2410c">
+  <meta name="theme-color" content="#f2a48b">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -56,6 +56,7 @@
         <span><strong>Qui sort ?</strong> <small>Filtrer pour notre groupe</small></span><span class="arrow" aria-hidden="true">→</span>
       </button>
       <button class="pill" id="groupPill" hidden><span aria-hidden="true">👥</span> <span id="groupSummary"></span></button>
+      <button class="pill install" id="installPill" hidden><span aria-hidden="true">📲</span> <span>Installer l'appli</span></button>
       <button class="pill ev-only" id="periodPill"><span aria-hidden="true">📅</span> <span id="periodLabel">30 jours</span></button>
     </div>
     <button class="locate-btn" id="locate" aria-label="Me localiser" title="Me localiser">
@@ -112,6 +113,43 @@
       <footer class="modal-foot">
         <button type="button" class="btn ghost" id="reset">Tout réinitialiser</button>
         <button class="btn primary" value="close" id="filtersApply">Voir les résultats</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Installer l'application -->
+  <dialog class="modal small" id="installDialog" aria-labelledby="installTitle">
+    <form method="dialog" class="modal-inner">
+      <header class="modal-head">
+        <h2 id="installTitle">Installer l'appli</h2>
+        <button class="icon-btn" value="close" aria-label="Fermer">✕</button>
+      </header>
+      <div class="modal-body">
+        <p>Brocante Map s'installe sur l'écran d'accueil comme une application, sans passer par un store : elle s'ouvre en plein écran et fonctionne même sans réseau (dernières sorties connues).</p>
+        <section id="installIOS">
+          <h3>Sur iPhone / iPad (Safari)</h3>
+          <ol class="howto">
+            <li>Touchez le bouton <strong>Partager</strong> <span class="ios-share" aria-hidden="true">⬆︎</span> en bas de l'écran (en haut sur iPad).</li>
+            <li>Faites défiler et choisissez <strong>« Sur l'écran d'accueil »</strong>.</li>
+            <li>Touchez <strong>Ajouter</strong>.</li>
+          </ol>
+          <p class="muted">Sur iPhone, l'installation se fait depuis Safari (ou Chrome avec iOS 16.4 et plus, via le même bouton Partager).</p>
+        </section>
+        <section id="installAndroid">
+          <h3>Sur Android (Chrome, Samsung Internet…)</h3>
+          <ol class="howto">
+            <li>Ouvrez le menu <strong>⋮</strong> en haut à droite.</li>
+            <li>Choisissez <strong>« Installer l'application »</strong> ou <strong>« Ajouter à l'écran d'accueil »</strong>.</li>
+          </ol>
+        </section>
+        <section id="installDesktop">
+          <h3>Sur ordinateur (Chrome, Edge)</h3>
+          <p>Cliquez sur l'icône d'installation <strong>⊕</strong> à droite de la barre d'adresse.</p>
+        </section>
+      </div>
+      <footer class="modal-foot">
+        <button class="btn ghost" value="later" id="installLater">Plus tard</button>
+        <button type="button" class="btn primary" id="installNow" hidden>Installer maintenant</button>
       </footer>
     </form>
   </dialog>

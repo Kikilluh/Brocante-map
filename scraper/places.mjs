@@ -14,7 +14,7 @@ import { configureHttp, fetchText } from './lib/http.mjs';
 import { createGeocoder } from './lib/geocode.mjs';
 import { cleanText, deptFromPostcode, slug } from './lib/normalize.mjs';
 import { splitVenue } from './lib/venues.mjs';
-import { fr, get, listOf } from './sources/datatourisme.mjs';
+import { fr, get, listOf, readImage } from './sources/datatourisme.mjs';
 import { loadRoutes } from './lib/routes.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
@@ -90,11 +90,12 @@ function dtCommon(n) {
     url: fr(get(arr(get(n, 'hasContact'))[0] ?? {}, 'homepage')),
     description: fr(get(descNode, 'shortDescription')) ?? fr(get(descNode, 'description')),
     credit: fr(get(arr(get(n, 'hasBeenCreatedBy'))[0] ?? {}, 'legalName')),
+    ...readImage(n),
   };
 }
 
 async function datatourismePlaces() {
-  const items = await dtFetchAll('placeOfInterest', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName');
+  const items = await dtFetchAll('placeOfInterest', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName,hasMainRepresentation');
   const typeCount = new Map();
   const out = [];
   for (const n of items) {
@@ -109,7 +110,7 @@ async function datatourismePlaces() {
 }
 
 async function datatourismeTours() {
-  const items = await dtFetchAll('tour', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName,tourDistance,duration,hasTheme,hasRepresentation');
+  const items = await dtFetchAll('tour', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName,tourDistance,duration,hasTheme,hasRepresentation,hasMainRepresentation');
   return items.map((n) => {
     const c = dtCommon(n);
     const dist = Number(fr(get(n, 'tourDistance')));
@@ -343,7 +344,7 @@ for (const p of places) {
   const twin = kept.find((q) => (q.kind === p.kind || (isRoute(q) && isRoute(p))) && near(p, q)
     && (key(q.name).includes(key(p.name)) || key(p.name).includes(key(q.name))));
   if (twin) {
-    for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network']) twin[k] ??= p[k];
+    for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network', 'image', 'imageCredit']) twin[k] ??= p[k];
     twin.sources.push({ id: p.source, url: p.sourceUrl ?? null });
     continue;
   }
@@ -352,7 +353,7 @@ for (const p of places) {
 
 const out = kept.map((p, i) => {
   const o = { id: `${p.kind}-${slug(p.name).slice(0, 50)}-${i}` };
-  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'description', 'distanceKm', 'partial', 'duration', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
+  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
     if (p[k] != null && p[k] !== '' && p[k] !== false) o[k] = p[k];
   }
   return o;
