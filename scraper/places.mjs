@@ -99,7 +99,7 @@ async function datatourismePlaces() {
     const c = dtCommon(n);
     const kind = kindOf(c.types, c.name ?? '');
     for (const t of arr(get(n, 'type'))) typeCount.set(t, (typeCount.get(t) ?? 0) + 1);
-    if (!kind || !c.name) continue;
+    if (!kind || !c.name || /projet d[ée]mo|\btest\b/i.test(c.name)) continue;
     out.push({ ...c, kind, source: 'datatourisme' });
   }
   log(`  types les plus fréquents : ${[...typeCount].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([t, n]) => `${t}=${n}`).join(', ')}`);
@@ -120,7 +120,7 @@ async function datatourismeTours() {
       duration: dur && /^\d+$/.test(dur) ? `${Math.floor(+dur / 60)} h ${String(+dur % 60).padStart(2, '0')}` : null,
       source: 'datatourisme',
     };
-  }).filter((p) => p.name);
+  }).filter((p) => p.name && !/projet d[ée]mo|\btest\b/i.test(p.name));
 }
 
 // ---------- data.gouv.fr (jeux du ministère de la Culture) ----------
@@ -150,12 +150,12 @@ function parseCsv(text) {
   return body.filter((r) => r.length > 1).map((r) => Object.fromEntries(head.map((h, i) => [h.trim(), (r[i] ?? '').trim()])));
 }
 
-async function dataGouv(query, titleRe) {
+async function dataGouv(query, titleRe, orgRe = /minist[eè]re de la culture/i) {
   const api = new URL('https://www.data.gouv.fr/api/1/datasets/');
   api.searchParams.set('q', query);
-  api.searchParams.set('page_size', '10');
+  api.searchParams.set('page_size', '20');
   const res = await fetchText(api.href, { json: true, checkRobots: false, delayMs: 300 });
-  const ds = (res.data ?? []).find((d) => titleRe.test(d.title) && !d.archived);
+  const ds = (res.data ?? []).find((d) => titleRe.test(d.title) && !d.archived && orgRe.test(d.organization?.name ?? ''));
   if (!ds) {
     log(`  data.gouv.fr : aucun jeu trouvé pour « ${query} »`);
     return null;
@@ -201,7 +201,7 @@ function inDepts(row, postcode) {
 }
 
 async function museofile() {
-  const ds = await dataGouv('Musées de France Muséofile', /mus[ée]ofile|mus[ée]es de france/i);
+  const ds = await dataGouv('Muséofile musées de France', /mus[ée]ofile|mus[ée]es de france/i);
   if (!ds) return [];
   return ds.rows.map((row) => {
     const postcode = col(row, /code.?postal|^cp$/i);
