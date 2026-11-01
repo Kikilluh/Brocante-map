@@ -1,4 +1,4 @@
-# Brocante Map
+# Brocante Map — sorties en Touraine
 
 Carte interactive des brocantes, vide-greniers, braderies et marchés aux puces, d'abord en **Indre-et-Loire (37)**, et prévue pour couvrir ensuite la France entière.
 
@@ -13,7 +13,7 @@ Carte interactive des brocantes, vide-greniers, braderies et marchés aux puces,
 ```
 public/                  site statique (aucune étape de build)
   index.html, app.js, style.css
-  data/brocantes.json    données réelles (générées par le collecteur)
+  data/events.json       données réelles (générées par le collecteur)
   data/demo.json         données FICTIVES affichées tant que brocantes.json est absent ou vide
 scraper/
   index.mjs              collecte → normalisation → géocodage → dédoublonnage → JSON

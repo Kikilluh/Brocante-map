@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Collecte des brocantes / vide-greniers depuis toutes les sources configurées
-// → public/data/brocantes.json (consommé par la carte).
+// → public/data/events.json (consommé par la carte).
 //
 // Usage : node scraper/index.mjs [--only=source-id] [--dept=37,41]
 
@@ -18,7 +18,7 @@ import * as manual from './sources/manual.mjs';
 
 const ADAPTERS = { 'structured-html': structuredHtml, datatourisme, openagenda, manual };
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const OUT = join(ROOT, '..', 'public', 'data', 'brocantes.json');
+const OUT = join(ROOT, '..', 'public', 'data', 'events.json');
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => a.replace(/^--/, '').split('=')));
 const config = JSON.parse(await readFile(join(ROOT, 'config.json'), 'utf8'));
@@ -64,12 +64,20 @@ for (const source of config.sources) {
   }
 }
 
-// Géocodage + filtrage géographique et temporel
+// Filtrage temporel par date (occurrence), géocodage, filtrage géographique
+const LONG_OK = new Set(config.longEventCategories ?? ['exposition']);
+const maxDays = config.maxDurationDays ?? 14;
 const inScope = [];
 for (const ev of collected) {
-  if (ev.end < today || ev.start > horizon) continue;
-  // Marchés permanents / récurrents décrits par une très longue période : ce ne sont pas des brocantes ponctuelles.
-  if ((Date.parse(ev.end) - Date.parse(ev.start)) / 864e5 > (config.maxDurationDays ?? 14)) continue;
+  // On ne garde que les dates à venir dans l'horizon ; les très longues périodes (marché hebdomadaire
+  // décrit sur toute l'année, lieu ouvert toute la saison) sont écartées, sauf pour les expositions.
+  ev.occurrences = ev.occurrences.filter(
+    (o) => o.end >= today && o.start <= horizon && (LONG_OK.has(ev.category) || (Date.parse(o.end) - Date.parse(o.start)) / 864e5 <= maxDays),
+  );
+  if (!ev.occurrences.length) continue;
+  ev.start = ev.occurrences[0].start;
+  ev.end = ev.occurrences.at(-1).end;
+  ev.hours = ev.occurrences[0].hours;
   await geocoder.geocode(ev);
   if (ev.lat == null || ev.lon == null) continue;
   if (!ev.dept || !departments.includes(ev.dept)) continue;
@@ -77,7 +85,23 @@ for (const ev of collected) {
 }
 await geocoder.save();
 
-const events = dedupe(inScope).sort((a, b) => a.start.localeCompare(b.start) || a.city?.localeCompare(b.city ?? ''));
+/** Allège le JSON : retire les champs vides, garde la liste des dates seulement si plusieurs. */
+function compact(ev) {
+  const out = {};
+  for (const [k, v] of Object.entries(ev)) {
+    if (v == null || v === '') continue;
+    if (k === 'occurrences') {
+      if (v.length > 1) out.dates = v.map((o) => [o.start, o.end, o.hours ?? undefined].filter((x) => x !== undefined));
+      continue;
+    }
+    out[k] = v;
+  }
+  return out;
+}
+
+const events = dedupe(inScope)
+  .sort((a, b) => a.start.localeCompare(b.start) || (a.city ?? '').localeCompare(b.city ?? ''))
+  .map(compact);
 
 // Si aucune source n'a répondu, on conserve les données précédentes encore à venir plutôt que d'afficher une carte vide.
 const anyOk = Object.values(report).some((r) => r.ok && r.count > 0);

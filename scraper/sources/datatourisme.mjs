@@ -1,26 +1,22 @@
-// DATAtourisme : plateforme nationale de données touristiques ouvertes (Licence Ouverte).
+// DATAtourisme : plateforme nationale des données touristiques (offices de tourisme), Licence Ouverte.
+// Doc : https://api.datatourisme.fr/v1/docs — clé API → secret DATATOURISME_API_KEY.
 //
-// Deux modes :
-//  1. API (recommandé, seul mode possible pour les nouveaux comptes depuis octobre 2026)
-//     clé gratuite → secret DATATOURISME_API_KEY ; endpoint https://api.datatourisme.fr/v1/catalog
-//  2. Ancien flux "Diffuseur" (fermeture en octobre 2027) → secret DATATOURISME_FEED_URL
-//
-// Le format exact des réponses de l'API n'a pas pu être vérifié lors de l'écriture :
-// le code accepte plusieurs formes (avec/sans préfixes "schema:", listes paginées diverses)
-// et journalise la structure reçue au premier appel pour faciliter l'ajustement.
+// On interroge l'endpoint pré-filtré /entertainmentAndEvent (fêtes et manifestations) avec un filtre
+// département + date de fin ≥ aujourd'hui, et on demande directement les champs utiles (dates, prix,
+// public, jauge) : pas besoin de lire chaque fiche une par une.
+// Ancien mode "flux Diffuseur" (fermeture oct. 2027) conservé : secret DATATOURISME_FEED_URL.
 
 import { fetchText } from '../lib/http.mjs';
-import { isRelevant, deptFromPostcode } from '../lib/normalize.mjs';
 
 const arr = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
-/** Texte en français depuis une valeur multilingue (string, {fr:[..]}, {fr:".."}, {"@value"}, [...]). */
+/** Texte en français depuis une valeur multilingue (string, {"@fr":..}, {fr:[..]}, [...]). */
 export function fr(v) {
   if (v == null) return null;
   if (typeof v === 'string' || typeof v === 'number') return String(v);
   if (Array.isArray(v)) return fr(v.find((x) => x?.['@language'] === 'fr') ?? v[0]);
   if (v['@value'] != null) return String(v['@value']);
-  for (const k of ['fr', '@fr', 'fr-FR', 'value']) if (v[k] != null) return fr(v[k]);
+  for (const k of ['@fr', 'fr', 'fr-FR', '@en', 'en', 'value']) if (v[k] != null) return fr(v[k]);
   const first = Object.values(v)[0];
   return first != null && typeof first !== 'object' ? String(first) : fr(first);
 }
@@ -34,138 +30,161 @@ function get(o, ...names) {
   return undefined;
 }
 
-/** Convertit un objet DATAtourisme en événements "bruts" (un par période). */
+const numOrNull = (v) => (v == null || v === '' || !Number.isFinite(Number(fr(v))) ? null : Number(fr(v)));
+const minOf = (xs) => (xs.length ? Math.min(...xs) : null);
+const maxOf = (xs) => (xs.length ? Math.max(...xs) : null);
+
+/** Prix depuis offers[].priceSpecification[]. */
+function readPrices(n) {
+  const specs = arr(get(n, 'offers')).flatMap((o) => arr(get(o, 'priceSpecification')));
+  const values = [];
+  let freeHint = false;
+  const texts = [];
+  for (const s of specs) {
+    for (const k of ['minPrice', 'maxPrice', 'price']) {
+      const x = numOrNull(get(s, k));
+      if (x != null) values.push(x);
+    }
+    const label = [fr(get(s, 'name')), fr(get(get(s, 'hasPricingOffer') ?? {}, 'label')), fr(get(get(s, 'hasPricingMode') ?? {}, 'label')), fr(get(s, 'additionalInformation'))]
+      .filter(Boolean)
+      .join(' ');
+    if (/gratuit|free/i.test(label)) freeHint = true;
+    texts.push(label);
+  }
+  for (const o of arr(get(n, 'offers'))) texts.push(fr(get(o, 'textPriceSpecification')) ?? '');
+  const out = { conditions: texts.filter(Boolean).join(' ') || null };
+  if (values.length) {
+    out.priceMin = freeHint ? 0 : minOf(values);
+    out.priceMax = maxOf(values);
+  } else if (freeHint) {
+    out.priceMin = 0;
+    out.priceMax = 0;
+  }
+  return out;
+}
+
+/** Âges et taille de groupe depuis hasClientTarget / isDedicatedTo. */
+function readAudience(n) {
+  const targets = [...arr(get(n, 'hasClientTarget')), ...arr(get(n, 'hasDescription')).flatMap((d) => arr(get(d, 'isDedicatedTo')))];
+  const mins = [];
+  const maxs = [];
+  const labels = [];
+  let maxPersons = null;
+  for (const t of targets) {
+    const mi = numOrNull(get(t, 'requiredMinAge')) ?? numOrNull(get(t, 'suggestedMinAge'));
+    const ma = numOrNull(get(t, 'requiredMaxAge')) ?? numOrNull(get(t, 'suggestedMaxAge'));
+    if (mi != null) mins.push(mi);
+    if (ma != null) maxs.push(ma);
+    const mp = numOrNull(get(t, 'requiredMaxPersonCount'));
+    if (mp != null) maxPersons = maxPersons == null ? mp : Math.max(maxPersons, mp);
+    const l = fr(get(t, 'label'));
+    if (l) labels.push(l);
+  }
+  return {
+    // l'événement accepte des personnes dès le plus petit âge minimum cité, jusqu'au plus grand âge maximum
+    ageMin: minOf(mins),
+    ageMax: maxs.length === targets.length && maxs.length ? maxOf(maxs) : null,
+    capacity: numOrNull(get(n, 'allowedPersons')) ?? maxPersons,
+    audience: labels.join(', ') || null,
+  };
+}
+
+/** Convertit un objet DATAtourisme en un événement "brut" (avec toutes ses dates). */
 export function mapNode(n) {
   const title = fr(get(n, 'label', 'name', 'title'));
-  const types = arr(get(n, '@type', 'type', 'types')).map((t) => (typeof t === 'object' ? fr(t['@id'] ?? t.label ?? t) : t)).join(' ');
-  const desc = fr(get(n, 'comment', 'description', 'shortDescription')) ?? fr(get(arr(get(n, 'hasDescription'))[0], 'shortDescription', 'description'));
   if (!title) return [];
-  if (!(isRelevant(`${title} ${types} ${desc ?? ''}`) || /SaleEvent|Brocante|VideGrenier|FleaMarket/i.test(types))) return [];
+  const types = arr(get(n, '@type', 'type')).map((t) => (typeof t === 'object' ? fr(t['@id'] ?? t.label ?? t) : t)).join(' ');
+  const descNode = arr(get(n, 'hasDescription'))[0];
+  const desc = fr(get(n, 'comment', 'description')) ?? fr(get(descNode, 'shortDescription')) ?? fr(get(descNode, 'description'));
 
   const loc = arr(get(n, 'isLocatedAt', 'location', 'place'))[0] ?? {};
   const addr = arr(get(loc, 'address') ?? get(n, 'address'))[0] ?? {};
   const geo = arr(get(loc, 'geo') ?? get(n, 'geo'))[0] ?? {};
   const cityNode = arr(get(addr, 'hasAddressCity', 'city'))[0];
-  const city = typeof cityNode === 'object' ? fr(get(cityNode, 'label', 'name')) : fr(cityNode);
+  const city = (typeof cityNode === 'object' ? fr(get(cityNode, 'label', 'name')) : fr(cityNode)) ?? fr(get(addr, 'addressLocality', 'locality'));
   const postcode = fr(get(addr, 'postalCode', 'postcode', 'zipCode'));
   const contact = arr(get(n, 'hasContact', 'contact'))[0] ?? {};
   const url = fr(get(contact, 'homepage', 'foaf:homepage', 'url', 'website'));
+  const creator = get(n, 'hasBeenCreatedBy');
+  const credit = fr(get(arr(creator)[0] ?? {}, 'legalName'));
 
-  const base = {
-    title,
-    description: desc,
-    address: arr(get(addr, 'streetAddress', 'street')).map(fr).filter(Boolean).join(', ') || null,
-    postcode,
-    city: city ?? fr(get(addr, 'addressLocality', 'locality')),
-    dept: postcode ? deptFromPostcode(postcode) : null,
-    lat: fr(get(geo, 'latitude', 'lat')),
-    lon: fr(get(geo, 'longitude', 'lon', 'lng')),
-    url,
-  };
-  const periods = arr(get(n, 'takesPlaceAt', 'periods', 'dates'));
-  if (!periods.length) return [{ ...base, start: fr(get(n, 'startDate')), end: fr(get(n, 'endDate')) }];
-  return periods.map((p) => {
+  const occurrences = arr(get(n, 'takesPlaceAt', 'periods', 'dates')).map((p) => {
     const st = fr(get(p, 'startTime'));
     const et = fr(get(p, 'endTime'));
+    const hhmm = (x) => (x && /\d{2}:\d{2}/.test(x) ? x.match(/\d{2}:\d{2}/)[0] : null);
     return {
-      ...base,
       start: fr(get(p, 'startDate', 'start')),
       end: fr(get(p, 'endDate', 'end')),
-      hours: st ? `${st.slice(0, 5)}${et ? '–' + et.slice(0, 5) : ''}` : null,
+      hours: hhmm(st) ? `${hhmm(st)}${hhmm(et) ? '–' + hhmm(et) : ''}` : null,
     };
   });
+  if (!occurrences.length) {
+    const s = fr(get(n, 'startDate'));
+    if (s) occurrences.push({ start: s, end: fr(get(n, 'endDate')) });
+  }
+  if (!occurrences.length) return [];
+
+  return [
+    {
+      title,
+      types,
+      description: desc,
+      occurrences,
+      address: arr(get(addr, 'streetAddress', 'street')).map(fr).filter(Boolean).join(', ') || null,
+      postcode,
+      city,
+      lat: fr(get(geo, 'latitude', 'lat')),
+      lon: fr(get(geo, 'longitude', 'lon', 'lng')),
+      url,
+      credit,
+      ...readPrices(n),
+      ...readAudience(n),
+    },
+  ];
 }
 
 /** Extrait la liste d'objets d'une réponse, quelle que soit sa forme. */
 export function listOf(data) {
   if (Array.isArray(data)) return data;
-  for (const k of ['objects', 'data', 'results', 'items', 'hits', 'catalog', '@graph', 'hydra:member', 'member']) {
-    if (Array.isArray(data?.[k])) return data[k];
-  }
+  for (const k of ['objects', 'data', 'results', 'items', '@graph']) if (Array.isArray(data?.[k])) return data[k];
   return [];
 }
 
-function nextUrl(data, current) {
-  const n = data?.meta?.next ?? data?.links?.next ?? data?.next ?? data?.['hydra:view']?.['hydra:next'] ?? data?.view?.next;
-  if (typeof n === 'string' && n) return new URL(n, current).href;
-  if (n && typeof n === 'object' && n.href) return new URL(n.href, current).href;
-  return null;
-}
+const FIELDS = [
+  'uuid', 'label', 'type', 'isLocatedAt.geo', 'isLocatedAt.address', 'takesPlaceAt', 'offers', 'hasDescription',
+  'hasContact.homepage', 'hasClientTarget', 'allowedPersons', 'hasTheme', 'hasBeenCreatedBy.legalName',
+].join(',');
 
 async function runApi(source, { departments, log }) {
   const key = process.env.DATATOURISME_API_KEY;
-  const base = source.apiUrl ?? 'https://api.datatourisme.fr/v1/catalog';
-  const pageSize = source.pageSize ?? 100;
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
+  const base = source.apiUrl ?? 'https://api.datatourisme.fr/v1/entertainmentAndEvent';
+  const headers = { 'X-API-Key': key };
   const raws = [];
-  const seen = new Set();
-  let logged = false;
-  let loggedDetail = false;
-
-  for (const term of source.searchTerms ?? ['brocante']) {
-    let url = new URL(base);
-    url.searchParams.set('api_key', key);
-    url.searchParams.set('search', term);
-    for (const [k, v] of Object.entries(source.extraParams ?? {})) url.searchParams.set(k, v);
-    url.searchParams.set(source.pageSizeParam ?? 'page_size', String(pageSize));
-    let page = 1;
-    let count = 0;
-    while (url && page <= (source.maxPagesPerTerm ?? 30)) {
-      const data = await fetchText(url.href, { json: true, checkRobots: false, headers: { 'X-API-KEY': key } });
-      const items = listOf(data);
-      if (!logged) {
-        logged = true;
-        log(`  [diagnostic] clés de la réponse : ${Object.keys(data ?? {}).join(', ') || '(tableau)'}`);
-        if (items[0]) log(`  [diagnostic] clés d'un objet : ${Object.keys(items[0]).join(', ')}`);
-      }
-      if (!items.length) break;
-      for (const n of items) {
-        const id = n['@id'] ?? n.uuid ?? n.id ?? JSON.stringify(n).slice(0, 200);
-        if (seen.has(id)) continue;
-        seen.add(id);
-        let mapped = mapNode(n);
-        // filtre géographique côté client (l'API cherche dans toute la France)
-        mapped = mapped.filter((r) => !r.dept || departments.includes(r.dept));
-        if (!mapped.length) continue;
-        // La liste ne contient pas les dates (takesPlaceAt) : on lit la fiche complète.
-        if (mapped.every((r) => !r.start) && n.uuid) {
-          try {
-            const detailUrl = new URL(`${base.replace(/\/$/, '')}/${n.uuid}`);
-            detailUrl.searchParams.set('api_key', key);
-            const raw = await fetchText(detailUrl.href, { json: true, checkRobots: false, headers: { 'X-API-KEY': key } });
-            const full = raw?.object ?? raw?.data ?? listOf(raw)[0] ?? raw;
-            if (!loggedDetail) {
-              loggedDetail = true;
-              log(`  [diagnostic] clés d'une fiche : ${Object.keys(full ?? {}).join(', ')}`);
-            }
-            mapped = mapNode({ ...n, ...full }).filter((r) => !r.dept || departments.includes(r.dept));
-          } catch (e) {
-            log(`  fiche ${n.uuid} → ${e.message}`);
-          }
-        }
-        const dated = mapped.filter((r) => r.start);
-        if (mapped.length && !dated.length) log(`  sans date (ignoré) : ${mapped[0].title} – ${mapped[0].city ?? '?'}`);
-        raws.push(...dated);
-        count += dated.length;
-      }
-      const next = nextUrl(data, url.href);
-      if (next) {
-        url = new URL(next);
-        if (!url.searchParams.has('api_key')) url.searchParams.set('api_key', key);
-      } else if (items.length >= pageSize) {
-        url.searchParams.set(source.pageParam ?? 'page', String(page + 1));
-      } else {
-        url = null;
-      }
-      page++;
-    }
-    log(`  recherche "${term}" → ${count} événements dans la zone`);
+  const deptList = departments.map((d) => (/^\d$/.test(d) ? `0${d}` : d)).join(',');
+  let url = new URL(base);
+  url.searchParams.set('filters', `isLocatedAt.address.hasAddressCity.isPartOfDepartment.insee[in]=${deptList} AND takesPlaceAt.endDate[gte]=${today}`);
+  url.searchParams.set('fields', source.fields ?? FIELDS);
+  url.searchParams.set('lang', 'fr');
+  url.searchParams.set('page_size', String(source.pageSize ?? 100));
+  let page = 0;
+  let total = null;
+  while (url && page < (source.maxPages ?? 100)) {
+    const data = await fetchText(url.href, { json: true, checkRobots: false, headers, delayMs: 400 });
+    total ??= data?.meta?.total;
+    const items = listOf(data);
+    for (const n of items) raws.push(...mapNode(n));
+    page++;
+    const next = data?.meta?.next;
+    url = next && items.length ? new URL(next, base) : null;
   }
+  log(`  ${raws.length} événements lus (${total ?? '?'} annoncés par l'API, ${page} page(s))`);
   return raws;
 }
 
 async function runLegacyFeed(feed) {
   const data = await fetchText(feed, { json: true, checkRobots: false });
-  return listOf(data).length ? listOf(data).flatMap(mapNode) : arr(data).flatMap(mapNode);
+  return (listOf(data).length ? listOf(data) : arr(data)).flatMap(mapNode);
 }
 
 export async function run(source, ctx) {

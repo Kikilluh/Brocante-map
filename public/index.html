@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Brocante Map</title>
-  <meta name="description" content="Carte interactive des brocantes, vide-greniers et braderies en Indre-et-Loire, filtrable par date.">
+  <title>Brocante Map – sorties en Touraine</title>
+  <meta name="description" content="Carte interactive des sorties en Indre-et-Loire : brocantes, concerts, spectacles, expositions, ateliers, randonnées… filtrable par date, type, âge et prix.">
   <meta name="theme-color" content="#c2410c">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z' fill='%23c2410c'/%3E%3Ccircle cx='16' cy='13' r='4.5' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -18,30 +18,59 @@
       <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z" fill="currentColor"/><circle cx="16" cy="13" r="4.5" fill="var(--surface)"/></svg>
       <div>
         <h1>Brocante Map</h1>
-        <p class="subtitle" id="zone">Indre-et-Loire</p>
+        <p class="subtitle"><span id="zone">Indre-et-Loire</span> · toutes les sorties</p>
       </div>
     </div>
     <button class="btn ghost only-mobile" id="toggleFilters" aria-expanded="false" aria-controls="filters">Filtres</button>
   </header>
 
   <section class="filters" id="filters" aria-label="Filtres">
-    <div class="presets" role="group" aria-label="Période rapide">
-      <button class="chip" data-preset="today">Aujourd'hui</button>
-      <button class="chip" data-preset="weekend">Ce week-end</button>
-      <button class="chip" data-preset="nextweekend">Week-end prochain</button>
-      <button class="chip" data-preset="7">7 jours</button>
-      <button class="chip" data-preset="30">30 jours</button>
-      <button class="chip" data-preset="all">Tout</button>
+    <div class="row">
+      <div class="presets" role="group" aria-label="Période rapide">
+        <button class="chip" data-preset="today">Aujourd'hui</button>
+        <button class="chip" data-preset="weekend">Ce week-end</button>
+        <button class="chip" data-preset="nextweekend">Week-end prochain</button>
+        <button class="chip" data-preset="7">7 jours</button>
+        <button class="chip" data-preset="30">30 jours</button>
+        <button class="chip" data-preset="all">Tout</button>
+      </div>
+      <div class="range">
+        <label>Du <input type="date" id="from"></label>
+        <label>au <input type="date" id="to"></label>
+      </div>
     </div>
-    <div class="range">
-      <label>Du <input type="date" id="from"></label>
-      <label>au <input type="date" id="to"></label>
+    <div class="row">
+      <div class="types" id="types" role="group" aria-label="Type d'activité"></div>
+      <button class="link" id="allTypes" type="button">Tout cocher</button>
     </div>
-    <div class="types" id="types" role="group" aria-label="Type d'événement"></div>
-    <label class="search">
-      <span class="sr-only">Commune ou mot-clé</span>
-      <input type="search" id="q" placeholder="Commune, mot-clé…" autocomplete="off">
-    </label>
+    <div class="row group">
+      <label class="field">Participants
+        <input type="number" id="people" min="1" max="50" value="1" inputmode="numeric">
+      </label>
+      <fieldset class="field ages">
+        <legend>Âges du groupe</legend>
+        <input type="number" id="ageMin" min="0" max="99" placeholder="de" inputmode="numeric" aria-label="Âge du plus jeune">
+        <span>à</span>
+        <input type="number" id="ageMax" min="0" max="99" placeholder="à" inputmode="numeric" aria-label="Âge du plus âgé">
+        <span>ans</span>
+      </fieldset>
+      <label class="field">Prix / pers.
+        <select id="price">
+          <option value="all">Tous</option>
+          <option value="free">Gratuit</option>
+          <option value="5">≤ 5 €</option>
+          <option value="10">≤ 10 €</option>
+          <option value="20">≤ 20 €</option>
+          <option value="50">≤ 50 €</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" id="unknown" checked> inclure les infos non précisées</label>
+      <label class="search">
+        <span class="sr-only">Commune ou mot-clé</span>
+        <input type="search" id="q" placeholder="Commune, mot-clé…" autocomplete="off">
+      </label>
+      <button class="link" id="reset" type="button">Réinitialiser</button>
+    </div>
   </section>
 
   <div id="demoBanner" class="banner" hidden>
@@ -49,7 +78,7 @@
   </div>
 
   <main class="layout">
-    <div id="map" aria-label="Carte des brocantes"></div>
+    <div id="map" aria-label="Carte des événements"></div>
     <aside class="panel" id="panel">
       <button class="panel-handle only-mobile" id="panelHandle" aria-expanded="false">
         <span id="count">…</span>

@@ -25,7 +25,7 @@ export async function createGeocoder(cachePath) {
     for (const [k, v] of Object.entries(params)) if (v) url.searchParams.set(k, v);
     let result = null;
     try {
-      const data = await fetchText(url.href, { json: true, checkRobots: false });
+      const data = await fetchText(url.href, { json: true, checkRobots: false, delayMs: 100 });
       const f = data.features?.[0];
       if (f && f.properties.score > 0.4) {
         result = {

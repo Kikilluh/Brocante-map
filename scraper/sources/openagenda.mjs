@@ -1,14 +1,14 @@
-// OpenAgenda : beaucoup de mairies, offices de tourisme et associations y publient leurs événements.
-// Clé API → secret OPENAGENDA_KEY.
-// - "agendas" (UID) dans config.json : agendas interrogés à coup sûr.
-// - "discover" : mots-clés pour trouver automatiquement des agendas (ex. "Touraine") ;
-//   la liste trouvée est écrite dans les logs pour pouvoir ensuite figer les bons UID.
+// OpenAgenda : agendas de mairies, musées, offices de tourisme, événements nationaux (patrimoine, musées…).
+// Clé API → secret OPENAGENDA_KEY. Agendas suivis : "agendas" (UID) dans config.json.
+// On ne garde que les événements situés dans les départements couverts et publiés sous licence ouverte
+// (chaque événement OpenAgenda porte sa licence dans rights.license).
 
 import { fetchText } from '../lib/http.mjs';
-import { isRelevant } from '../lib/normalize.mjs';
+import { deptFromPostcode } from '../lib/normalize.mjs';
 
 const API = 'https://api.openagenda.com/v2';
 const tr = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v.fr ?? Object.values(v)[0] : v);
+const OPEN_LICENSE = /etalab|licence ouverte|cc-by|cc by|odbl|cc0|public domain/i;
 
 async function discoverAgendas(key, terms, log) {
   const found = new Map();
@@ -18,10 +18,8 @@ async function discoverAgendas(key, terms, log) {
       url.searchParams.set('key', key);
       url.searchParams.set('search', term);
       url.searchParams.set('size', '50');
-      const data = await fetchText(url.href, { json: true, checkRobots: false });
-      for (const a of data.agendas ?? data.items ?? []) {
-        if (!found.has(a.uid)) found.set(a.uid, a);
-      }
+      const data = await fetchText(url.href, { json: true, checkRobots: false, delayMs: 300 });
+      for (const a of data.agendas ?? data.items ?? []) if (!found.has(a.uid)) found.set(a.uid, a);
     } catch (e) {
       log(`  découverte "${term}" → ${e.message}`);
     }
@@ -30,7 +28,36 @@ async function discoverAgendas(key, terms, log) {
   return [...found.keys()];
 }
 
-export async function run(source, { log }) {
+/** Convertit un événement OpenAgenda en événement "brut". */
+export function mapEvent(ev, uid) {
+  const loc = ev.location ?? {};
+  const keywords = [].concat(tr(ev.keywords) ?? []).join(' ');
+  const conditions = tr(ev.conditions) ?? '';
+  return {
+    title: tr(ev.title),
+    description: tr(ev.description) ?? tr(ev.longDescription),
+    conditions,
+    types: keywords,
+    occurrences: (ev.timings?.length ? ev.timings : [{ begin: ev.firstTiming?.begin, end: ev.lastTiming?.end }]).map((t) => ({
+      start: t.begin,
+      end: t.end,
+      hours: t.begin && /T\d{2}:\d{2}/.test(t.begin)
+        ? `${t.begin.slice(11, 16)}${t.end && /T\d{2}:\d{2}/.test(t.end) ? '–' + t.end.slice(11, 16) : ''}`.replace(':', 'h').replace(':', 'h')
+        : null,
+    })),
+    address: loc.address,
+    postcode: loc.postalCode,
+    city: loc.city,
+    lat: loc.latitude,
+    lon: loc.longitude,
+    ageMin: ev.age?.min ?? null,
+    ageMax: ev.age?.max ?? null,
+    url: ev.canonicalUrl ?? `https://openagenda.com/agendas/${uid}/events/${ev.slug ?? ev.uid}`,
+    credit: ev.rights?.licensor?.name ?? null,
+  };
+}
+
+export async function run(source, { departments, log }) {
   const key = process.env.OPENAGENDA_KEY;
   if (!key) {
     log('  OPENAGENDA_KEY absent : source ignorée');
@@ -45,54 +72,43 @@ export async function run(source, { log }) {
 
   const raws = [];
   const seen = new Set();
+  let closed = 0;
   for (const uid of agendas) {
     let n = 0;
-    for (const term of source.searchTerms ?? ['brocante', 'vide-grenier', 'braderie', 'puces', 'bourse']) {
-      let after = null;
-      for (let page = 0; page < 5; page++) {
-        const url = new URL(`${API}/agendas/${uid}/events`);
-        url.searchParams.set('key', key);
-        url.searchParams.set('size', '100');
-        url.searchParams.set('relative[]', 'upcoming');
-        url.searchParams.set('detailed', '1');
-        url.searchParams.set('search', term);
-        if (after) after.forEach((a) => url.searchParams.append('after[]', a));
-        let data;
-        try {
-          data = await fetchText(url.href, { json: true, checkRobots: false });
-        } catch (e) {
-          log(`  agenda ${uid} "${term}" → ${e.message}`);
-          break;
-        }
-        for (const ev of data.events ?? []) {
-          if (seen.has(`${uid}/${ev.uid}`)) continue;
-          seen.add(`${uid}/${ev.uid}`);
-          const title = tr(ev.title);
-          const desc = tr(ev.longDescription) ?? tr(ev.description) ?? '';
-          const keywords = [].concat(tr(ev.keywords) ?? []).join(' ');
-          if (!isRelevant(`${title} ${desc} ${keywords}`)) continue;
-          const loc = ev.location ?? {};
-          for (const t of ev.timings?.length ? ev.timings : [{ begin: ev.firstTiming?.begin, end: ev.lastTiming?.end }]) {
-            raws.push({
-              title,
-              description: tr(ev.description) ?? desc,
-              start: t.begin,
-              end: t.end,
-              address: loc.address,
-              postcode: loc.postalCode,
-              city: loc.city,
-              lat: loc.latitude,
-              lon: loc.longitude,
-              url: `https://openagenda.com/agendas/${uid}/events/${ev.slug ?? ev.uid}`,
-            });
-            n++;
-          }
-        }
-        if (!data.after || !(data.events ?? []).length) break;
-        after = data.after;
+    let after = null;
+    for (let page = 0; page < (source.maxPages ?? 10); page++) {
+      const url = new URL(`${API}/agendas/${uid}/events`);
+      url.searchParams.set('key', key);
+      url.searchParams.set('size', '100');
+      url.searchParams.append('relative[]', 'current');
+      url.searchParams.append('relative[]', 'upcoming');
+      url.searchParams.set('detailed', '1');
+      if (after) after.forEach((a) => url.searchParams.append('after[]', a));
+      let data;
+      try {
+        data = await fetchText(url.href, { json: true, checkRobots: false, delayMs: 300 });
+      } catch (e) {
+        log(`  agenda ${uid} → ${e.message}`);
+        break;
       }
+      for (const ev of data.events ?? []) {
+        if (seen.has(ev.uid)) continue;
+        seen.add(ev.uid);
+        const dept = deptFromPostcode(ev.location?.postalCode);
+        if (dept && !departments.includes(dept)) continue;
+        const license = `${ev.rights?.license?.id ?? ''} ${ev.rights?.license?.name ?? ''}`;
+        if (!OPEN_LICENSE.test(license)) {
+          closed++;
+          continue;
+        }
+        raws.push(mapEvent(ev, uid));
+        n++;
+      }
+      if (!data.after || !(data.events ?? []).length) break;
+      after = data.after;
     }
-    if (n) log(`  agenda ${uid} → ${n} événement(s) pertinent(s)`);
+    if (n) log(`  agenda ${uid} → ${n} événement(s) dans la zone`);
   }
+  if (closed) log(`  ${closed} événement(s) écarté(s) : licence non ouverte`);
   return raws;
 }

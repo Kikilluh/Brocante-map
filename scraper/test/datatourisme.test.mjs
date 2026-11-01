@@ -31,6 +31,31 @@ test('objet au format API sans préfixes, plusieurs dates', () => {
   const items = listOf(data);
   assert.equal(items.length, 2);
   const raws = items.flatMap(mapNode);
-  assert.equal(raws.length, 2);
-  assert.equal(raws[1].start, '2026-12-06');
+  assert.equal(raws.length, 1);
+  assert.equal(raws[0].occurrences.length, 2);
+  assert.equal(raws[0].occurrences[1].start, '2026-12-06');
+});
+
+test('API v1 : prix, public, jauge, dates multiples', () => {
+  const n = {
+    uuid: 'x', type: ['PointOfInterest', 'EntertainmentAndEvent', 'MusicEvent', 'Concert'],
+    label: { '@fr': 'Concert du soir' },
+    isLocatedAt: [{ address: [{ postalCode: '37000', addressLocality: 'Tours', streetAddress: ['Place Plumereau'] }], geo: { latitude: 47.39, longitude: 0.68 } }],
+    takesPlaceAt: [{ startDate: '2026-11-20', endDate: '2026-11-20', startTime: '20:30:00' }, { startDate: '2026-11-21', endDate: '2026-11-21' }],
+    offers: [{ priceSpecification: [{ minPrice: 8, maxPrice: 15, priceCurrency: 'EUR' }] }],
+    hasClientTarget: [{ requiredMinAge: 12 }],
+    allowedPersons: 150,
+    hasBeenCreatedBy: { legalName: 'Office de tourisme Tours Val de Loire' },
+  };
+  const [raw] = mapNode(n);
+  const ev = makeEvent(raw, 'datatourisme');
+  assert.equal(ev.category, 'concert');
+  assert.equal(ev.priceMin, 8);
+  assert.equal(ev.priceMax, 15);
+  assert.equal(ev.free, false);
+  assert.equal(ev.ageMin, 12);
+  assert.equal(ev.capacity, 150);
+  assert.equal(ev.occurrences.length, 2);
+  assert.equal(ev.hours, '20:30');
+  assert.equal(ev.credit, 'Office de tourisme Tours Val de Loire');
 });
