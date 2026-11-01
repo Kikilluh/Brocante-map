@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Collecte des brocantes / vide-greniers depuis toutes les sources configurées
-// → public/data/events.json (consommé par la carte).
+// → public/data/<département>/events.json + public/data/index.json (consommés par la carte).
 //
 // Usage : node scraper/index.mjs [--only=source-id] [--dept=37,41]
 
@@ -12,6 +12,7 @@ import { makeEvent } from './lib/normalize.mjs';
 import { createGeocoder } from './lib/geocode.mjs';
 import { dedupe } from './lib/dedupe.mjs';
 import { createVenueFinder } from './lib/venues.mjs';
+import { readPrevious, writeSplit, keepMissing } from './lib/store.mjs';
 import * as structuredHtml from './sources/structured-html.mjs';
 import * as datatourisme from './sources/datatourisme.mjs';
 import * as openagenda from './sources/openagenda.mjs';
@@ -20,7 +21,6 @@ import * as ticketmaster from './sources/ticketmaster.mjs';
 
 const ADAPTERS = { 'structured-html': structuredHtml, datatourisme, openagenda, manual, ticketmaster };
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const OUT = join(ROOT, '..', 'public', 'data', 'events.json');
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => a.replace(/^--/, '').split('=')));
 const config = JSON.parse(await readFile(join(ROOT, 'config.json'), 'utf8'));
@@ -30,12 +30,7 @@ configureHttp({ delayMs: config.requestDelayMs, userAgent: config.userAgent });
 const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
 const horizon = new Date(Date.now() + config.horizonDays * 864e5).toISOString().slice(0, 10);
 
-let previous = { events: [] };
-try {
-  previous = JSON.parse(await readFile(OUT, 'utf8'));
-} catch {
-  /* premier lancement */
-}
+const previous = await readPrevious('events');
 
 const geocoder = await createGeocoder(join(ROOT, 'cache', 'geocode.json'));
 const collected = [];
@@ -117,14 +112,10 @@ const events = dedupe(inScope)
   .sort((a, b) => a.start.localeCompare(b.start) || (a.city ?? '').localeCompare(b.city ?? ''))
   .map(compact);
 
-// Si aucune source n'a répondu, on conserve les données précédentes encore à venir plutôt que d'afficher une carte vide.
-const anyOk = Object.values(report).some((r) => r.ok && r.count > 0);
-const finalEvents = anyOk ? events : (previous.events ?? []).filter((e) => e.end >= today);
-if (!anyOk) console.warn('Aucune source exploitable : conservation des données précédentes.');
+// Filet de sécurité par source et par département (voir lib/store.mjs)
+keepMissing(events, previous, { departments, stillValid: (e) => e.end >= today, log: console.warn });
+events.sort((a, b) => a.start.localeCompare(b.start) || (a.city ?? '').localeCompare(b.city ?? ''));
 
-await mkdir(dirname(OUT), { recursive: true });
-await writeFile(
-  OUT,
-  JSON.stringify({ generatedAt: new Date().toISOString(), departments, sources: report, events: finalEvents }, null, 1),
-);
-console.log(`\n${finalEvents.length} événements écrits dans ${OUT}`);
+await writeSplit('events', events, { departments, all: config.departments, sources: report });
+const perDept = departments.map((d) => `${d}: ${events.filter((e) => e.dept === d).length}`).join(', ');
+console.log(`\n${events.length} événements écrits (${perDept})`);

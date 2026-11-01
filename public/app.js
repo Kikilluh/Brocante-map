@@ -133,6 +133,7 @@ function readHash() {
   const g = h.get('g') && decodeGroup(h.get('g'));
   if (g) state.group = { ...NEW_GROUP(), ...g, set: true };
   state.selected = h.get('e') ? { type: 'events', id: h.get('e') } : h.get('l') ? { type: 'places', id: h.get('l') } : null;
+  if (state.selected && h.get('d')) state.selected.dept = h.get('d');
   if (state.preset) [state.from, state.to] = presetRange(state.preset);
 }
 function writeHash() {
@@ -145,6 +146,7 @@ function writeHash() {
   if (state.mode === 'places') h.set('m', 'lieux');
   if (state.group.set) h.set('g', encodeGroup(state.group));
   if (state.selected) h.set(state.selected.type === 'events' ? 'e' : 'l', state.selected.id);
+  if (state.selected?.dept) h.set('d', state.selected.dept);
   history.replaceState(null, '', `#${h}`);
 }
 
@@ -332,7 +334,7 @@ function renderList() {
   }
 }
 let moveTimer;
-map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(renderList, 120); });
+map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { renderList(); ensureData(); }, 120); });
 
 function eventItem(ev) {
   const facts = [priceLabel(ev), ageLabel(ev), ev._dist != null ? km(ev._dist) : ''].filter(Boolean).join(' · ');
@@ -463,7 +465,7 @@ function showOnMap(id) {
 function select(type, id, { fromMap = false, open = false } = {}) {
   const item = (type === 'events' ? events : places).find((x) => x.id === id);
   if (!item) return;
-  state.selected = { type, id };
+  state.selected = { type, id, dept: item.dept };
   if (state.mode !== type) { state.mode = type; render(); }
   item._dist = distFrom(refPoint(), item);
   const d = $('detail');
@@ -627,6 +629,7 @@ document.addEventListener('click', (e) => {
     if (t.closest('#groupDialog')) { syncControls(); return; }
   } else if (t.dataset.mode) { state.mode = t.dataset.mode; unselect(); }
   render();
+  if (t.dataset.mode) ensureData();
 });
 $('allTypes').addEventListener('click', () => {
   if (state.mode === 'places') state.kinds = state.kinds.size === KALL.length ? new Set() : new Set(KALL);
@@ -802,45 +805,103 @@ $('addr').addEventListener('input', () => {
   }, 250);
 });
 
-// ---------- Données ----------
+// ---------- Données (un fichier par département, chargé quand il devient visible) ----------
 async function getJson(url) {
   try { const r = await fetch(url, { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; }
 }
 const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'brocante', bourse: 'brocante' };
+function prepEvent(e) {
+  let category = e.category ?? OLD_TYPES[e.type] ?? e.type ?? 'autre';
+  if (!(category in CATS)) category = 'autre';
+  const occurrences = e.dates?.length
+    ? e.dates.map(([start, end, hours]) => ({ start, end: end ?? start, hours: hours ?? null }))
+    : [{ start: e.start, end: e.end ?? e.start, hours: e.hours ?? null }];
+  return { ...e, category, occurrences, sources: e.sources ?? [], _search: norm(`${e.title} ${e.venue ?? ''} ${e.organizer ?? ''} ${e.city ?? ''} ${e.postcode ?? ''} ${e.description ?? ''} ${CATS[category]}`) };
+}
+function prepPlace(p) {
+  return { ...p, _search: norm(`${p.name} ${p.city ?? ''} ${p.postcode ?? ''} ${p.description ?? ''} ${p.discipline ?? ''} ${KINDS[p.kind]}`) };
+}
+function addItems(kind, list) {
+  const ok = list.filter((x) => x.lat != null && x.lon != null && (kind === 'events' || x.kind in KINDS));
+  if (kind === 'events') events.push(...ok.map(prepEvent)); else places.push(...ok.map(prepPlace));
+}
+
+let dataIndex = null;
+const loaded = { events: new Set(), places: new Set() };
+const pending = new Map();
+/** Charge (une seule fois) les données d'un département. Renvoie true si de nouvelles données sont arrivées. */
+function loadDept(kind, d) {
+  if (loaded[kind].has(d)) return Promise.resolve(false);
+  const key = `${kind}/${d}`;
+  if (!pending.has(key)) {
+    pending.set(key, getJson(`data/${d}/${kind}.json`).then((data) => {
+      addItems(kind, data?.[kind] ?? []);
+      loaded[kind].add(d);
+      return true;
+    }));
+  }
+  return pending.get(key);
+}
+const deptBounds = (i) => L.latLngBounds([i.bbox[0], i.bbox[1]], [i.bbox[2], i.bbox[3]]);
+/** Départements qui recoupent la carte (avec une marge) ou le rayon du groupe. */
+function wantedDepts() {
+  if (!dataIndex) return [];
+  const view = map.getBounds().pad(0.25);
+  const g = state.group;
+  const zone = g.set && g.center && g.radius ? L.latLng(g.center.lat, g.center.lon).toBounds(g.radius * 2000) : null;
+  return Object.entries(dataIndex.depts ?? {})
+    .filter(([, i]) => i.bbox && (deptBounds(i).intersects(view) || (zone && deptBounds(i).intersects(zone))))
+    .map(([d]) => d);
+}
+async function ensureData() {
+  const kind = state.mode;
+  const fresh = await Promise.all(wantedDepts().map((d) => loadDept(kind, d)));
+  if (fresh.some(Boolean)) render();
+}
 
 (async () => {
   readHash();
   $('q').value = state.q;
-  let data = (await getJson('data/events.json')) ?? (await getJson('data/brocantes.json'));
-  if (!data?.events?.length) { data = await getJson('data/demo.json'); $('demoBanner').hidden = !data; }
-  data ??= { events: [], departments: ['37'] };
-  events = data.events.filter((e) => e.lat != null && e.lon != null).map((e) => {
-    let category = e.category ?? OLD_TYPES[e.type] ?? e.type ?? 'autre';
-    if (!(category in CATS)) category = 'autre';
-    const occurrences = e.dates?.length
-      ? e.dates.map(([start, end, hours]) => ({ start, end: end ?? start, hours: hours ?? null }))
-      : [{ start: e.start, end: e.end ?? e.start, hours: e.hours ?? null }];
-    return { ...e, category, occurrences, sources: e.sources ?? [], _search: norm(`${e.title} ${e.venue ?? ''} ${e.organizer ?? ''} ${e.city ?? ''} ${e.postcode ?? ''} ${e.description ?? ''} ${CATS[category]}`) };
-  });
-  const pd = await getJson('data/places.json');
-  places = (pd?.places ?? []).filter((p) => p.lat != null && p.kind in KINDS).map((p) => ({
-    ...p, _search: norm(`${p.name} ${p.city ?? ''} ${p.postcode ?? ''} ${p.description ?? ''} ${p.discipline ?? ''} ${KINDS[p.kind]}`),
-  }));
-  if (!places.length) document.querySelector('[data-mode="places"]').hidden = true;
-
-  const depts = data.departments ?? [];
-  $('zone').textContent = depts.map((d) => DEPT_NAMES[d] ?? `Département ${d}`).join(' · ');
-  $('meta').innerHTML = `${data.generatedAt ? `Mis à jour le ${new Date(data.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. ` : ''}`
+  dataIndex = await getJson('data/index.json');
+  let meta = dataIndex;
+  if (!dataIndex?.depts) {
+    // Ancien format (fichier unique) ou données de démonstration
+    dataIndex = null;
+    let data = await getJson('data/events.json');
+    if (!data?.events?.length) { data = await getJson('data/demo.json'); $('demoBanner').hidden = !data; }
+    data ??= { events: [], departments: [] };
+    addItems('events', data.events);
+    addItems('places', (await getJson('data/places.json'))?.places ?? []);
+    meta = data;
+  }
+  const deptInfo = dataIndex?.depts ?? {};
+  const totalPlaces = dataIndex ? Object.values(deptInfo).reduce((n, i) => n + (i.places ?? 0), 0) : places.length;
+  if (!totalPlaces) document.querySelector('[data-mode="places"]').hidden = true;
+  const codes = meta?.departments ?? [];
+  $('zone').textContent = codes.length > 3 ? `${codes.length} départements` : codes.map((d) => deptInfo[d]?.name ?? DEPT_NAMES[d] ?? `Département ${d}`).join(' · ');
+  $('meta').innerHTML = `${meta?.generatedAt ? `Mis à jour le ${new Date(meta.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. ` : ''}`
     + 'Données : DATAtourisme et OpenAgenda (Licence Ouverte), Ticketmaster, ministère de la Culture, © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). '
     + '<a href="mentions-legales.html">Mentions légales et confidentialité</a> · <a href="#" data-install>📲 Installer l\'appli</a>';
 
-  drawCenter();
-  render();
-  if (state.selected) { const { id } = state.selected; state.selected = null; setTimeout(() => showOnMap(id), 300); }
+  // Vue de départ : élément partagé, zone du groupe, sinon toute la zone couverte
+  const sel = state.selected;
+  if (sel && dataIndex) {
+    if (deptInfo[sel.dept]) await loadDept(sel.type, sel.dept);
+    // lien sans département (ancien format) : on cherche partout
+    if (!(sel.type === 'events' ? events : places).some((x) => x.id === sel.id)) await Promise.all(Object.keys(deptInfo).map((d) => loadDept(sel.type, d)));
+  }
+  const all = Object.values(deptInfo).filter((i) => i.bbox);
+  if (sel) state.mode = sel.type;
   else if (state.group.set && state.group.center) map.setView([state.group.center.lat, state.group.center.lon], 10);
+  else if (all.length) map.fitBounds(all.map(deptBounds).reduce((a, b) => a.extend(b)), { maxZoom: 11 });
   else if (events.length) map.fitBounds(L.latLngBounds(events.map((e) => [e.lat, e.lon])).pad(0.05), { maxZoom: 11 });
+
+  drawCenter();
+  await ensureData();
+  render();
+  if (sel) { state.selected = null; setTimeout(() => showOnMap(sel.id), 300); }
   // Par défaut : carte centrée sur la position de l'utilisateur, s'il l'autorise
-  if (!state.selected && !(state.group.set && state.group.center)) {
+  if (!sel && !(state.group.set && state.group.center)) {
     locateMe((me) => { map.setView([me.lat, me.lon], 11); render(); }, true);
   }
 })();

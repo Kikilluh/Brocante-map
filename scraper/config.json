@@ -72,8 +72,8 @@
         88603017,
         13268936
       ],
-      "discover": [],
-      "maxDiscovered": 40,
+      "discover": ["Orléans", "Loiret", "Montargis", "Gien", "Pithiviers", "Nièvre", "Nevers", "Cosne-Cours-sur-Loire", "Clamecy", "Morvan"],
+      "maxDiscovered": 30,
       "maxPages": 10
     },
     {

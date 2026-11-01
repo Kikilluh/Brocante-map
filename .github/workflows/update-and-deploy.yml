@@ -9,7 +9,7 @@ on:
     paths: ['public/**', 'scraper/**', 'data/**', 'firebase.json', '.github/workflows/**']
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: update-and-deploy
@@ -31,6 +31,18 @@ jobs:
       - name: Tests du collecteur
         run: npm test
 
+      # Caches de géocodage et d'OpenStreetMap, conservés d'une collecte à l'autre (hors Git)
+      - name: Caches de la collecte
+        uses: actions/cache@v4
+        with:
+          path: scraper/cache
+          key: scraper-cache-${{ github.run_id }}
+          restore-keys: scraper-cache-
+
+      # Les données ne sont plus dans Git : on repart de celles en ligne (filet de sécurité si une source tombe)
+      - name: Données actuellement en ligne
+        run: node scraper/tools/fetch-live.mjs
+
       - name: Collecte des événements
         run: npm run scrape
         env:
@@ -38,22 +50,6 @@ jobs:
           DATATOURISME_FEED_URL: ${{ secrets.DATATOURISME_FEED_URL }}
           OPENAGENDA_KEY: ${{ secrets.OPENAGENDA_KEY }}
           TICKETMASTER_KEY: ${{ secrets.TICKETMASTER_KEY }}
-
-      - name: Enregistrer les nouvelles données
-        run: |
-          git config user.name "brocante-map-bot"
-          git config user.email "brocante-map-bot@users.noreply.github.com"
-          git add public/data scraper/cache
-          if git diff --cached --quiet; then
-            echo "Pas de changement"
-          else
-            git commit -m "Mise à jour des brocantes ($(date -u +%F))"
-            # main a pu avancer pendant la collecte : on se replace dessus avant d'envoyer
-            for i in 1 2 3; do
-              git pull --rebase -X theirs origin "${GITHUB_REF_NAME}" && git push && break
-              sleep 5
-            done
-          fi
 
       - name: Bibliothèques de carte (Leaflet) intégrées au site
         run: |
@@ -74,7 +70,7 @@ jobs:
         if: env.HAS_FIREBASE == 'true'
         run: |
           sleep 10
-          for f in "" app.js style.css sw.js manifest.webmanifest mentions-legales.html icons/icon-192.png vendor/leaflet/leaflet.js vendor/markercluster/leaflet.markercluster.js data/events.json data/places.json; do
+          for f in "" app.js style.css sw.js manifest.webmanifest mentions-legales.html icons/icon-192.png vendor/leaflet/leaflet.js vendor/markercluster/leaflet.markercluster.js data/index.json data/37/events.json data/37/places.json; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://brocante-map.web.app/$f")
             echo "/$f -> $code"
             [ "$code" = "200" ] || exit 1

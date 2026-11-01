@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Couche « À visiter » : lieux sans date (musées, châteaux, jardins, sites naturels), itinéraires de
-// randonnée / vélo, et festivals récurrents. → public/data/places.json
+// randonnée / vélo, et festivals récurrents. → public/data/<département>/places.json
 //
 // Sources (toutes en données ouvertes) :
 //  - DATAtourisme /placeOfInterest et /tour (Licence Ouverte) — secret DATATOURISME_API_KEY
@@ -15,10 +15,10 @@ import { createGeocoder } from './lib/geocode.mjs';
 import { cleanText, deptFromPostcode, slug } from './lib/normalize.mjs';
 import { splitVenue } from './lib/venues.mjs';
 import { fr, get, listOf, readImage } from './sources/datatourisme.mjs';
-import { loadRoutes } from './lib/routes.mjs';
+import { loadRoutes, BBOX } from './lib/routes.mjs';
+import { readPrevious, writeSplit, keepMissing, deptByBbox } from './lib/store.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const OUT = join(ROOT, '..', 'public', 'data', 'places.json');
 const config = JSON.parse(await readFile(join(ROOT, 'config.json'), 'utf8'));
 const departments = config.departments;
 configureHttp({ delayMs: config.requestDelayMs, userAgent: config.userAgent });
@@ -286,6 +286,7 @@ async function osmRoutes() {
         ...r,
         city: c?.city ?? null,
         postcode: c?.postcode ?? null,
+        dept: c?.postcode ? deptFromPostcode(c.postcode) : dept,
         source: 'osm-itineraires',
         sourceUrl: `https://www.openstreetmap.org/relation/${r.osmId}`,
         credit: '© contributeurs OpenStreetMap',
@@ -352,19 +353,30 @@ for (const p of places) {
   kept.push({ ...p, sources: [{ id: p.source, url: p.sourceUrl ?? null }] });
 }
 
-const out = kept.map((p, i) => {
-  const o = { id: `${p.kind}-${slug(p.name).slice(0, 50)}-${i}` };
+// Identifiant stable d'un jour à l'autre (utile pour les favoris) : type + nom + position arrondie
+const usedIds = new Set();
+const stableId = (p) => {
+  const base = `${p.kind}-${slug(p.name).slice(0, 50)}-${Math.round(p.lat * 1000)}-${Math.round(p.lon * 1000)}`;
+  let id = base;
+  for (let n = 2; usedIds.has(id); n++) id = `${base}-${n}`;
+  usedIds.add(id);
+  return id;
+};
+const out = kept.map((p) => {
+  const o = { id: stableId(p), dept: p.dept || deptByBbox(p, BBOX) || null };
   for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
     if (p[k] != null && p[k] !== '' && p[k] !== false) o[k] = p[k];
   }
   return o;
 });
 
-const counts = Object.fromEntries([...new Set(out.map((p) => p.kind))].map((k) => [k, out.filter((p) => p.kind === k).length]));
-log(`\n${out.length} lieux écrits dans ${OUT} : ${JSON.stringify(counts)}`);
-if (!out.length) {
-  log('Aucun lieu : fichier précédent conservé.');
-} else {
-  await mkdir(dirname(OUT), { recursive: true });
-  await writeFile(OUT, JSON.stringify({ generatedAt: new Date().toISOString(), departments, sources: report, places: out }));
-}
+// Un lieu sans département identifiable est écarté
+const located = out.filter((p) => departments.includes(p.dept));
+// Filet de sécurité par source et par département (voir lib/store.mjs)
+keepMissing(located, await readPrevious('places'), { departments, log });
+
+const counts = Object.fromEntries([...new Set(located.map((p) => p.kind))].map((k) => [k, located.filter((p) => p.kind === k).length]));
+const perDept = departments.map((d) => `${d}: ${located.filter((p) => p.dept === d).length}`).join(', ');
+log(`\n${located.length} lieux écrits (${perDept}) : ${JSON.stringify(counts)}`);
+if (!located.length) log('Aucun lieu : fichiers précédents conservés.');
+else await writeSplit('places', located, { departments, sources: report });

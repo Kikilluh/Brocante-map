@@ -1,5 +1,5 @@
 // Service worker : l'application s'ouvre même sans réseau (dernières données connues).
-const VERSION = 'v10';
+const VERSION = 'v11';
 const SHELL = [
   './', 'index.html', 'app.js', 'style.css', 'manifest.webmanifest', 'mentions-legales.html',
   'icons/icon.svg', 'icons/icon-192.png',

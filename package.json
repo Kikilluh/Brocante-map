@@ -8,7 +8,7 @@
   },
   "scripts": {
     "scrape": "node scraper/index.mjs && node scraper/places.mjs",
-    "test": "node --check public/app.js && node --check scraper/places.mjs && node --test scraper/test/*.test.mjs",
+    "test": "node --check public/app.js && node --check scraper/places.mjs && node --check scraper/index.mjs && node --check scraper/tools/fetch-live.mjs && node --test scraper/test/*.test.mjs",
     "demo": "node scraper/tools/make-demo.mjs",
     "serve": "bash scripts/vendor.sh && npx --yes serve public -l 5000",
     "deploy": "npx --yes firebase-tools deploy --only hosting",

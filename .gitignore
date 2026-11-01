@@ -3,3 +3,6 @@ node_modules/
 *.log
 .DS_Store
 public/vendor/
+# Données collectées : publiées sur Firebase, pas stockées dans Git
+public/data/*
+!public/data/demo.json
