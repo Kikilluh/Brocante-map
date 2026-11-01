@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-01T13:16:32.598Z",
+ "generatedAt": "2026-11-01T13:20:26.322Z",
  "departments": [
   "37"
  ],
@@ -3341,7 +3341,7 @@
   },
   {
    "title": "Raconte-moi une histoire",
-   "category": "autre",
+   "category": "spectacle",
    "start": "2026-11-04",
    "end": "2026-11-04",
    "hours": "16:30–17:30",
@@ -3364,7 +3364,7 @@
   },
   {
    "title": "Du jardin à l’horizon",
-   "category": "exposition",
+   "category": "rando",
    "start": "2026-11-04",
    "end": "2026-11-11",
    "hours": "10:00–18:30",
@@ -4091,7 +4091,7 @@
   },
   {
    "title": "Match d'impro amateurs",
-   "category": "sport",
+   "category": "spectacle",
    "start": "2026-11-07",
    "end": "2026-11-07",
    "hours": "20:30–22:45",
@@ -4255,7 +4255,7 @@
   },
   {
    "title": "Escape game en famille",
-   "category": "spectacle",
+   "category": "atelier",
    "start": "2026-11-07",
    "end": "2026-11-07",
    "hours": "14:00–16:00",
@@ -4508,7 +4508,7 @@
   },
   {
    "title": "Testez vos connaissances sur le code de la route",
-   "category": "autre",
+   "category": "atelier",
    "start": "2026-11-07",
    "end": "2026-11-07",
    "hours": "14:30–16:00",
@@ -4923,7 +4923,7 @@
   },
   {
    "title": "CINE-OFF - séance de 20h : LE CORSET",
-   "category": "autre",
+   "category": "spectacle",
    "start": "2026-11-10",
    "end": "2026-11-10",
    "hours": "20:00–23:00",
@@ -5000,7 +5000,7 @@
   },
   {
    "title": "Apéro paysan à Saint-Ouen-Les-Vignes",
-   "category": "autre",
+   "category": "marche",
    "start": "2026-11-10",
    "end": "2026-11-10",
    "hours": "18:30–19:30",
@@ -5196,7 +5196,7 @@
   },
   {
    "title": "Vincent Dubois “Ordinaire” (Maria Bodin’s) Apéro de Gysèle",
-   "category": "concert",
+   "category": "marche",
    "start": "2026-11-12",
    "end": "2026-11-12",
    "hours": "20:00–23:30",
@@ -5273,7 +5273,7 @@
   },
   {
    "title": "Représentations théâtrales",
-   "category": "autre",
+   "category": "spectacle",
    "start": "2026-11-13",
    "end": "2026-11-15",
    "city": "Descartes",
@@ -5696,7 +5696,7 @@
   },
   {
    "title": "Patrimoine culinaire - Quand nos assiettes racontent l'histoire...",
-   "category": "visite",
+   "category": "spectacle",
    "start": "2026-11-14",
    "end": "2026-11-14",
    "city": "Neuil",
@@ -6131,7 +6131,7 @@
   },
   {
    "title": "Exposition, animations enfants & conférence \"Flânerie autour de la mycothérapie\"",
-   "category": "exposition",
+   "category": "atelier",
    "start": "2026-11-15",
    "end": "2026-11-15",
    "city": "Savigny-en-Véron",
@@ -6152,7 +6152,7 @@
   },
   {
    "title": "Récolte de champignons dans le Véron",
-   "category": "autre",
+   "category": "rando",
    "start": "2026-11-15",
    "end": "2026-11-15",
    "city": "Savigny-en-Véron",
@@ -6317,7 +6317,7 @@
   },
   {
    "title": "Match d'impro Tours (LIT) / Québec (LNI)",
-   "category": "sport",
+   "category": "spectacle",
    "start": "2026-11-17",
    "end": "2026-11-17",
    "hours": "20:00",
@@ -6413,7 +6413,7 @@
   },
   {
    "title": "Animations au jardin de la Régie : animation boules de graines pour oiseaux",
-   "category": "autre",
+   "category": "atelier",
    "start": "2026-11-18",
    "end": "2026-11-18",
    "hours": "14:00–16:00",
@@ -6557,7 +6557,7 @@
   },
   {
    "title": "Après-midi jeux de société",
-   "category": "autre",
+   "category": "atelier",
    "start": "2026-11-18",
    "end": "2026-12-16",
    "dates": [
@@ -7288,7 +7288,7 @@
   },
   {
    "title": "Animation Zéro Déchet",
-   "category": "autre",
+   "category": "atelier",
    "start": "2026-11-21",
    "end": "2026-11-21",
    "dates": [
@@ -7530,7 +7530,7 @@
   },
   {
    "title": "Portes ouvertes au Domaine de l'Asselière",
-   "category": "marche",
+   "category": "atelier",
    "start": "2026-11-22",
    "end": "2026-11-22",
    "hours": "10:00–19:00",
@@ -8231,7 +8231,7 @@
   },
   {
    "title": "Soirée jeux de société d'antan",
-   "category": "fete",
+   "category": "atelier",
    "start": "2026-11-27",
    "end": "2026-11-27",
    "hours": "19:30–22:00",
@@ -9314,7 +9314,7 @@
   },
   {
    "title": "Noël au pays des châteaux I Animation kamishibaï",
-   "category": "visite",
+   "category": "atelier",
    "start": "2026-12-02",
    "end": "2027-01-03",
    "dates": [
@@ -9544,7 +9544,7 @@
   },
   {
    "title": "Téléthon",
-   "category": "concert",
+   "category": "atelier",
    "start": "2026-12-04",
    "end": "2026-12-05",
    "dates": [
@@ -10051,7 +10051,7 @@
   },
   {
    "title": "Téléthon",
-   "category": "rando",
+   "category": "atelier",
    "start": "2026-12-05",
    "end": "2026-12-06",
    "hours": "10:00–23:59",
@@ -11553,7 +11553,7 @@
   },
   {
    "title": "Démonstrations Faire du feu comme à la Préhistoire",
-   "category": "exposition",
+   "category": "atelier",
    "start": "2026-12-19",
    "end": "2026-12-31",
    "hours": "14:30–15:00",
@@ -12224,7 +12224,7 @@
   },
   {
    "title": "Escape game « l’Alchimiste »",
-   "category": "concert",
+   "category": "atelier",
    "start": "2026-12-26",
    "end": "2026-12-31",
    "city": "Amboise",
@@ -12314,7 +12314,7 @@
   },
   {
    "title": "Ciné vacances : « Il faut sauver Noël »",
-   "category": "fete",
+   "category": "spectacle",
    "start": "2026-12-29",
    "end": "2026-12-29",
    "hours": "15:00–16:00",
@@ -12415,7 +12415,7 @@
   },
   {
    "title": "Nouveau jeu de plateau \"WarGame\" néolithique",
-   "category": "autre",
+   "category": "atelier",
    "start": "2026-12-30",
    "end": "2026-12-30",
    "hours": "11:30–16:30",
@@ -12521,7 +12521,7 @@
   },
   {
    "title": "Réveillon de la Saint-Sylvestre",
-   "category": "concert",
+   "category": "atelier",
    "start": "2026-12-31",
    "end": "2026-12-31",
    "city": "Parçay-sur-Vienne",
@@ -12545,7 +12545,7 @@
   },
   {
    "title": "Réveillon de la Saint-Sylvestre",
-   "category": "concert",
+   "category": "atelier",
    "start": "2026-12-31",
    "end": "2026-12-31",
    "city": "Sazilly",
@@ -12890,7 +12890,7 @@
   },
   {
    "title": "Escape game",
-   "category": "autre",
+   "category": "atelier",
    "start": "2027-01-16",
    "end": "2027-01-16",
    "hours": "10:00–19:00",
