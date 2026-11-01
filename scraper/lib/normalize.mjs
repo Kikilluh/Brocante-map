@@ -3,12 +3,12 @@
 const TYPES = [
   ['vide-grenier', /vide[\s-]?greniers?|vide[\s-]?maisons?|vide[\s-]?dressing/i],
   ['braderie', /braderie/i],
-  ['puces', /puces|chine/i],
+  ['puces', /\bpuces\b|\bchin(e|er|eurs?)\b/i],
   ['bourse', /bourse|troc/i],
   ['brocante', /brocante|antiquit/i],
 ];
 
-const RELEVANT = /brocante|vide[\s-]?grenier|vide[\s-]?maison|braderie|puces|bric[\s-]?[àa][\s-]?brac|antiquit|bourse aux|troc|vide[\s-]?dressing|chine/i;
+const RELEVANT = /brocante|vide[\s-]?grenier|vide[\s-]?maison|braderie|\bpuces\b|bric[\s-]?[àa][\s-]?brac|antiquit|bourse aux|\btroc\b|vide[\s-]?dressing|\bchin(e|er|eurs?)\b/i;
 
 export function guessType(text = '') {
   for (const [type, re] of TYPES) if (re.test(text)) return type;

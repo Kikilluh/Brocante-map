@@ -68,6 +68,8 @@ for (const source of config.sources) {
 const inScope = [];
 for (const ev of collected) {
   if (ev.end < today || ev.start > horizon) continue;
+  // Marchés permanents / récurrents décrits par une très longue période : ce ne sont pas des brocantes ponctuelles.
+  if ((Date.parse(ev.end) - Date.parse(ev.start)) / 864e5 > (config.maxDurationDays ?? 14)) continue;
   await geocoder.geocode(ev);
   if (ev.lat == null || ev.lon == null) continue;
   if (!ev.dept || !departments.includes(ev.dept)) continue;
