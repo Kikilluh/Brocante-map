@@ -16,8 +16,9 @@ import * as structuredHtml from './sources/structured-html.mjs';
 import * as datatourisme from './sources/datatourisme.mjs';
 import * as openagenda from './sources/openagenda.mjs';
 import * as manual from './sources/manual.mjs';
+import * as ticketmaster from './sources/ticketmaster.mjs';
 
-const ADAPTERS = { 'structured-html': structuredHtml, datatourisme, openagenda, manual };
+const ADAPTERS = { 'structured-html': structuredHtml, datatourisme, openagenda, manual, ticketmaster };
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const OUT = join(ROOT, '..', 'public', 'data', 'events.json');
 

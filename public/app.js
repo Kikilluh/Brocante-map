@@ -15,7 +15,17 @@ const CATS = {
 };
 const ALL = Object.keys(CATS);
 const DEPT_NAMES = { '37': 'Indre-et-Loire' };
-const SOURCE_NAMES = { datatourisme: 'DATAtourisme', openagenda: 'OpenAgenda', manual: 'ajout manuel' };
+const SOURCE_NAMES = {
+  datatourisme: 'DATAtourisme', openagenda: 'OpenAgenda', manual: 'ajout manuel', ticketmaster: 'Ticketmaster',
+  museofile: 'Musées de France', festivals: 'Liste des festivals', 'datatourisme-lieux': 'DATAtourisme (lieux)',
+  'datatourisme-itineraires': 'DATAtourisme (itinéraires)',
+};
+const KINDS = {
+  musee: 'Musées', chateau: 'Châteaux', patrimoine: 'Patrimoine', jardin: 'Parcs & jardins', nature: 'Nature',
+  rando: 'Randonnées', velo: 'Vélo', loisir: 'Loisirs', festival: 'Festivals',
+};
+const KALL = Object.keys(KINDS);
+const kcolor = (k) => css(`--k-${k}`) || css('--accent');
 
 const $ = (id) => document.getElementById(id);
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -77,8 +87,9 @@ function ageLabel(ev) {
 
 // ---------- État ----------
 const DEFAULTS = { preset: '30', people: 1, ageMin: null, ageMax: null, price: 'all', unknown: true, q: '' };
-const state = { from: '', to: '', cats: new Set(ALL), sort: 'date', me: null, ...DEFAULTS };
+const state = { from: '', to: '', cats: new Set(ALL), kinds: new Set(KALL), mode: 'events', sort: 'date', me: null, ...DEFAULTS };
 let events = [];
+let places = [];
 const markers = new Map();
 
 function readHash() {
@@ -93,6 +104,8 @@ function readHash() {
   if (h.get('prix')) state.price = h.get('prix');
   if (h.get('inc') === '0') state.unknown = false;
   if (h.get('q')) state.q = h.get('q');
+  if (h.get('m') === 'lieux') state.mode = 'places';
+  if (h.get('k')) state.kinds = new Set(h.get('k').split(',').filter((t) => t in KINDS));
   if (state.preset) [state.from, state.to] = presetRange(state.preset);
 }
 function writeHash() {
@@ -105,6 +118,8 @@ function writeHash() {
   if (state.price !== 'all') h.set('prix', state.price);
   if (!state.unknown) h.set('inc', '0');
   if (state.q) h.set('q', state.q);
+  if (state.mode === 'places') h.set('m', 'lieux');
+  if (state.kinds.size !== KALL.length) h.set('k', [...state.kinds].join(','));
   history.replaceState(null, '', `#${h}`);
 }
 
@@ -129,6 +144,7 @@ L.control.layers({ 'Plan IGN': planIGN, OpenStreetMap: osm }, null, { position: 
 
 const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45 });
 map.addLayer(cluster);
+const placeCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45 });
 
 const Locate = L.Control.extend({
   options: { position: 'topleft' },
@@ -156,6 +172,68 @@ function icon(cat) {
     html: `<div class="pin" style="background:${color(cat)}"></div>`,
     iconSize: [22, 22], iconAnchor: [11, 22], popupAnchor: [0, -22],
   }));
+}
+
+const picons = {};
+function placeIcon(kind) {
+  return (picons[kind] ??= L.divIcon({
+    className: '',
+    html: `<div class="pin place" style="background:${kcolor(kind)}"></div>`,
+    iconSize: [18, 18], iconAnchor: [9, 9], popupAnchor: [0, -10],
+  }));
+}
+const kbadge = (p) => `<span class="badge" style="background:${kcolor(p.kind)}">${esc(KINDS[p.kind] ?? p.kind)}</span>`;
+
+function placePopup(p) {
+  const route = `https://www.openstreetmap.org/directions?to=${p.lat},${p.lon}`;
+  const facts = [p.distanceKm ? `${String(p.distanceKm).replace('.', ',')} km` : '', p.duration ?? '', p.period ?? '', p.discipline ?? ''].filter(Boolean);
+  const sources = (p.sources ?? []).map((s) => (s.url
+    ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(SOURCE_NAMES[s.id] ?? s.id)}</a>` : esc(SOURCE_NAMES[s.id] ?? s.id))).join(' · ');
+  return `<div class="popup">
+    <h3>${esc(p.name)}</h3>
+    <p>${kbadge(p)}</p>
+    <p class="muted">${esc([p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', '))}</p>
+    ${facts.length ? `<p class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</p>` : ''}
+    ${p.description ? `<p class="muted">${esc(p.description.slice(0, 240))}${p.description.length > 240 ? '…' : ''}</p>` : ''}
+    <div class="links"><a href="${route}" target="_blank" rel="noopener">Itinéraire</a>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">Site</a>` : ''}</div>
+    <p class="muted small">Source : ${sources}${p.credit ? ` · ${esc(p.credit)}` : ''}</p>
+  </div>`;
+}
+
+function renderPlaces() {
+  map.removeLayer(cluster);
+  map.addLayer(placeCluster);
+  const q = norm(state.q.trim());
+  const list = places.filter((p) => state.kinds.has(p.kind) && (!q || p._search.includes(q)));
+  if (state.me) list.sort((a, b) => distanceKm(a) - distanceKm(b));
+  else list.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+  placeCluster.clearLayers();
+  markers.clear();
+  placeCluster.addLayers(list.map((p) => {
+    const m = L.marker([p.lat, p.lon], { icon: placeIcon(p.kind), title: p.name }).bindPopup(() => placePopup(p), { maxWidth: 300 });
+    markers.set(p.id, m);
+    return m;
+  }));
+  const n = list.length;
+  const label = `${n} lieu${n > 1 ? 'x' : ''} à visiter`;
+  $('count').textContent = label;
+  $('countDesk').textContent = label;
+  const ol = $('list');
+  ol.innerHTML = n ? '' : '<li class="empty">Aucun lieu ne correspond.</li>';
+  const frag = document.createDocumentFragment();
+  for (const p of list.slice(0, 500)) {
+    const li = document.createElement('li');
+    const d = distanceKm(p);
+    const facts = [p.distanceKm ? `${String(p.distanceKm).replace('.', ',')} km` : '', p.period ?? ''].filter(Boolean).join(' · ');
+    li.innerHTML = `<button class="item" data-id="${esc(p.id)}">
+      <div class="title">${esc(p.name)}</div>
+      <div class="where">${kbadge(p)} ${esc(p.city ?? '')}${d != null ? ` · ${d.toFixed(0)} km` : ''}${facts ? ` · ${esc(facts)}` : ''}</div>
+    </button>`;
+    frag.append(li);
+  }
+  ol.append(frag);
+  syncControls();
+  writeHash();
 }
 
 function badge(ev) {
@@ -229,6 +307,11 @@ function distanceKm(ev) {
 }
 
 function render() {
+  document.body.className = `mode-${state.mode}`;
+  document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.mode === state.mode)));
+  if (state.mode === 'places') return renderPlaces();
+  map.removeLayer(placeCluster);
+  map.addLayer(cluster);
   const list = filtered();
   if (state.sort === 'distance' && state.me) list.sort((a, b) => distanceKm(a) - distanceKm(b));
 
@@ -275,13 +358,15 @@ function syncControls() {
   $('unknown').checked = state.unknown;
   document.querySelectorAll('[data-preset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.preset === state.preset)));
   document.querySelectorAll('[data-type]').forEach((b) => b.setAttribute('aria-pressed', String(state.cats.has(b.dataset.type))));
-  $('allTypes').textContent = state.cats.size === ALL.length ? 'Tout décocher' : 'Tout cocher';
+  document.querySelectorAll('[data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(state.kinds.has(b.dataset.kind))));
+  const full = state.mode === 'places' ? state.kinds.size === KALL.length : state.cats.size === ALL.length;
+  $('allTypes').textContent = full ? 'Tout décocher' : 'Tout cocher';
 }
 
 function focusEvent(id) {
   const m = markers.get(id);
   if (!m) return;
-  cluster.zoomToShowLayer(m, () => m.openPopup());
+  (state.mode === 'places' ? placeCluster : cluster).zoomToShowLayer(m, () => m.openPopup());
   document.querySelectorAll('.item.active').forEach((x) => x.classList.remove('active'));
   document.querySelector(`.item[data-id="${CSS.escape(id)}"]`)?.classList.add('active');
   if (matchMedia('(max-width: 760px)').matches) togglePanel(false);
@@ -295,6 +380,21 @@ function togglePanel(open) {
 // ---------- UI ----------
 $('types').innerHTML = ALL.map((k) =>
   `<button class="chip type" data-type="${k}"><span class="dot" style="background:var(--c-${k})"></span>${CATS[k]}</button>`).join('');
+
+$('kinds').innerHTML = KALL.map((k) =>
+  `<button class="chip type" data-kind="${k}"><span class="dot" style="background:var(--k-${k})"></span>${KINDS[k]}</button>`).join('');
+document.querySelectorAll('[data-kind]').forEach((b) => b.addEventListener('click', () => {
+  const k = b.dataset.kind;
+  if (state.kinds.size === KALL.length) state.kinds = new Set([k]);
+  else if (state.kinds.has(k)) state.kinds.delete(k);
+  else state.kinds.add(k);
+  if (!state.kinds.size) state.kinds = new Set(KALL);
+  render();
+}));
+document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => {
+  state.mode = b.dataset.mode;
+  render();
+}));
 
 document.querySelectorAll('[data-preset]').forEach((b) => b.addEventListener('click', () => {
   state.preset = b.dataset.preset;
@@ -311,8 +411,11 @@ document.querySelectorAll('[data-type]').forEach((b) => b.addEventListener('clic
   render();
 }));
 $('allTypes').addEventListener('click', () => {
-  state.cats = state.cats.size === ALL.length ? new Set() : new Set(ALL);
-  if (!state.cats.size) state.cats = new Set(['brocante']);
+  if (state.mode === 'places') {
+    state.kinds = state.kinds.size === KALL.length ? new Set(['musee']) : new Set(KALL);
+  } else {
+    state.cats = state.cats.size === ALL.length ? new Set(['brocante']) : new Set(ALL);
+  }
   render();
 });
 for (const id of ['from', 'to']) {
@@ -340,7 +443,7 @@ $('ageMax').addEventListener('change', () => {
 $('price').addEventListener('change', () => { state.price = $('price').value; render(); });
 $('unknown').addEventListener('change', () => { state.unknown = $('unknown').checked; render(); });
 $('reset').addEventListener('click', () => {
-  Object.assign(state, DEFAULTS, { cats: new Set(ALL) });
+  Object.assign(state, DEFAULTS, { cats: new Set(ALL), kinds: new Set(KALL) });
   [state.from, state.to] = presetRange(state.preset);
   $('q').value = '';
   render();
@@ -394,6 +497,18 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
     };
   });
 
+  try {
+    const r = await fetch('data/places.json', { cache: 'no-cache' });
+    if (r.ok) {
+      places = ((await r.json()).places ?? []).filter((p) => p.lat != null && p.kind in KINDS).map((p) => ({
+        ...p,
+        _search: norm(`${p.name} ${p.city ?? ''} ${p.postcode ?? ''} ${p.description ?? ''} ${p.discipline ?? ''} ${KINDS[p.kind]}`),
+      }));
+    }
+  } catch { /* pas de lieux */ }
+  $('modePlacesCount') && ($('modePlacesCount').textContent = places.length);
+  if (!places.length) document.querySelector('[data-mode="places"]').hidden = true;
+
   const depts = data.departments ?? [];
   $('zone').textContent = depts.length > 3 ? 'France' : depts.map((d) => DEPT_NAMES[d] ?? `Département ${d}`).join(', ');
 
@@ -402,7 +517,7 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
     ? `Mis à jour le ${new Date(data.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. `
     : 'Données de démonstration. ')
     + `Données : ${srcs.length ? srcs.map((s) => esc(SOURCE_NAMES[s] ?? s)).join(', ') : '—'}`
-    + ' — <a href="https://www.datatourisme.fr" target="_blank" rel="noopener">DATAtourisme</a> et OpenAgenda sous Licence Ouverte (Etalab 2.0), producteurs cités sur chaque fiche ; noms de lieux complétés avec © les contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL).';
+    + ' — <a href="https://www.datatourisme.fr" target="_blank" rel="noopener">DATAtourisme</a> et OpenAgenda sous Licence Ouverte (Etalab 2.0), producteurs cités sur chaque fiche ; lieux à visiter : DATAtourisme et ministère de la Culture (Muséofile, Liste des festivals) ; noms de lieux complétés avec © les contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL).';
 
   render();
   if (events.length) {

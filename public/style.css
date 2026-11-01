@@ -11,6 +11,8 @@
   --c-brocante: #c2410c; --c-concert: #db2777; --c-spectacle: #7c3aed; --c-exposition: #0891b2;
   --c-visite: #92400e; --c-atelier: #16a34a; --c-rando: #4d7c0f; --c-sport: #2563eb;
   --c-fete: #d97706; --c-marche: #0d9488; --c-conference: #475569; --c-autre: #6b7280;
+  --k-musee: #0891b2; --k-chateau: #92400e; --k-patrimoine: #7c3aed; --k-jardin: #16a34a;
+  --k-nature: #4d7c0f; --k-rando: #c2410c; --k-velo: #2563eb; --k-loisir: #db2777; --k-festival: #d97706;
   --radius: 12px;
   color-scheme: light;
 }
@@ -163,3 +165,20 @@ button, input, select { font: inherit; color: inherit; }
 .popup .badge { margin-left: 0; }
 .item .venue { font-size: 13.5px; font-weight: 600; color: var(--text); margin: 1px 0 3px; }
 .popup .venue { font-weight: 700; font-size: 14.5px; margin-top: 6px; }
+
+.modes { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 2px; }
+.mode { border: 0; background: none; padding: 5px 14px; border-radius: 999px; cursor: pointer; font-size: 14px; color: var(--muted); }
+.mode[aria-selected="true"] { background: var(--accent); color: #fff; }
+.mode-events .place-only, .mode-places .ev-only { display: none !important; }
+.pin.place { border-radius: 5px; transform: none; width: 18px; height: 18px; }
+.popup .facts span.k { color: #fff; border: 0; }
+@media (max-width: 760px) {
+  .brand .subtitle { display: none; }
+  .brand h1 { font-size: 16px; }
+  .topbar { gap: 8px; }
+  .mode { padding: 5px 10px; font-size: 13px; }
+}
+.mode, .brand h1 { white-space: nowrap; }
+@media (max-width: 400px) {
+  .brand svg { display: none; }
+}

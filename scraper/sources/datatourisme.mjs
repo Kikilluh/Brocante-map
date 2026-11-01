@@ -23,7 +23,7 @@ export function fr(v) {
 }
 
 /** Lit une propriété avec ou sans préfixe (schema:, rdfs:, :). */
-function get(o, ...names) {
+export function get(o, ...names) {
   if (!o || typeof o !== 'object') return undefined;
   for (const n of names) {
     for (const k of [n, `schema:${n}`, `rdfs:${n}`, `:${n}`, `dt:${n}`]) if (o[k] != null) return o[k];

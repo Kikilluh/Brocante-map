@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="vendor/markercluster/MarkerCluster.Default.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="mode-events">
   <header class="topbar">
     <div class="brand">
       <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z" fill="currentColor"/><circle cx="16" cy="13" r="4.5" fill="var(--surface)"/></svg>
@@ -22,11 +22,15 @@
         <p class="subtitle"><span id="zone">Indre-et-Loire</span> · toutes les sorties</p>
       </div>
     </div>
+    <div class="modes" role="tablist" aria-label="Que chercher ?">
+      <button class="mode" role="tab" data-mode="events" aria-selected="true">Sorties</button>
+      <button class="mode" role="tab" data-mode="places" aria-selected="false">À visiter</button>
+    </div>
     <button class="btn ghost only-mobile" id="toggleFilters" aria-expanded="false" aria-controls="filters">Filtres</button>
   </header>
 
   <section class="filters" id="filters" aria-label="Filtres">
-    <div class="row">
+    <div class="row ev-only">
       <div class="presets" role="group" aria-label="Période rapide">
         <button class="chip" data-preset="today">Aujourd'hui</button>
         <button class="chip" data-preset="weekend">Ce week-end</button>
@@ -41,21 +45,22 @@
       </div>
     </div>
     <div class="row">
-      <div class="types" id="types" role="group" aria-label="Type d'activité"></div>
+      <div class="types ev-only" id="types" role="group" aria-label="Type d'activité"></div>
+      <div class="types place-only" id="kinds" role="group" aria-label="Type de lieu"></div>
       <button class="link" id="allTypes" type="button">Tout cocher</button>
     </div>
     <div class="row group">
-      <label class="field">Participants
+      <label class="field ev-only">Participants
         <input type="number" id="people" min="1" max="50" value="1" inputmode="numeric">
       </label>
-      <fieldset class="field ages">
+      <fieldset class="field ages ev-only">
         <legend>Âges du groupe</legend>
         <input type="number" id="ageMin" min="0" max="99" placeholder="de" inputmode="numeric" aria-label="Âge du plus jeune">
         <span>à</span>
         <input type="number" id="ageMax" min="0" max="99" placeholder="à" inputmode="numeric" aria-label="Âge du plus âgé">
         <span>ans</span>
       </fieldset>
-      <label class="field">Prix / pers.
+      <label class="field ev-only">Prix / pers.
         <select id="price">
           <option value="all">Tous</option>
           <option value="free">Gratuit</option>
@@ -65,7 +70,7 @@
           <option value="50">≤ 50 €</option>
         </select>
       </label>
-      <label class="check"><input type="checkbox" id="unknown" checked> inclure les infos non précisées</label>
+      <label class="check ev-only"><input type="checkbox" id="unknown" checked> inclure les infos non précisées</label>
       <label class="search">
         <span class="sr-only">Commune ou mot-clé</span>
         <input type="search" id="q" placeholder="Commune, mot-clé…" autocomplete="off">
@@ -89,7 +94,7 @@
       </button>
       <div class="panel-head">
         <strong id="countDesk">…</strong>
-        <label class="sort">Tri
+        <label class="sort ev-only">Tri
           <select id="sort">
             <option value="date">par date</option>
             <option value="distance">par distance</option>

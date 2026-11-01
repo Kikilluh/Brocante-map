@@ -75,6 +75,12 @@
       "maxPages": 10
     },
     {
+      "id": "ticketmaster",
+      "type": "ticketmaster",
+      "enabled": true,
+      "_comment": "Consumer Key Ticketmaster → secret TICKETMASTER_KEY. Lien vers la billetterie obligatoire (conditions de l'API)."
+    },
+    {
       "id": "manual",
       "type": "manual",
       "enabled": true,
