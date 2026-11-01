@@ -458,8 +458,17 @@ function syncControls() {
   $('allTypes').textContent = full ? 'Tout décocher' : 'Tout cocher';
   $('filtersBadge').hidden = full && state.unknown && (state.preset === '30' || state.mode === 'places');
   $('groupSummary').textContent = groupSummary();
+  $('groupCta').hidden = state.group.set;
+  $('groupPill').hidden = !state.group.set;
+  $('periodLabel').textContent = periodLabel();
+  $('searchBadge').hidden = !state.q;
 }
 
+function periodLabel() {
+  if (state.preset) return Object.fromEntries(PRESETS)[state.preset];
+  const f = (d) => fmtShort.format(parse(d));
+  return state.to ? (state.from === state.to ? f(state.from) : `${f(state.from)} → ${f(state.to)}`) : `dès le ${f(state.from)}`;
+}
 function groupSummary() {
   const g = state.group;
   if (!g.set) return 'Notre groupe : qui, quand, où, budget ?';
@@ -520,6 +529,12 @@ $('reset').addEventListener('click', () => {
   $('q').value = '';
   render();
 });
+$('openSearch').addEventListener('click', () => { $('top').classList.add('searching'); $('q').focus(); });
+$('closeSearch').addEventListener('click', () => {
+  $('top').classList.remove('searching');
+  if (state.q) { state.q = ''; $('q').value = ''; render(); }
+});
+$('q').addEventListener('blur', () => { if (!$('q').value) $('top').classList.remove('searching'); });
 let qTimer;
 $('q').addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(() => { state.q = $('q').value; unselect(); render(); }, 180); });
 $('sort').addEventListener('change', () => {
@@ -530,14 +545,14 @@ $('sort').addEventListener('change', () => {
 $('openFilters').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
 $('filtersDialog').addEventListener('close', () => { if (isMobile()) setSheet('half'); });
 
-function locateMe(then) {
-  if (!navigator.geolocation) return alert('Localisation indisponible sur cet appareil.');
+function locateMe(then, silent = false) {
+  if (!navigator.geolocation) return silent ? null : alert('Localisation indisponible sur cet appareil.');
   navigator.geolocation.getCurrentPosition((pos) => {
     state.me = { lat: pos.coords.latitude, lon: pos.coords.longitude };
     meMarker?.remove();
     meMarker = L.circleMarker([state.me.lat, state.me.lon], { radius: 7, color: '#fff', weight: 2, fillColor: '#2563eb', fillOpacity: 1 }).addTo(map);
     then ? then(state.me) : (map.setView([state.me.lat, state.me.lon], 12), render());
-  }, () => alert('Impossible de vous localiser (autorisation refusée ?).'), { enableHighAccuracy: false, timeout: 10000 });
+  }, () => { if (!silent) alert('Impossible de vous localiser (autorisation refusée ?).'); }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
 }
 $('locate').addEventListener('click', () => locateMe());
 
@@ -556,6 +571,8 @@ function renderGroup() {
   $('groupPrev').hidden = step === 0;
   $('groupNext').textContent = step === 3 ? 'Voir nos sorties' : 'Suivant';
   $('adults').textContent = draft.adults;
+  const who = draft.kids.length ? 'famille' : draft.adults === 1 ? 'solo' : draft.adults === 2 ? 'couple' : draft.adults >= 3 ? 'amis' : null;
+  $$('[data-gpreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.gpreset === who)));
   $('kidsList').innerHTML = draft.kids.map((a, i) => `<li><label>Enfant ${i + 1}
       <select data-kid="${i}">${Array.from({ length: 18 }, (_, k) => `<option value="${k}"${k === a ? ' selected' : ''}>${k === 0 ? 'moins d\'1 an' : `${k} an${k > 1 ? 's' : ''}`}</option>`).join('')}</select>
     </label><button type="button" class="rm" data-rmkid="${i}" aria-label="Retirer l'enfant ${i + 1}">✕</button></li>`).join('');
@@ -567,7 +584,9 @@ function renderGroup() {
   $('centerLabel').textContent = draft.center ? `Autour de ${draft.center.label}` : "Toute l'Indre-et-Loire";
   syncControls();
 }
-$('openGroup').addEventListener('click', openGroup);
+$('groupCta').addEventListener('click', openGroup);
+$('groupPill').addEventListener('click', openGroup);
+$('periodPill').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
 $('groupForm').addEventListener('click', (e) => {
   const t = e.target;
   if (t.closest('[data-adults]')) draft.adults = Math.max(0, Math.min(20, draft.adults + +t.closest('[data-adults]').dataset.adults));
@@ -678,7 +697,10 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
   if (state.selected) select(state.selected.type, state.selected.id);
   else if (state.group.set && state.group.center) map.setView([state.group.center.lat, state.group.center.lon], 10);
   else if (events.length) map.fitBounds(L.latLngBounds(events.map((e) => [e.lat, e.lon])).pad(0.05), { maxZoom: 11 });
-  if (!state.group.set && !store.get('vu') && isMobile()) { store.set('vu', true); setTimeout(openGroup, 600); }
+  // Par défaut : carte centrée sur la position de l'utilisateur, s'il l'autorise
+  if (!state.selected && !(state.group.set && state.group.center)) {
+    locateMe((me) => { map.setView([me.lat, me.lon], 11); render(); }, true);
+  }
 })();
 
 // ---------- Application installable (PWA) ----------
