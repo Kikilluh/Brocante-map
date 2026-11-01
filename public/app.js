@@ -307,13 +307,7 @@ function visibleBounds() {
   if (!map.getBounds || typeof map.getBounds !== 'function') return null;
   try {
     const b = map.getBounds();
-    // Sur mobile, le bas de la carte est caché par le panneau : on ne compte que la partie visible
-    // (en plein écran, la carte est cachée : on garde toute la zone qu'elle montrait)
-    if (isMobile() && $('sheet').dataset.state === 'half') {
-      const sheetTop = $('sheet').getBoundingClientRect().top - $('map').getBoundingClientRect().top;
-      const p = map.containerPointToLatLng([0, Math.max(40, sheetTop)]);
-      return L.latLngBounds([p.lat, b.getWest()], b.getNorthEast());
-    }
+    // Toute la zone de la carte compte, même la partie recouverte par le panneau du bas
     return b;
   } catch { return null; }
 }
@@ -507,7 +501,7 @@ function setListOpen(open) {
 $('listToggle').addEventListener('click', () => setListOpen(!document.documentElement.classList.contains('list-open')));
 
 // ---------- Panneau du bas (mobile) ----------
-function setSheet(s) { $('sheet').dataset.state = s; setTimeout(renderList, 300); }
+function setSheet(s) { $('sheet').dataset.state = s; }
 // Glisser la carte quand le panneau est à moitié ouvert : il se replie pour libérer la carte
 map.on('dragstart', () => { if (isMobile() && $('sheet').dataset.state === 'half') setSheet('peek'); });
 // Bouton ⌄ pour réduire d'un cran
