@@ -54,6 +54,12 @@ jobs:
             done
           fi
 
+      - name: Bibliothèques de carte (Leaflet) intégrées au site
+        run: |
+          bash scripts/vendor.sh
+          # pour mémoire : l'ancien lien CDN utilisé avant (diagnostic)
+          curl -s -o /dev/null -w "cdnjs leaflet.min.js -> %{http_code}\n" https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js || true
+
       - name: Déploiement Firebase Hosting
         if: env.HAS_FIREBASE == 'true'
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -62,3 +68,13 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           channelId: live
           projectId: ${{ vars.FIREBASE_PROJECT_ID || 'brocante-map' }}
+
+      - name: Vérifier le site en ligne
+        if: env.HAS_FIREBASE == 'true'
+        run: |
+          sleep 10
+          for f in "" app.js style.css vendor/leaflet/leaflet.js vendor/markercluster/leaflet.markercluster.js data/events.json; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "https://brocante-map.web.app/$f")
+            echo "/$f -> $code"
+            [ "$code" = "200" ] || exit 1
+          done

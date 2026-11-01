@@ -5,7 +5,7 @@ const CATS = {
   spectacle: 'Spectacles',
   exposition: 'Expos & musées',
   visite: 'Visites & patrimoine',
-  atelier: 'Ateliers atelier: 'Ateliers & stages', animations',
+  atelier: 'Ateliers & animations',
   rando: 'Randos & nature',
   sport: 'Sport',
   fete: 'Fêtes & festivals',
@@ -109,6 +109,13 @@ function writeHash() {
 }
 
 // ---------- Carte ----------
+// Si Leaflet n'a pas pu se charger, on remplace la carte par un objet neutre :
+// la liste et les filtres continuent de fonctionner.
+if (!(window.L && window.L.markerClusterGroup)) {
+  const noop = new Proxy(function () {}, { get: () => noop, apply: () => noop, construct: () => noop });
+  window.L = noop;
+  document.getElementById('mapError').hidden = false;
+}
 const map = L.map('map', { zoomControl: true }).setView([47.25, 0.7], 9);
 const planIGN = L.tileLayer(
   'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
