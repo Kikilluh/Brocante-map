@@ -56,6 +56,7 @@
   <main class="layout">
     <div id="map" aria-label="Carte"></div>
     <div class="map-pills">
+      <button class="pill fav-pill" id="favPill" hidden aria-label="Mes favoris"><span aria-hidden="true">❤️</span> <span id="favCount">0</span></button>
       <button class="pill ev-only" id="periodPill"><span aria-hidden="true">📅</span> <span id="periodLabel">30 jours</span></button>
     </div>
     <button class="list-toggle" id="listToggle" aria-expanded="false" aria-controls="sheet">☰ Liste · <span id="listCount">0</span></button>
@@ -74,6 +75,7 @@
       <div class="sheet-body" id="sheetBody">
         <ol class="list" id="list"></ol>
         <article class="detail" id="detail" hidden></article>
+        <article class="detail fav-view" id="favView" hidden></article>
         <footer class="meta" id="meta"></footer>
       </div>
     </section>

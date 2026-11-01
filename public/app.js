@@ -382,7 +382,7 @@ function eventDetail(ev) {
   const others = ev.occurrences.filter((o) => o !== next && o.end >= iso(new Date())).slice(0, 8);
   const where = [ev.address, ev.postcode && ev.city ? `${ev.postcode} ${ev.city}` : ev.city].filter(Boolean).join(', ');
   return `<button class="back" data-back>← Retour à la liste</button>
-    <div>${evBadge(ev)}</div>
+    <div class="badge-row">${evBadge(ev)}${favBtn('events', ev)}</div>
     <h2>${esc(ev.title)}</h2>
     <p class="when">${esc(occLabel(next))}${next.hours ? ` · ${esc(next.hours)}` : ''}</p>
     ${ev.venue ? `<p class="venue">${esc(ev.venue)}</p>` : ''}
@@ -395,6 +395,7 @@ function eventDetail(ev) {
       ${evLink(ev)}
       ${!ev.url || ev.urlKind === 'site' ? searchLink(ev) : ''}
       ${link(`https://www.openstreetmap.org/directions?to=${ev.lat},${ev.lon}`, 'Itinéraire')}
+      <button type="button" data-ics="${esc(ev.id)}">📅 Agenda</button>
       <button data-share>Partager</button>
     </div>
     ${hero(ev)}
@@ -407,7 +408,7 @@ function placeDetail(p) {
   const facts = [p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.duration ?? '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
   const where = [p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', ');
   return `<button class="back" data-back>← Retour à la liste</button>
-    <div>${plBadge(p)}</div>
+    <div class="badge-row">${plBadge(p)}${favBtn('places', p)}</div>
     <h2>${esc(p.name)}</h2>
     ${where ? `<p class="muted">${isRoute ? (p.partial ? 'Entrée dans le département : ' : 'Départ : ') : ''}${esc(where)}</p>` : ''}
     ${facts.length ? `<div class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</div>` : ''}
@@ -432,10 +433,12 @@ function popupHtml(x, isEv) {
   const main = isEv
     ? evLink(x, true)
     : (x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
+  const heart = favBtn(isEv ? 'events' : 'places', x, true);
   return `<div class="popcard">
+    ${x.image ? heart : ''}
     ${x.image ? `<img class="popimg" src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
     <div class="popbody">
-      ${isEv ? evBadge(x) : plBadge(x)}
+      ${x.image ? (isEv ? evBadge(x) : plBadge(x)) : `<span class="pop-badges">${isEv ? evBadge(x) : plBadge(x)}${heart.replace('fav-btn sm', 'fav-btn sm inline')}</span>`}
       <strong class="poptitle">${esc(x.title ?? x.name)}</strong>
       ${isEv ? `<span class="popwhen">${esc(occLabel(next))}${next.hours ? ` · ${esc(next.hours)}` : ''}</span>` : ''}
       <span class="popwhere">${esc([x.venue, x.city].filter(Boolean).join(' · '))}</span>
@@ -472,6 +475,7 @@ function select(type, id, { fromMap = false, open = false } = {}) {
   d.innerHTML = type === 'events' ? eventDetail(item) : placeDetail(item);
   d.hidden = false;
   $('list').hidden = true;
+  $('favView').hidden = true;
   $('sheetBody').scrollTop = 0;
   const m = markers.get(id);
   if (m && !fromMap) (type === 'events' ? cluster : placeCluster).zoomToShowLayer(m, () => map.panTo(m.getLatLng()));
@@ -483,6 +487,7 @@ function select(type, id, { fromMap = false, open = false } = {}) {
 function unselect() {
   state.selected = null;
   $('detail').hidden = true;
+  $('favView').hidden = true;
   $('list').hidden = false;
   writeHash();
 }
@@ -805,6 +810,194 @@ $('addr').addEventListener('input', () => {
   }, 250);
 });
 
+// ---------- Favoris et planning (enregistrés sur l'appareil, sans compte) ----------
+// Chaque favori garde un instantané de l'élément : le planning reste lisible même si l'élément n'est plus
+// chargé (autre département) ou a disparu des sources.
+let favs = store.get('favoris') ?? [];
+const looseKey = (x) => norm(`${x.title ?? x.name}|${x.city ?? ''}`);
+const findFav = (type, x) => favs.find((f) => f.type === type && (f.id === x.id || f.loose === looseKey(x)));
+const today = () => iso(new Date());
+function snapshot(type, x) {
+  const base = { type, id: x.id, loose: looseKey(x), dept: x.dept, city: x.city ?? null, lat: x.lat, lon: x.lon, url: x.url ?? x.routeUrl ?? null, savedAt: Date.now() };
+  if (type === 'events') {
+    return { ...base, title: x.title, venue: x.venue ?? null, address: x.address ?? null, postcode: x.postcode ?? null, category: x.category,
+      occurrences: x.occurrences.filter((o) => o.end >= today()).slice(0, 30) };
+  }
+  return { ...base, name: x.name, kind: x.kind };
+}
+function favBtn(type, x, small = false) {
+  const on = !!findFav(type, x);
+  return `<button type="button" class="fav-btn${small ? ' sm' : ''}" data-fav="${type}|${esc(x.id)}" aria-pressed="${on}" aria-label="${on ? 'Retirer des favoris' : 'Ajouter aux favoris'}" title="${on ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${on ? '❤️' : '🤍'}</button>`;
+}
+function saveFavs() {
+  store.set('favoris', favs);
+  $('favCount').textContent = favs.length;
+  $('favPill').hidden = !favs.length;
+}
+function toggleFav(type, x) {
+  const f = findFav(type, x);
+  favs = f ? favs.filter((y) => y !== f) : [...favs, snapshot(type, x)];
+  saveFavs();
+  return !f;
+}
+const itemById = (type, id) => (type === 'events' ? events : places).find((x) => x.id === id);
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-fav]');
+  if (!b) return;
+  e.stopPropagation();
+  const [type, id] = [b.dataset.fav.slice(0, b.dataset.fav.indexOf('|')), b.dataset.fav.slice(b.dataset.fav.indexOf('|') + 1)];
+  const x = itemById(type, id) ?? favs.find((f) => f.type === type && f.id === id);
+  if (!x) return;
+  const on = itemById(type, id) ? toggleFav(type, x) : (favs = favs.filter((f) => f !== x), saveFavs(), false);
+  $$(`[data-fav="${CSS.escape(b.dataset.fav)}"]`).forEach((el) => {
+    el.setAttribute('aria-pressed', String(on));
+    el.textContent = on ? '❤️' : '🤍';
+    el.title = el.ariaLabel = on ? 'Retirer des favoris' : 'Ajouter aux favoris';
+  });
+  if (on) { b.classList.remove('pop-anim'); void b.offsetWidth; b.classList.add('pop-anim'); }
+  if (!$('favView').hidden) renderFavs();
+}, true);
+
+// --- Export vers l'agenda du téléphone (.ics) ---
+function icsText(list) {
+  const pad = (n) => String(n).padStart(2, '0');
+  const d8 = (s) => s.replaceAll('-', '');
+  const txt = (s) => String(s ?? '').replace(/\\/g, '\\\\').replace(/[;,]/g, (c) => `\\${c}`).replace(/\r?\n/g, '\\n');
+  const now = new Date();
+  const stamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}00Z`;
+  const fold = (l) => { const out = []; while (l.length > 73) { out.push(l.slice(0, 73)); l = ` ${l.slice(73)}`; } out.push(l); return out.join('\r\n'); };
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Brocante Map//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+  for (const ev of list) {
+    const o = ev.occurrences.find((x) => x.end >= today()) ?? ev.occurrences[0];
+    const m = String(o.hours ?? '').match(/(\d{1,2})[:h](\d{2})?(?:\s*[–-]\s*(\d{1,2})[:h](\d{2})?)?/);
+    const long = (parse(o.end) - parse(o.start)) / 864e5 > 6;
+    let title = ev.title;
+    lines.push('BEGIN:VEVENT', `UID:${ev.id}@brocante-map.web.app`, `DTSTAMP:${stamp}`);
+    if (m && o.start === o.end) {
+      const h1 = `${pad(m[1])}${m[2] ?? '00'}00`;
+      const h2 = m[3] ? `${pad(m[3])}${m[4] ?? '00'}00` : `${pad(Math.min(23, +m[1] + 2))}${m[2] ?? '00'}00`;
+      lines.push(`DTSTART:${d8(o.start)}T${h1}`, `DTEND:${d8(o.start)}T${h2}`);
+    } else if (long) {
+      // Longue période (exposition…) : un seul jour dans l'agenda, au début ou aujourd'hui si déjà commencée
+      const day = o.start < today() ? today() : o.start;
+      lines.push(`DTSTART;VALUE=DATE:${d8(day)}`, `DTEND;VALUE=DATE:${d8(iso(addDays(parse(day), 1)))}`);
+      title += ` (jusqu'au ${fmtShortY.format(parse(o.end))})`;
+    } else {
+      lines.push(`DTSTART;VALUE=DATE:${d8(o.start)}`, `DTEND;VALUE=DATE:${d8(iso(addDays(parse(o.end), 1)))}`);
+    }
+    const where = [ev.venue, ev.address, [ev.postcode, ev.city].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    lines.push(fold(`SUMMARY:${txt(title)}`));
+    if (where) lines.push(fold(`LOCATION:${txt(where)}`));
+    if (ev.lat != null) lines.push(`GEO:${ev.lat};${ev.lon}`);
+    const desc = [o.hours ? `Horaires : ${o.hours}` : '', ev.url ?? '', 'Trouvé sur Brocante Map – https://brocante-map.web.app'].filter(Boolean).join('\n');
+    lines.push(fold(`DESCRIPTION:${txt(desc)}`));
+    if (ev.url) lines.push(fold(`URL:${ev.url}`));
+    lines.push('END:VEVENT');
+  }
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+function downloadIcs(list, name) {
+  const text = icsText(list);
+  if (isIOS()) { location.href = `data:text/calendar;charset=utf-8,${encodeURIComponent(text)}`; return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/calendar;charset=utf-8' }));
+  a.download = `${name}.ics`;
+  document.body.append(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-ics]');
+  if (!b) return;
+  const ev = itemById('events', b.dataset.ics) ?? favs.find((f) => f.type === 'events' && f.id === b.dataset.ics);
+  if (ev) downloadIcs([ev], slugName(ev.title));
+});
+const slugName = (s) => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'evenement';
+
+// --- Vue « Mes favoris » (dans le panneau, à la place de la liste) ---
+function favEventItem(f, past = false) {
+  const o = f.occurrences.find((x) => x.end >= today()) ?? f.occurrences.at(-1) ?? {};
+  return `<li class="fav-row${past ? ' past' : ''}"><button class="item" data-favopen="events|${esc(f.id)}">
+    <span class="ico" style="background:${color(f.category)}" aria-hidden="true">${CAT_ICONS[f.category] ?? '📍'}</span>
+    <span class="body">
+      <span class="when">${o.start ? esc(occLabel(o)) : ''}${o.hours ? ` · ${esc(o.hours)}` : ''}</span>
+      <span class="title" style="display:block">${esc(f.title)}</span>
+      <span class="where" style="display:block">${esc([f.venue, f.city].filter(Boolean).join(' · '))}</span>
+    </span></button>
+    <span class="fav-tools">${past ? '' : `<button type="button" class="icon-btn flat" data-ics="${esc(f.id)}" aria-label="Ajouter à mon agenda" title="Ajouter à mon agenda">📅</button>`}${favBtn('events', f)}</span></li>`;
+}
+function favPlaceItem(f) {
+  return `<li class="fav-row"><button class="item" data-favopen="places|${esc(f.id)}">
+    <span class="ico sq" style="background:${kcolor(f.kind)}" aria-hidden="true">${KIND_ICONS[f.kind] ?? '📍'}</span>
+    <span class="body"><span class="title" style="display:block">${esc(f.name)}</span><span class="where" style="display:block">${esc(f.city ?? '')}</span></span>
+  </button><span class="fav-tools">${favBtn('places', f)}</span></li>`;
+}
+function renderFavs() {
+  const t = today();
+  const evs = favs.filter((f) => f.type === 'events');
+  const upcoming = evs.filter((f) => f.occurrences.some((o) => o.end >= t))
+    .sort((a, b) => (a.occurrences.find((o) => o.end >= t).start).localeCompare(b.occurrences.find((o) => o.end >= t).start));
+  const past = evs.filter((f) => !upcoming.includes(f));
+  const pls = favs.filter((f) => f.type === 'places');
+  // regroupement du planning par jour
+  let lastLabel = '';
+  const plan = upcoming.map((f) => {
+    const o = f.occurrences.find((x) => x.end >= t);
+    const label = o.start <= t ? "En ce moment / aujourd'hui" : fmtDay.format(parse(o.start));
+    const head = label !== lastLabel ? `<li class="fav-day">${esc(label)}</li>` : '';
+    lastLabel = label;
+    return head + favEventItem(f);
+  }).join('');
+  $('favView').innerHTML = `<button class="back" data-favclose>← Retour à la liste</button>
+    <h2>❤️ Mes favoris</h2>
+    ${!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : ''}
+    ${upcoming.length ? `<div class="fav-head"><h3>📅 Mon planning</h3><button type="button" class="btn small" data-icsall>Tout ajouter à mon agenda</button></div><ul class="list fav-list">${plan}</ul>` : ''}
+    ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
+    ${past.length ? `<details><summary>${past.length} événement${past.length > 1 ? 's' : ''} passé${past.length > 1 ? 's' : ''}</summary><ul class="list fav-list">${past.map((f) => favEventItem(f, true)).join('')}</ul><button type="button" class="btn small" data-clearpast>Effacer les événements passés</button></details>` : ''}
+    <p class="src">Vos favoris sont enregistrés uniquement sur cet appareil (aucun compte, rien n'est envoyé).</p>`;
+}
+function openFavs() {
+  renderFavs();
+  $('favView').hidden = false;
+  $('list').hidden = true;
+  $('detail').hidden = true;
+  $('sheetBody').scrollTop = 0;
+  if (isMobile()) setSheet('full'); else setListOpen(true);
+}
+function closeFavs() {
+  $('favView').hidden = true;
+  if (state.selected) $('detail').hidden = false; else $('list').hidden = false;
+}
+$('favPill').addEventListener('click', openFavs);
+$('favView').addEventListener('click', async (e) => {
+  if (e.target.closest('[data-favclose]')) return closeFavs();
+  if (e.target.closest('[data-icsall]')) {
+    const t = today();
+    return downloadIcs(favs.filter((f) => f.type === 'events' && f.occurrences.some((o) => o.end >= t)), 'mon-planning');
+  }
+  if (e.target.closest('[data-clearpast]')) {
+    const t = today();
+    favs = favs.filter((f) => f.type !== 'events' || f.occurrences.some((o) => o.end >= t));
+    saveFavs();
+    return renderFavs();
+  }
+  const b = e.target.closest('[data-favopen]');
+  if (!b) return;
+  const i = b.dataset.favopen.indexOf('|');
+  const type = b.dataset.favopen.slice(0, i);
+  const id = b.dataset.favopen.slice(i + 1);
+  const f = favs.find((x) => x.type === type && x.id === id);
+  if (f?.dept && dataIndex?.depts?.[f.dept]) await loadDept(type, f.dept);
+  const list = type === 'events' ? events : places;
+  const x = list.find((y) => y.id === id) ?? list.find((y) => looseKey(y) === f?.loose);
+  if (!x) { b.querySelector('.where').textContent = "N'est plus en ligne"; return; }
+  $('favView').hidden = true;
+  if (state.mode !== type) { state.mode = type; render(); }
+  select(type, x.id, { open: true });
+  map.setView([x.lat, x.lon], Math.max(map.getZoom(), 13));
+});
+
 // ---------- Données (un fichier par département, chargé quand il devient visible) ----------
 async function getJson(url) {
   try { const r = await fetch(url, { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; }
@@ -862,6 +1055,7 @@ async function ensureData() {
 (async () => {
   readHash();
   $('q').value = state.q;
+  saveFavs();
   dataIndex = await getJson('data/index.json');
   let meta = dataIndex;
   if (!dataIndex?.depts) {
