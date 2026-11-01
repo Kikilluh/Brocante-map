@@ -743,13 +743,9 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
 const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
 const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let installEvent = null;
-function updateInstallPill() {
-  const later = store.get('installPlusTard');
-  const snoozed = later && Date.now() - later < 14 * 864e5;
-  $('installPill').hidden = isStandalone() || snoozed || !(installEvent || isIOS() || isMobile());
-}
+function updateInstallPill() { /* pastille retirée : l'installation reste accessible par le lien en bas de liste */ }
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvent = e; updateInstallPill(); });
-window.addEventListener('appinstalled', () => { installEvent = null; $('installPill').hidden = true; });
+window.addEventListener('appinstalled', () => { installEvent = null; });
 function openInstall() {
   const ios = isIOS();
   $('installIOS').hidden = !ios && isMobile();
@@ -758,7 +754,6 @@ function openInstall() {
   $('installNow').hidden = !installEvent;
   $('installDialog').showModal();
 }
-$('installPill').addEventListener('click', openInstall);
 $('installNow').addEventListener('click', async () => {
   if (!installEvent) return;
   installEvent.prompt();
