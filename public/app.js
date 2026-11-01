@@ -576,9 +576,11 @@ function syncControls() {
   const full = state.mode === 'places' ? state.kinds.size === KALL.length : state.cats.size === ALL.length;
   $('allTypes').textContent = full ? 'Tout décocher' : 'Tout cocher';
   $('filtersBadge').hidden = full && state.unknown && (state.preset === '30' || state.mode === 'places');
-  $('groupSummary').textContent = groupSummary();
-  $('groupCta').hidden = state.group.set;
-  $('groupPill').hidden = !state.group.set;
+  const gb = $('openGroup');
+  gb.classList.toggle('set', state.group.set);
+  $('groupBadge').hidden = !state.group.set;
+  gb.title = state.group.set ? `Notre groupe : ${groupSummary()} (modifier)` : 'Qui sort ? Filtrer pour notre groupe';
+  gb.setAttribute('aria-label', gb.title);
   $('periodLabel').textContent = periodLabel();
   $('searchBadge').hidden = !state.q;
 }
@@ -656,11 +658,6 @@ $('closeSearch').addEventListener('click', () => {
 $('q').addEventListener('blur', () => { if (!$('q').value) $('top').classList.remove('searching'); });
 let qTimer;
 $('q').addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(() => { state.q = $('q').value; unselect(); render(); }, 180); });
-$('sort').addEventListener('change', () => {
-  state.sort = $('sort').value;
-  if (state.sort === 'distance' && !refPoint()) locateMe();
-  render();
-});
 $('openFilters').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
 $('filtersDialog').addEventListener('close', () => { if (isMobile()) setSheet('half'); });
 
@@ -686,7 +683,7 @@ function openGroup() {
 }
 function renderGroup() {
   $$('#groupDialog .step').forEach((s) => { s.hidden = +s.dataset.step !== step; });
-  $$('#groupDialog .steps li').forEach((li, i) => li.classList.toggle('on', i <= step));
+  $$('#groupDialog .step-tab').forEach((b, i) => { b.classList.toggle('done', i < step); b.setAttribute('aria-current', i === step ? 'step' : 'false'); });
   $('groupPrev').hidden = step === 0;
   $('groupNext').textContent = step === 3 ? 'Voir nos sorties' : 'Suivant';
   $('adults').textContent = draft.adults;
@@ -703,12 +700,12 @@ function renderGroup() {
   $('centerLabel').textContent = draft.center ? `Autour de ${draft.center.label}` : "Toute l'Indre-et-Loire";
   syncControls();
 }
-$('groupCta').addEventListener('click', openGroup);
-$('groupPill').addEventListener('click', openGroup);
+$('openGroup').addEventListener('click', openGroup);
 $('periodPill').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
 $('groupForm').addEventListener('click', (e) => {
   const t = e.target;
-  if (t.closest('[data-adults]')) draft.adults = Math.max(0, Math.min(20, draft.adults + +t.closest('[data-adults]').dataset.adults));
+  if (t.closest('[data-goto]')) step = +t.closest('[data-goto]').dataset.goto;
+  else if (t.closest('[data-adults]')) draft.adults = Math.max(0, Math.min(20, draft.adults + +t.closest('[data-adults]').dataset.adults));
   else if (t.closest('[data-gpreset]')) {
     const p = t.closest('[data-gpreset]').dataset.gpreset;
     Object.assign(draft, { solo: { adults: 1, kids: [] }, couple: { adults: 2, kids: [] }, famille: { adults: 2, kids: draft.kids.length ? draft.kids : [6] }, amis: { adults: 4, kids: [] } }[p]);

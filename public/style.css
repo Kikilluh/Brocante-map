@@ -72,6 +72,27 @@ button { cursor: pointer; }
 }
 .icon-btn.flat { border: 0; background: none; width: 34px; height: 34px; color: var(--muted); }
 .dot-badge { position: absolute; top: 6px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent-strong); }
+/* Bouton « Qui sort ? » dans l'en-tête : texte tant que le groupe n'est pas renseigné, puis icône seule */
+.group-btn {
+  position: relative; flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px;
+  border: 0; border-radius: 999px; color: var(--accent-ink); font-size: 14px; font-weight: 700; white-space: nowrap;
+  background: linear-gradient(135deg, #f6b49d, #f2a48b 55%, #f4c39f); box-shadow: 0 3px 10px rgba(200,100,74,.3);
+}
+.group-btn.set { width: 40px; padding: 0; justify-content: center; box-shadow: none; }
+.group-btn.set .group-label { display: none; }
+.check-badge {
+  position: absolute; top: -3px; right: -3px; width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent-strong); color: #fff; font-size: 11px; line-height: 1; border: 2px solid var(--surface);
+}
+.top.searching .group-btn { display: none; }
+@media (max-width: 420px) {
+  .mode .long { display: none; }
+  /* Petit écran : le logo laisse sa place tant que le groupe n'est pas renseigné */
+  .top:has(.group-btn:not(.set)) .brand { display: none; }
+  .top { gap: 6px; }
+  .mode { padding: 6px 4px; }
+  .group-btn:not(.set) { padding: 0 10px; font-size: 13.5px; gap: 5px; }
+}
 /* Recherche : repliée derrière la loupe sur mobile */
 .search {
   display: none; flex: 1; min-width: 0; align-items: center; gap: 4px; height: 40px; padding: 0 4px 0 14px;
@@ -220,9 +241,13 @@ button { cursor: pointer; }
 .switch { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; }
 .switch input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); }
 
-.steps { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0 16px; }
-.steps li { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
-.steps li.on { background: var(--accent); }
+.steps { display: flex; gap: 6px; margin: 0; padding: 0 16px 4px; overflow-x: auto; scrollbar-width: none; }
+.step-tab {
+  flex: 1 0 auto; border: 1px solid var(--border); background: var(--surface-2); color: var(--muted);
+  border-radius: 999px; padding: 7px 10px; font-size: 13.5px; font-weight: 600; white-space: nowrap;
+}
+.step-tab.done { color: var(--text); border-color: var(--accent); }
+.step-tab[aria-current="step"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .counter { display: flex; align-items: center; gap: 14px; margin: 18px 0 8px; font-weight: 600; }
 .counter span { flex: 1; }
 .counter output { min-width: 28px; text-align: center; font-size: 20px; }
@@ -250,8 +275,8 @@ button { cursor: pointer; }
 @media (min-width: 761px) {
   .top { padding: 8px 16px; gap: 12px; }
   .brand-text { display: flex; }
-  .modes { flex: 0 1 auto; }
-  .mode { padding: 6px 14px; }
+  .modes { flex: none; }
+  .mode { padding: 6px 14px; flex: none; overflow: visible; }
   .search { display: flex; max-width: 420px; margin-left: auto; }
   #openSearch, #closeSearch { display: none; }
   .layout { display: flex; }

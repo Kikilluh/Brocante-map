@@ -28,13 +28,18 @@
     </a>
     <div class="modes" role="tablist" aria-label="Que chercher ?">
       <button class="mode" role="tab" data-mode="events" aria-selected="true">Sorties</button>
-      <button class="mode" role="tab" data-mode="places" aria-selected="false">Lieux &amp; activités</button>
+      <button class="mode" role="tab" data-mode="places" aria-selected="false">Lieux<span class="long"> &amp; activités</span></button>
     </div>
     <label class="search" id="searchBox">
       <span class="sr-only">Rechercher une commune, un lieu, un mot-clé</span>
       <input type="text" id="q" placeholder="Commune, lieu, mot-clé…" autocomplete="off" enterkeyhint="search" inputmode="search">
       <button type="button" class="icon-btn flat" id="closeSearch" aria-label="Fermer la recherche">✕</button>
     </label>
+    <button class="group-btn" id="openGroup" aria-label="Qui sort ? Filtrer pour notre groupe" title="Qui sort ? Filtrer pour notre groupe">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm7 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 13c-3.3 0-7 1.6-7 4v2h14v-2c0-2.4-3.7-4-7-4zm7 0c-.5 0-1 0-1.5.1 1.5.9 2.5 2.2 2.5 3.9v2h5v-2c0-2.3-3.4-4-6-4z" fill="currentColor"/></svg>
+      <span class="group-label">Qui sort&nbsp;?</span>
+      <span class="check-badge" id="groupBadge" hidden>✓</span>
+    </button>
     <button class="icon-btn" id="openSearch" aria-label="Rechercher" title="Rechercher">
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M10 3a7 7 0 1 0 4.2 12.6l5.1 5.1 1.4-1.4-5.1-5.1A7 7 0 0 0 10 3zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10z" fill="currentColor"/></svg>
       <span class="dot-badge" id="searchBadge" hidden></span>
@@ -51,11 +56,6 @@
   <main class="layout">
     <div id="map" aria-label="Carte"></div>
     <div class="map-pills">
-      <button class="group-cta" id="groupCta">
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm7 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 13c-3.3 0-7 1.6-7 4v2h14v-2c0-2.4-3.7-4-7-4zm7 0c-.5 0-1 0-1.5.1 1.5.9 2.5 2.2 2.5 3.9v2h5v-2c0-2.3-3.4-4-6-4z" fill="currentColor"/></svg>
-        <span><strong>Qui sort ?</strong> <small>Filtrer pour notre groupe</small></span><span class="arrow" aria-hidden="true">→</span>
-      </button>
-      <button class="pill" id="groupPill" hidden><span aria-hidden="true">👥</span> <span id="groupSummary"></span></button>
       <button class="pill ev-only" id="periodPill"><span aria-hidden="true">📅</span> <span id="periodLabel">30 jours</span></button>
     </div>
     <button class="list-toggle" id="listToggle" aria-expanded="false" aria-controls="sheet">☰ Liste · <span id="listCount">0</span></button>
@@ -69,13 +69,6 @@
         <div class="sheet-head">
           <strong id="count">…</strong>
           <button type="button" class="icon-btn flat sheet-down" id="sheetDown" aria-label="Réduire la liste" title="Réduire">⌄</button>
-          <label class="sort ev-only">
-            <span class="sr-only">Trier</span>
-            <select id="sort">
-              <option value="date">Par date</option>
-              <option value="distance">Par distance</option>
-            </select>
-          </label>
         </div>
       </div>
       <div class="sheet-body" id="sheetBody">
@@ -162,7 +155,12 @@
         <h2 id="groupTitle">Notre groupe</h2>
         <button class="icon-btn" value="close" aria-label="Fermer">✕</button>
       </header>
-      <ol class="steps" aria-hidden="true"><li></li><li></li><li></li><li></li></ol>
+      <nav class="steps" aria-label="Étapes">
+        <button type="button" class="step-tab" data-goto="0">👥 Qui</button>
+        <button type="button" class="step-tab" data-goto="1">📅 Quand</button>
+        <button type="button" class="step-tab" data-goto="2">📍 Où</button>
+        <button type="button" class="step-tab" data-goto="3">💶 Budget</button>
+      </nav>
       <div class="modal-body">
         <section class="step" data-step="0">
           <h3>Qui sort ?</h3>
