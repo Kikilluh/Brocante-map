@@ -212,10 +212,11 @@ function rowCoords(row) {
   return m ? { lat: Number(m[1]), lon: Number(m[2]) } : { lat: null, lon: null };
 }
 
+const DEPT_RE = { '37': 'indre-et-loire', '45': 'loiret', '58': 'ni[eè]vre' };
 function inDepts(row, postcode) {
   if (postcode && departments.includes(deptFromPostcode(postcode))) return true;
   const dep = col(row, /d[ée]partement/i);
-  return !!dep && departments.some((d) => new RegExp(`(^|\\D)${d}(\\D|$)|indre-et-loire`, 'i').test(dep));
+  return !!dep && departments.some((d) => new RegExp(`(^|\\D)${d}(\\D|$)${DEPT_RE[d] ? `|${DEPT_RE[d]}` : ''}`, 'i').test(dep));
 }
 
 async function museofile() {

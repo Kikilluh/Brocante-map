@@ -10,7 +10,12 @@ const OVERPASS = 'https://overpass-api.de/api/interpreter';
 const MAX_AGE_MS = 7 * 864e5;
 
 // Emprise (sud, ouest, nord, est) de chaque département couvert
-export const BBOX = { '37': [46.73, -0.06, 47.72, 1.37] };
+// Emprise (sud, ouest, nord, est) de chaque département couvert
+export const BBOX = {
+  '37': [46.73, -0.06, 47.72, 1.37], // Indre-et-Loire
+  '45': [47.47, 1.50, 48.35, 3.14], // Loiret
+  '58': [46.64, 2.84, 47.60, 4.24], // Nièvre
+};
 
 const VIEWERS = {
   hiking: 'https://hiking.waymarkedtrails.org/#route?id=',

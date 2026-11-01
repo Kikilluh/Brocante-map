@@ -9,7 +9,11 @@ import { deptFromPostcode } from '../lib/normalize.mjs';
 const API = 'https://app.ticketmaster.com/discovery/v2/events.json';
 
 // Centre et rayon couvrant chaque département (ajouter une entrée par département couvert)
-const AREAS = { '37': { lat: 47.26, lon: 0.69, radiusKm: 75 } };
+const AREAS = {
+  '37': { lat: 47.26, lon: 0.69, radiusKm: 75 }, // Indre-et-Loire
+  '45': { lat: 47.91, lon: 2.30, radiusKm: 75 }, // Loiret
+  '58': { lat: 47.12, lon: 3.52, radiusKm: 75 }, // Nièvre
+};
 
 const B32 = '0123456789bcdefghjkmnpqrstuvwxyz';
 /** Encode une position en geohash (paramètre geoPoint de l'API). */

@@ -1,7 +1,9 @@
 {
   "_comment": "Départements couverts. Pour passer à la France entière, ajoutez les codes (\"01\" … \"95\", \"2A\", \"2B\", \"971\"…).",
   "departments": [
-    "37"
+    "37",
+    "45",
+    "58"
   ],
   "horizonDays": 180,
   "requestDelayMs": 1500,

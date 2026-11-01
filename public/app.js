@@ -31,7 +31,7 @@ const ENVIES = {
   chine: { label: 'Brocantes & marchés', cats: ['brocante', 'marche'], kinds: [] },
 };
 const EALL = Object.keys(ENVIES);
-const DEPT_NAMES = { '37': 'Indre-et-Loire' };
+const DEPT_NAMES = { '37': 'Indre-et-Loire', '45': 'Loiret', '58': 'Nièvre' };
 const SOURCE_NAMES = {
   datatourisme: 'DATAtourisme', openagenda: 'OpenAgenda', manual: 'ajout manuel', ticketmaster: 'Ticketmaster',
   museofile: 'Musées de France', festivals: 'Liste des festivals', 'datatourisme-lieux': 'DATAtourisme',
@@ -697,7 +697,7 @@ function renderGroup() {
   $$('#budgets [data-budget]').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.budget === '' ? null : +b.dataset.budget) === draft.budget)));
   $$('input[name="budgetMode"]').forEach((r) => { r.checked = r.value === draft.budgetMode; });
   $('envies').innerHTML = EALL.map((k) => `<button type="button" class="chip" data-envie="${k}" aria-pressed="${draft.envies.includes(k)}">${ENVIES[k].label}</button>`).join('');
-  $('centerLabel').textContent = draft.center ? `Autour de ${draft.center.label}` : "Toute l'Indre-et-Loire";
+  $('centerLabel').textContent = draft.center ? `Autour de ${draft.center.label}` : "Toute la zone couverte";
   syncControls();
 }
 $('openGroup').addEventListener('click', openGroup);
@@ -786,7 +786,8 @@ $('addr').addEventListener('input', () => {
   const q = $('addr').value.trim();
   if (q.length < 3) { $('addrSuggest').hidden = true; return; }
   addrTimer = setTimeout(async () => {
-    const qs = `q=${encodeURIComponent(q)}&limit=5&lat=47.3&lon=0.7`;
+    const c = map.getCenter();
+    const qs = `q=${encodeURIComponent(q)}&limit=5&lat=${c.lat.toFixed(2)}&lon=${c.lng.toFixed(2)}`;
     let data = null;
     for (const base of ['https://api-adresse.data.gouv.fr/search/', 'https://data.geopf.fr/geocodage/search']) {
       try { const r = await fetch(`${base}?${qs}`); if (r.ok) { data = await r.json(); break; } } catch { /* service suivant */ }
@@ -828,7 +829,7 @@ const OLD_TYPES = { 'vide-grenier': 'brocante', braderie: 'brocante', puces: 'br
   if (!places.length) document.querySelector('[data-mode="places"]').hidden = true;
 
   const depts = data.departments ?? [];
-  $('zone').textContent = depts.map((d) => DEPT_NAMES[d] ?? `Département ${d}`).join(', ');
+  $('zone').textContent = depts.map((d) => DEPT_NAMES[d] ?? `Département ${d}`).join(' · ');
   $('meta').innerHTML = `${data.generatedAt ? `Mis à jour le ${new Date(data.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. ` : ''}`
     + 'Données : DATAtourisme et OpenAgenda (Licence Ouverte), Ticketmaster, ministère de la Culture, © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). '
     + '<a href="mentions-legales.html">Mentions légales et confidentialité</a> · <a href="#" data-install>📲 Installer l\'appli</a>';
