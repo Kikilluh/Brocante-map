@@ -18,7 +18,7 @@ const VIEWERS = {
   bicycle: 'https://cycling.waymarkedtrails.org/#route?id=',
   mtb: 'https://mtb.waymarkedtrails.org/#route?id=',
 };
-const NETWORKS = { iwn: 'itinéraire international', nwn: 'GR / itinéraire national', rwn: 'GR de pays / régional', lwn: 'PR / boucle locale', icn: 'véloroute internationale', ncn: 'véloroute nationale', rcn: 'véloroute régionale', lcn: 'boucle vélo locale' };
+const NETWORKS = { iwn: 'itinéraire international', nwn: 'itinéraire national', rwn: 'itinéraire régional', lwn: 'boucle locale', icn: 'véloroute internationale', ncn: 'véloroute nationale', rcn: 'véloroute régionale', lcn: 'boucle vélo locale' };
 
 function distM(a, b) {
   const R = 6371000;
@@ -67,7 +67,7 @@ export function mapRelation(rel) {
 }
 
 export async function loadRoutes(dept, cacheDir, log = () => {}) {
-  const file = join(cacheDir, `routes-${dept}.json`);
+  const file = join(cacheDir, `routes-v2-${dept}.json`);
   try {
     if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) {
       const cached = JSON.parse(await readFile(file, 'utf8'));

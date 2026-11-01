@@ -74,7 +74,7 @@ jobs:
         if: env.HAS_FIREBASE == 'true'
         run: |
           sleep 10
-          for f in "" app.js style.css vendor/leaflet/leaflet.js vendor/markercluster/leaflet.markercluster.js data/events.json; do
+          for f in "" app.js style.css sw.js manifest.webmanifest mentions-legales.html icons/icon-192.png vendor/leaflet/leaflet.js vendor/markercluster/leaflet.markercluster.js data/events.json data/places.json; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://brocante-map.web.app/$f")
             echo "/$f -> $code"
             [ "$code" = "200" ] || exit 1

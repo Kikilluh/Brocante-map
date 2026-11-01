@@ -4,9 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Brocante Map – sorties en Touraine</title>
-  <meta name="description" content="Carte interactive des sorties en Indre-et-Loire : brocantes, concerts, spectacles, expositions, ateliers, randonnées… filtrable par date, type, âge et prix.">
+  <meta name="description" content="Que faire en Indre-et-Loire avec votre groupe ? Concerts, spectacles, expos, brocantes, ateliers, randonnées et lieux à visiter, filtrés selon votre groupe : âges, budget, distance.">
   <meta name="theme-color" content="#c2410c">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z' fill='%23c2410c'/%3E%3Ccircle cx='16' cy='13' r='4.5' fill='white'/%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Brocante Map">
+  <meta property="og:title" content="Brocante Map – sorties en Touraine">
+  <meta property="og:description" content="Toutes les sorties d'Indre-et-Loire sur une carte, filtrées pour votre groupe.">
+  <meta property="og:type" content="website">
   <!-- Leaflet est copié dans vendor/ au déploiement (voir le workflow), sans dépendre d'un CDN -->
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="vendor/markercluster/MarkerCluster.css">
@@ -14,97 +21,195 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="mode-events">
-  <header class="topbar">
-    <div class="brand">
-      <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z" fill="currentColor"/><circle cx="16" cy="13" r="4.5" fill="var(--surface)"/></svg>
-      <div>
-        <h1>Brocante Map</h1>
-        <p class="subtitle"><span id="zone">Indre-et-Loire</span> · toutes les sorties</p>
+  <header class="top">
+    <div class="top-row">
+      <a class="brand" href="./" aria-label="Brocante Map, accueil">
+        <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><path d="M16 2C10 2 5 7 5 13c0 8 11 17 11 17s11-9 11-17c0-6-5-11-11-11z" fill="currentColor"/><circle cx="16" cy="13" r="4.5" fill="#fff"/></svg>
+        <span class="brand-text"><strong>Brocante Map</strong><small id="zone">Indre-et-Loire</small></span>
+      </a>
+      <label class="search">
+        <span class="sr-only">Rechercher une commune, un lieu, un mot-clé</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M10 3a7 7 0 1 0 4.2 12.6l5.1 5.1 1.4-1.4-5.1-5.1A7 7 0 0 0 10 3zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10z" fill="currentColor"/></svg>
+        <input type="search" id="q" placeholder="Commune, lieu, mot-clé…" autocomplete="off" enterkeyhint="search">
+      </label>
+      <button class="icon-btn" id="openFilters" aria-label="Filtres" title="Filtres">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 5h18v2H3zm4 6h10v2H7zm3 6h4v2h-4z" fill="currentColor"/></svg>
+        <span class="dot-badge" id="filtersBadge" hidden></span>
+      </button>
+    </div>
+    <div class="top-row second">
+      <button class="group-btn" id="openGroup" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm7 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM9 13c-3.3 0-7 1.6-7 4v2h14v-2c0-2.4-3.7-4-7-4zm7 0c-.5 0-1 0-1.5.1 1.5.9 2.5 2.2 2.5 3.9v2h5v-2c0-2.3-3.4-4-6-4z" fill="currentColor"/></svg>
+        <span id="groupSummary">Notre groupe</span>
+      </button>
+      <div class="modes" role="tablist" aria-label="Que chercher ?">
+        <button class="mode" role="tab" data-mode="events" aria-selected="true">Sorties</button>
+        <button class="mode" role="tab" data-mode="places" aria-selected="false">Lieux &amp; activités</button>
       </div>
     </div>
-    <div class="modes" role="tablist" aria-label="Que chercher ?">
-      <button class="mode" role="tab" data-mode="events" aria-selected="true">Sorties</button>
-      <button class="mode" role="tab" data-mode="places" aria-selected="false">À visiter</button>
+    <div class="chips-row ev-only" role="group" aria-label="Période">
+      <button class="chip" data-preset="today">Aujourd'hui</button>
+      <button class="chip" data-preset="weekend">Ce week-end</button>
+      <button class="chip" data-preset="nextweekend">Week-end prochain</button>
+      <button class="chip" data-preset="7">7 jours</button>
+      <button class="chip" data-preset="30">30 jours</button>
+      <button class="chip" data-preset="all">Tout</button>
     </div>
-    <button class="btn ghost only-mobile" id="toggleFilters" aria-expanded="false" aria-controls="filters">Filtres</button>
+    <div class="chips-row desktop-only">
+      <div class="types ev-only" data-types-container></div>
+      <div class="types place-only" data-kinds-container></div>
+    </div>
   </header>
 
-  <section class="filters" id="filters" aria-label="Filtres">
-    <div class="row ev-only">
-      <div class="presets" role="group" aria-label="Période rapide">
-        <button class="chip" data-preset="today">Aujourd'hui</button>
-        <button class="chip" data-preset="weekend">Ce week-end</button>
-        <button class="chip" data-preset="nextweekend">Week-end prochain</button>
-        <button class="chip" data-preset="7">7 jours</button>
-        <button class="chip" data-preset="30">30 jours</button>
-        <button class="chip" data-preset="all">Tout</button>
-      </div>
-      <div class="range">
-        <label>Du <input type="date" id="from"></label>
-        <label>au <input type="date" id="to"></label>
-      </div>
-    </div>
-    <div class="row">
-      <div class="types ev-only" id="types" role="group" aria-label="Type d'activité"></div>
-      <div class="types place-only" id="kinds" role="group" aria-label="Type de lieu"></div>
-      <button class="link" id="allTypes" type="button">Tout cocher</button>
-    </div>
-    <div class="row group">
-      <label class="field ev-only">Participants
-        <input type="number" id="people" min="1" max="50" value="1" inputmode="numeric">
-      </label>
-      <fieldset class="field ages ev-only">
-        <legend>Âges du groupe</legend>
-        <input type="number" id="ageMin" min="0" max="99" placeholder="de" inputmode="numeric" aria-label="Âge du plus jeune">
-        <span>à</span>
-        <input type="number" id="ageMax" min="0" max="99" placeholder="à" inputmode="numeric" aria-label="Âge du plus âgé">
-        <span>ans</span>
-      </fieldset>
-      <label class="field ev-only">Prix / pers.
-        <select id="price">
-          <option value="all">Tous</option>
-          <option value="free">Gratuit</option>
-          <option value="5">≤ 5 €</option>
-          <option value="10">≤ 10 €</option>
-          <option value="20">≤ 20 €</option>
-          <option value="50">≤ 50 €</option>
-        </select>
-      </label>
-      <label class="check ev-only"><input type="checkbox" id="unknown" checked> inclure les infos non précisées</label>
-      <label class="search">
-        <span class="sr-only">Commune ou mot-clé</span>
-        <input type="search" id="q" placeholder="Commune, mot-clé…" autocomplete="off">
-      </label>
-      <button class="link" id="reset" type="button">Réinitialiser</button>
-    </div>
-  </section>
-
-  <div id="mapError" class="banner" hidden>
-    La carte n'a pas pu se charger. La liste et les filtres restent utilisables.
-  </div>
-  <div id="demoBanner" class="banner" hidden>
-    Données de démonstration — la carte sera alimentée automatiquement dès la première collecte.
-  </div>
+  <div id="mapError" class="banner" hidden>La carte n'a pas pu se charger. La liste et les filtres restent utilisables.</div>
+  <div id="demoBanner" class="banner" hidden>Données de démonstration.</div>
 
   <main class="layout">
-    <div id="map" aria-label="Carte des événements"></div>
-    <aside class="panel" id="panel">
-      <button class="panel-handle only-mobile" id="panelHandle" aria-expanded="false">
-        <span id="count">…</span>
-      </button>
-      <div class="panel-head">
-        <strong id="countDesk">…</strong>
-        <label class="sort ev-only">Tri
-          <select id="sort">
-            <option value="date">par date</option>
-            <option value="distance">par distance</option>
-          </select>
-        </label>
+    <div id="map" aria-label="Carte"></div>
+    <button class="locate-btn" id="locate" aria-label="Me localiser" title="Me localiser">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm9 3h-2.1A7 7 0 0 0 13 5.1V3h-2v2.1A7 7 0 0 0 5.1 11H3v2h2.1a7 7 0 0 0 5.9 5.9V21h2v-2.1a7 7 0 0 0 5.9-5.9H21v-2zm-9 6a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" fill="currentColor"/></svg>
+    </button>
+
+    <section class="sheet" id="sheet" data-state="peek" aria-label="Résultats">
+      <div class="sheet-handle" id="sheetHandle">
+        <span class="grip" aria-hidden="true"></span>
+        <div class="sheet-head">
+          <strong id="count">…</strong>
+          <label class="sort ev-only">
+            <span class="sr-only">Trier</span>
+            <select id="sort">
+              <option value="date">Par date</option>
+              <option value="distance">Par distance</option>
+            </select>
+          </label>
+        </div>
       </div>
-      <ol class="list" id="list"></ol>
-      <footer class="meta" id="meta"></footer>
-    </aside>
+      <div class="sheet-body" id="sheetBody">
+        <ol class="list" id="list"></ol>
+        <article class="detail" id="detail" hidden></article>
+        <footer class="meta" id="meta"></footer>
+      </div>
+    </section>
   </main>
+
+  <!-- Filtres -->
+  <dialog class="modal" id="filtersDialog" aria-labelledby="filtersTitle">
+    <form method="dialog" class="modal-inner">
+      <header class="modal-head">
+        <h2 id="filtersTitle">Filtres</h2>
+        <button class="icon-btn" value="close" aria-label="Fermer">✕</button>
+      </header>
+      <div class="modal-body">
+        <section class="ev-only">
+          <h3>Période</h3>
+          <div class="chips-wrap" data-presets-copy></div>
+          <div class="range">
+            <label>Du <input type="date" id="from"></label>
+            <label>au <input type="date" id="to"></label>
+          </div>
+        </section>
+        <section>
+          <h3>Type <button type="button" class="link" id="allTypes">Tout cocher</button></h3>
+          <div class="types ev-only" data-types-container></div>
+          <div class="types place-only" data-kinds-container></div>
+        </section>
+        <section class="ev-only">
+          <label class="switch"><input type="checkbox" id="unknown" checked> <span>Garder les sorties dont le prix ou l'âge n'est pas précisé</span></label>
+        </section>
+      </div>
+      <footer class="modal-foot">
+        <button type="button" class="btn ghost" id="reset">Tout réinitialiser</button>
+        <button class="btn primary" value="close" id="filtersApply">Voir les résultats</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <!-- Assistant « Notre groupe » -->
+  <dialog class="modal" id="groupDialog" aria-labelledby="groupTitle">
+    <form method="dialog" class="modal-inner" id="groupForm">
+      <header class="modal-head">
+        <h2 id="groupTitle">Notre groupe</h2>
+        <button class="icon-btn" value="close" aria-label="Fermer">✕</button>
+      </header>
+      <ol class="steps" aria-hidden="true"><li></li><li></li><li></li><li></li></ol>
+      <div class="modal-body">
+        <section class="step" data-step="0">
+          <h3>Qui sort ?</h3>
+          <div class="presets-group">
+            <button type="button" class="chip" data-gpreset="solo">Solo</button>
+            <button type="button" class="chip" data-gpreset="couple">En couple</button>
+            <button type="button" class="chip" data-gpreset="famille">En famille</button>
+            <button type="button" class="chip" data-gpreset="amis">Entre amis</button>
+          </div>
+          <div class="counter">
+            <span>Adultes</span>
+            <button type="button" class="round" data-adults="-1" aria-label="Un adulte de moins">−</button>
+            <output id="adults">2</output>
+            <button type="button" class="round" data-adults="1" aria-label="Un adulte de plus">+</button>
+          </div>
+          <div class="kids">
+            <div class="kids-head"><span>Enfants</span><button type="button" class="btn small" id="addKid">+ Ajouter un enfant</button></div>
+            <ul id="kidsList"></ul>
+          </div>
+        </section>
+
+        <section class="step" data-step="1" hidden>
+          <h3>Quand ?</h3>
+          <div class="chips-wrap" data-presets-copy></div>
+          <h3>À quel moment de la journée ?</h3>
+          <div class="chips-wrap" id="moments">
+            <button type="button" class="chip" data-moment="any">Peu importe</button>
+            <button type="button" class="chip" data-moment="matin">Matin</button>
+            <button type="button" class="chip" data-moment="aprem">Après-midi</button>
+            <button type="button" class="chip" data-moment="soir">Soirée</button>
+          </div>
+        </section>
+
+        <section class="step" data-step="2" hidden>
+          <h3>Où ?</h3>
+          <div class="where">
+            <button type="button" class="btn" id="useMyPos">◎ Autour de moi</button>
+            <div class="addr">
+              <input type="search" id="addr" placeholder="ou une commune, une adresse…" autocomplete="off">
+              <ul class="suggest" id="addrSuggest" hidden></ul>
+            </div>
+            <p class="muted" id="centerLabel">Toute l'Indre-et-Loire</p>
+          </div>
+          <h3>Jusqu'à quelle distance ?</h3>
+          <div class="chips-wrap" id="radii">
+            <button type="button" class="chip" data-radius="10">10 km</button>
+            <button type="button" class="chip" data-radius="20">20 km</button>
+            <button type="button" class="chip" data-radius="30">30 km</button>
+            <button type="button" class="chip" data-radius="50">50 km</button>
+            <button type="button" class="chip" data-radius="0">Pas de limite</button>
+          </div>
+        </section>
+
+        <section class="step" data-step="3" hidden>
+          <h3>Budget</h3>
+          <div class="chips-wrap" id="budgets">
+            <button type="button" class="chip" data-budget="">Peu importe</button>
+            <button type="button" class="chip" data-budget="0">Gratuit</button>
+            <button type="button" class="chip" data-budget="5">≤ 5 €</button>
+            <button type="button" class="chip" data-budget="10">≤ 10 €</button>
+            <button type="button" class="chip" data-budget="20">≤ 20 €</button>
+            <button type="button" class="chip" data-budget="40">≤ 40 €</button>
+          </div>
+          <div class="seg" role="radiogroup" aria-label="Budget par personne ou pour tout le groupe">
+            <label><input type="radio" name="budgetMode" value="person" checked> par personne</label>
+            <label><input type="radio" name="budgetMode" value="total"> pour tout le groupe</label>
+          </div>
+          <h3>Envies</h3>
+          <div class="chips-wrap" id="envies"></div>
+        </section>
+      </div>
+      <footer class="modal-foot">
+        <button type="button" class="btn ghost" id="groupPrev">Retour</button>
+        <button type="button" class="btn ghost" id="groupClear">Effacer</button>
+        <button type="button" class="btn primary" id="groupNext">Suivant</button>
+      </footer>
+    </form>
+  </dialog>
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="vendor/markercluster/leaflet.markercluster.js"></script>

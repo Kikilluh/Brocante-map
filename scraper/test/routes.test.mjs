@@ -21,7 +21,7 @@ test('relation OSM → itinéraire avec lien Waymarked Trails', () => {
   assert.equal(r.lat, 47.4);
   assert.equal(r.distanceKm, 12.5);
   assert.equal(r.routeUrl, 'https://hiking.waymarkedtrails.org/#route?id=123');
-  assert.equal(r.network, 'PR / boucle locale');
+  assert.equal(r.network, 'boucle locale');
   const v = mapRelation({ id: 9, tags: { route: 'bicycle', name: 'La Loire à Vélo', network: 'icn' }, members: [{ type: 'way', geometry: [p(47.3, 0.4), p(47.3, 0.5)] }] });
   assert.equal(v.kind, 'velo');
   assert.equal(v.partial, true);

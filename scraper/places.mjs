@@ -27,6 +27,7 @@ const arr = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 
 // ---------- Types de lieux ----------
 export const KINDS = [
+  ['activite', /IntroductionCourse|AccompaniedPractice|Practice|Course|Lesson|Workshop|Training|Activity|Initiation/i],
   ['musee', /Museum|InterpretationCentre|ArtGallery|Ecomuseum|mus[ée]e|galerie/i],
   ['chateau', /Castle|Chateau|Château|Manor|Fortress|Palace|ch[âa]teau|forteresse|manoir|logis royal/i],
   ['patrimoine', /ReligiousSite|Church|Abbey|Chapel|Cathedral|Monument|RemarkableBuilding|HistoricSite|ArcheologicalSite|Cave|Troglodyte|CulturalSite|Mill|[ée]glise|abbaye|chapelle|moulin|troglo/i],

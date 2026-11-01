@@ -67,7 +67,8 @@ export function parsePrice(text = '') {
 
 /** Âges depuis un texte libre : { ageMin, ageMax }. */
 export function parseAge(text = '') {
-  const t = String(text).toLowerCase();
+  // Les âges cités dans un tarif (« gratuit jusqu'à 12 ans », « réduit pour les 18-25 ans ») ne sont pas des limites d'âge
+  const t = String(text).toLowerCase().replace(/(gratuit|gratuité|tarifs?|r[ée]duit|offert|demi-tarif|exon[ée]r|€|euros?)[^.;\n]{0,45}/g, ' ');
   let m;
   if ((m = t.match(/(\d{1,2})\s*(?:-|à|a)\s*(\d{1,2})\s*ans/))) return { ageMin: +m[1], ageMax: +m[2] };
   if ((m = t.match(/(?:d[èe]s|[àa] partir de|plus de|\+\s?de|\+)\s*(\d{1,2})\s*ans/))) return { ageMin: +m[1], ageMax: null };

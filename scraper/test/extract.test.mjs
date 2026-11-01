@@ -67,6 +67,8 @@ test('prix, âges, jauge depuis le texte', () => {
   assert.deepEqual(parsePrice('Gratuit pour les enfants, 5 € adultes'), { free: false, priceMin: 0, priceMax: 5 });
   assert.deepEqual(parseAge('dès 6 ans'), { ageMin: 6, ageMax: null });
   assert.deepEqual(parseAge('pour les 8-12 ans'), { ageMin: 8, ageMax: 12 });
+  assert.deepEqual(parseAge('Entrée 5 €, gratuit jusqu\'à 26 ans'), { ageMin: null, ageMax: null });
+  assert.deepEqual(parseAge('Tarif réduit pour les moins de 12 ans. Atelier dès 6 ans'), { ageMin: 6, ageMax: null });
   assert.equal(parseCapacity('Places limitées à 15 personnes'), 15);
   assert.equal(parseCapacity('200 exposants'), null);
 });
