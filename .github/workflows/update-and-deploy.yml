@@ -47,7 +47,11 @@ jobs:
             echo "Pas de changement"
           else
             git commit -m "Mise à jour des brocantes ($(date -u +%F))"
-            git push
+            # main a pu avancer pendant la collecte : on se replace dessus avant d'envoyer
+            for i in 1 2 3; do
+              git pull --rebase -X theirs origin "${GITHUB_REF_NAME}" && git push && break
+              sleep 5
+            done
           fi
 
       - name: Déploiement Firebase Hosting
