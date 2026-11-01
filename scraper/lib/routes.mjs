@@ -69,7 +69,10 @@ export function mapRelation(rel) {
 export async function loadRoutes(dept, cacheDir, log = () => {}) {
   const file = join(cacheDir, `routes-${dept}.json`);
   try {
-    if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) return JSON.parse(await readFile(file, 'utf8'));
+    if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) {
+      const cached = JSON.parse(await readFile(file, 'utf8'));
+      if (cached.length) return cached; // un cache vide est ignoré
+    }
   } catch {
     /* pas de cache */
   }
@@ -81,7 +84,7 @@ export async function loadRoutes(dept, cacheDir, log = () => {}) {
   const q = `[out:json][timeout:240][maxsize:536870912];
 area["ref:INSEE"="${dept}"]["admin_level"="6"]->.d;
 rel(area.d)["type"="route"]["route"~"^(hiking|foot|bicycle|mtb)$"];
-out tags geom(${bb.join(',')});`;
+out body geom(${bb.join(',')});`;
   try {
     const res = await fetch(OVERPASS, {
       method: 'POST',

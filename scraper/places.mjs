@@ -167,13 +167,26 @@ async function dataGouv(query, titleRe, orgRe = /minist[eè]re de la culture/i) 
     log(`  « ${ds.title} » ignoré : licence « ${ds.license} » non ouverte`);
     return null;
   }
-  const r = (ds.resources ?? []).find((x) => /csv/i.test(x.format ?? '')) ?? (ds.resources ?? []).find((x) => /json/i.test(x.format ?? ''));
-  if (!r) {
-    log(`  « ${ds.title} » : pas de fichier CSV/JSON`);
+  // On essaie les fichiers CSV puis JSON du jeu, jusqu'à en trouver un avec des lignes
+  const candidates = [
+    ...(ds.resources ?? []).filter((x) => /csv/i.test(x.format ?? '')),
+    ...(ds.resources ?? []).filter((x) => /json/i.test(x.format ?? '')),
+  ];
+  let rows = [];
+  for (const r of candidates) {
+    try {
+      const text = await fetchText(r.url, { checkRobots: false });
+      if (/^\s*</.test(text)) continue; // page HTML, pas un fichier de données
+      rows = /json/i.test(r.format) ? listOf(JSON.parse(text)) : parseCsv(text);
+      if (rows.length) break;
+    } catch (e) {
+      log(`  fichier ${r.title ?? r.url} illisible : ${e.message}`);
+    }
+  }
+  if (!rows.length) {
+    log(`  « ${ds.title} » : aucun fichier exploitable parmi ${candidates.length} (formats : ${(ds.resources ?? []).map((x) => x.format).join(', ')})`);
     return null;
   }
-  const text = await fetchText(r.url, { checkRobots: false });
-  const rows = /json/i.test(r.format) ? listOf(JSON.parse(text)) : parseCsv(text);
   log(`  « ${ds.title} » (licence ${ds.license}) : ${rows.length} lignes ; colonnes : ${Object.keys(rows[0] ?? {}).slice(0, 30).join(' | ')}`);
   return { rows, title: ds.title, page: ds.page ?? `https://www.data.gouv.fr/datasets/${ds.slug}/`, license: ds.license };
 }
