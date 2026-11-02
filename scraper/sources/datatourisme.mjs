@@ -11,6 +11,14 @@ import { splitVenue } from '../lib/venues.mjs';
 import { isEventUrl } from '../lib/normalize.mjs';
 
 const arr = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
+const DAY_NAMES = [/Sunday|dimanche/i, /Monday|lundi/i, /Tuesday|mardi/i, /Wednesday|mercredi/i, /Thursday|jeudi/i, /Friday|vendredi/i, /Saturday|samedi/i];
+/** Jours de la semaine (0 = dimanche … 6 = samedi) d'une période DATAtourisme, ou null si non précisés. */
+export function weekdaysOf(v) {
+  if (v == null) return null;
+  const text = JSON.stringify(v);
+  const days = DAY_NAMES.map((re, i) => (re.test(text) ? i : -1)).filter((i) => i >= 0);
+  return days.length && days.length < 7 ? days : null;
+}
 
 /** Texte en français depuis une valeur multilingue (string, {"@fr":..}, {fr:[..]}, [...]). */
 export function fr(v) {
@@ -139,6 +147,8 @@ export function mapNode(n) {
       start: fr(get(p, 'startDate', 'start')),
       end: fr(get(p, 'endDate', 'end')),
       hours: hhmm(st) ? `${hhmm(st)}${hhmm(et) ? '–' + hhmm(et) : ''}` : null,
+      // jours de la semaine (« tous les mardis » sur une longue période) : appliesOnDay
+      days: weekdaysOf(get(p, 'appliesOnDay')),
     };
   });
   if (!occurrences.length) {

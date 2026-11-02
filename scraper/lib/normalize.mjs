@@ -169,7 +169,7 @@ export function makeEvent(raw, source) {
       if (!start) return null;
       let end = toDay(o.end) || start;
       if (end < start) end = start;
-      return { start, end, hours: o.hours ? cleanText(o.hours) : null };
+      return { start, end, hours: o.hours ? cleanText(o.hours) : null, ...(o.days?.length ? { days: o.days } : {}) };
     })
     .filter(Boolean)
     .sort((a, b) => a.start.localeCompare(b.start));
@@ -219,4 +219,26 @@ export function makeEvent(raw, source) {
     imageCredit: raw.imageCredit ? cleanText(raw.imageCredit).slice(0, 120) : null,
     sources: [{ id: source, url: raw.url || null }],
   };
+}
+
+/**
+ * Période longue avec jours de la semaine (« tous les mardis de mai à octobre ») → une date par jour concerné,
+ * entre aujourd'hui et l'horizon (au plus `cap` dates). Les autres occurrences sont rendues telles quelles.
+ */
+export function expandRecurring(occurrences, { today, horizon, maxDays = 14, cap = 30 }) {
+  const out = [];
+  for (const o of occurrences) {
+    const span = (Date.parse(o.end) - Date.parse(o.start)) / 864e5;
+    if (!o.days?.length || span <= maxDays) { const { days, ...rest } = o; out.push(rest); continue; }
+    const from = new Date(`${o.start > today ? o.start : today}T12:00:00Z`);
+    const to = o.end < horizon ? o.end : horizon;
+    let n = 0;
+    for (let d = from; d.toISOString().slice(0, 10) <= to && n < cap; d = new Date(d.getTime() + 864e5)) {
+      if (!o.days.includes(d.getUTCDay())) continue;
+      const day = d.toISOString().slice(0, 10);
+      out.push({ start: day, end: day, hours: o.hours ?? null });
+      n++;
+    }
+  }
+  return out.sort((a, b) => a.start.localeCompare(b.start));
 }

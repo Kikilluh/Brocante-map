@@ -80,3 +80,15 @@ test('image principale et crédits (droits expirés ignorés)', async () => {
   const old = { hasMainRepresentation: [{ hasAnnotation: [{ rightsEndDate: '2020-01-01' }], hasRelatedResource: [{ locator: ['https://x/y.jpg'] }] }] };
   assert.deepEqual(readImage(old), {});
 });
+
+test('période longue « tous les mardis » → une date par mardi', async () => {
+  const { expandRecurring } = await import('../lib/normalize.mjs');
+  const { weekdaysOf } = await import('../sources/datatourisme.mjs');
+  assert.deepEqual(weekdaysOf([{ '@id': 'schema:Tuesday' }]), [2]);
+  assert.equal(weekdaysOf(null), null);
+  const occ = expandRecurring([{ start: '2026-11-01', end: '2027-03-31', hours: '08:00', days: [2] }], { today: '2026-11-02', horizon: '2026-11-30' });
+  assert.deepEqual(occ.map((o) => o.start), ['2026-11-03', '2026-11-10', '2026-11-17', '2026-11-24']);
+  assert.equal(occ[0].hours, '08:00');
+  // période courte : inchangée (jours retirés)
+  assert.deepEqual(expandRecurring([{ start: '2026-11-07', end: '2026-11-08', days: [6, 0] }], { today: '2026-11-02', horizon: '2026-12-31' }), [{ start: '2026-11-07', end: '2026-11-08' }]);
+});

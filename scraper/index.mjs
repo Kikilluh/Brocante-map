@@ -8,7 +8,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { configureHttp } from './lib/http.mjs';
-import { makeEvent } from './lib/normalize.mjs';
+import { makeEvent, expandRecurring } from './lib/normalize.mjs';
 import { createGeocoder } from './lib/geocode.mjs';
 import { dedupe } from './lib/dedupe.mjs';
 import { createVenueFinder } from './lib/venues.mjs';
@@ -66,21 +66,32 @@ for (const source of config.sources) {
 const LONG_OK = new Set(config.longEventCategories ?? ['exposition']);
 const maxDays = config.maxDurationDays ?? 14;
 const inScope = [];
+const dropped = { passe: 0, tropLong: 0, horsZone: 0, nonLocalise: 0 };
+let expanded = 0;
 for (const ev of collected) {
+  // « tous les mardis de mai à octobre » → une date par mardi (au lieu d'écarter la période entière)
+  if (ev.occurrences.some((o) => o.days?.length)) {
+    const before = ev.occurrences.length;
+    ev.occurrences = expandRecurring(ev.occurrences, { today, horizon, maxDays });
+    if (ev.occurrences.length !== before) expanded++;
+  }
+  const upcoming = ev.occurrences.filter((o) => o.end >= today && o.start <= horizon);
+  if (!upcoming.length) { dropped.passe++; continue; }
   // On ne garde que les dates à venir dans l'horizon ; les très longues périodes (marché hebdomadaire
   // décrit sur toute l'année, lieu ouvert toute la saison) sont écartées, sauf pour les expositions.
   ev.occurrences = ev.occurrences.filter(
     (o) => o.end >= today && o.start <= horizon && (LONG_OK.has(ev.category) || (Date.parse(o.end) - Date.parse(o.start)) / 864e5 <= maxDays),
   );
-  if (!ev.occurrences.length) continue;
+  if (!ev.occurrences.length) { dropped.tropLong++; continue; }
   ev.start = ev.occurrences[0].start;
   ev.end = ev.occurrences.at(-1).end;
   ev.hours = ev.occurrences[0].hours;
   await geocoder.geocode(ev);
-  if (ev.lat == null || ev.lon == null) continue;
-  if (!ev.dept || !departments.includes(ev.dept)) continue;
+  if (ev.lat == null || ev.lon == null) { dropped.nonLocalise++; continue; }
+  if (!ev.dept || !departments.includes(ev.dept)) { dropped.horsZone++; continue; }
   inScope.push(ev);
 }
+console.log(`Écartés : ${dropped.passe} passés ou hors horizon, ${dropped.tropLong} périodes trop longues sans jours précis, ${dropped.horsZone} hors zone, ${dropped.nonLocalise} non localisés ; ${expanded} récurrences développées en dates`);
 await geocoder.save();
 
 // Nom du lieu manquant : lieu nommé OpenStreetMap le plus proche (seulement si la position est précise)
