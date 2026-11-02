@@ -8,6 +8,7 @@
 import { readFile, writeFile, mkdir, rm, readdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { deptBbox } from './depts.mjs';
 
 export const DATA_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '..', 'public', 'data');
 
@@ -90,12 +91,29 @@ function bboxOf(items) {
   return [s, w, n, e].map((v) => Math.round(v * 1000) / 1000);
 }
 
+// France métropolitaine (secours si l'emprise officielle d'un département est indisponible)
+const METRO = [41.2, -5.6, 51.2, 9.7];
+const inBox = (x, [s, w, n, e], m = 0) => x.lat >= s - m && x.lat <= n + m && x.lon >= w - m && x.lon <= e + m;
+
+/**
+ * Garde-fou : un élément placé hors de son département (géocodage d'une commune homonyme à l'étranger,
+ * coordonnées inversées…) est écarté, sinon il apparaît au Maroc ou dans l'océan et fausse l'emprise.
+ */
+export function insideDept(items, d, official, log = () => {}) {
+  const box = official ?? (/^9[78]/.test(d) ? null : METRO);
+  if (!box) return items;
+  const ok = items.filter((x) => Number.isFinite(x.lat) && Number.isFinite(x.lon) && inBox(x, box, official ? 0.1 : 0));
+  if (ok.length < items.length) log(`  ⚠ ${d} : ${items.length - ok.length} élément(s) hors du département écarté(s) (mauvaise position)`);
+  return ok;
+}
+
 /** Écrit un fichier par département et met à jour index.json. */
-export async function writeSplit(kind, items, { departments, all = departments, sources }) {
+export async function writeSplit(kind, items, { departments, all = departments, sources, log = console.warn }) {
   const index = await readIndex();
   index.depts ??= {};
   for (const d of departments) {
-    const mine = items.filter((x) => x.dept === d);
+    const official = await deptBbox(d, log);
+    const mine = insideDept(items.filter((x) => x.dept === d), d, official, log);
     await mkdir(join(DATA_DIR, d), { recursive: true });
     await writeFile(join(DATA_DIR, d, `${kind}.json`), JSON.stringify({ [kind]: mine }));
     const info = (index.depts[d] ??= {});
@@ -105,6 +123,12 @@ export async function writeSplit(kind, items, { departments, all = departments, 
     info.bboxes = { ...info.bboxes, [kind]: mine.length ? bboxOf(mine) : undefined };
     const bs = Object.values(info.bboxes).filter(Boolean);
     info.bbox = bs.length ? [Math.min(...bs.map((x) => x[0])), Math.min(...bs.map((x) => x[1])), Math.max(...bs.map((x) => x[2])), Math.max(...bs.map((x) => x[3]))] : null;
+    // jamais plus large que le département lui-même
+    if (info.bbox && official) {
+      const [s, w, n, e] = official;
+      info.bbox = [Math.max(info.bbox[0], s), Math.max(info.bbox[1], w), Math.min(info.bbox[2], n), Math.min(info.bbox[3], e)];
+      if (info.bbox[0] > info.bbox[2] || info.bbox[1] > info.bbox[3]) info.bbox = official;
+    }
   }
   // départements retirés de la configuration
   for (const d of Object.keys(index.depts)) {
