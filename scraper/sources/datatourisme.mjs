@@ -170,6 +170,7 @@ export function mapNode(n) {
       city,
       lat: fr(get(geo, 'latitude', 'lat')),
       lon: fr(get(geo, 'longitude', 'lon', 'lng')),
+      periodsRaw: arr(get(n, 'takesPlaceAt', 'periods', 'dates')).slice(0, 2),
       url,
       // hasContact.homepage = souvent le site général de l'organisateur, pas la page de l'événement
       urlKind: url && !isEventUrl(url, title) ? 'site' : null,
@@ -189,7 +190,7 @@ export function listOf(data) {
 }
 
 const FIELDS = [
-  'uuid', 'label', 'type', 'isLocatedAt.geo', 'isLocatedAt.address', 'takesPlaceAt', 'offers', 'hasDescription',
+  'uuid', 'label', 'type', 'isLocatedAt.geo', 'isLocatedAt.address', 'takesPlaceAt', 'takesPlaceAt.startDate', 'takesPlaceAt.endDate', 'takesPlaceAt.startTime', 'takesPlaceAt.endTime', 'takesPlaceAt.appliesOnDay', 'offers', 'hasDescription',
   'hasContact.homepage', 'hasContact.legalName', 'hasMainRepresentation', 'hasClientTarget', 'allowedPersons', 'hasTheme', 'hasBeenCreatedBy.legalName',
 ].join(',');
 

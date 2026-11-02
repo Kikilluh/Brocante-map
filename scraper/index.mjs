@@ -51,6 +51,7 @@ for (const source of config.sources) {
     for (const raw of raws) {
       const ev = makeEvent(raw, source.id);
       if (!ev) continue;
+      if (raw.periodsRaw) Object.defineProperty(ev, '_raw', { value: raw.periodsRaw, enumerable: false });
       collected.push(ev);
       kept++;
     }
@@ -82,7 +83,12 @@ for (const ev of collected) {
   ev.occurrences = ev.occurrences.filter(
     (o) => o.end >= today && o.start <= horizon && (LONG_OK.has(ev.category) || (Date.parse(o.end) - Date.parse(o.start)) / 864e5 <= maxDays),
   );
-  if (!ev.occurrences.length) { dropped.tropLong++; continue; }
+  if (!ev.occurrences.length) {
+    // diagnostic : un exemple de période longue écartée, pour voir comment la source décrit les récurrences
+    if (!dropped.tropLong && ev._raw) console.log(`  exemple de période longue écartée : ${ev.title} → ${JSON.stringify(ev._raw).slice(0, 600)}`);
+    dropped.tropLong++;
+    continue;
+  }
   ev.start = ev.occurrences[0].start;
   ev.end = ev.occurrences.at(-1).end;
   ev.hours = ev.occurrences[0].hours;
