@@ -152,6 +152,52 @@
       "enabled": true,
       "_comment": "Ajouts manuels : data/manual.json",
       "file": "../data/manual.json"
+    },
+    {
+      "id": "agendas-locaux",
+      "type": "feeds",
+      "enabled": true,
+      "_comment": "Agendas des collectivités (mairies, intercommunalités, offices de tourisme publics). Le flux est détecté automatiquement depuis l'adresse du site (iCal, WordPress The Events Calendar, données structurées) ; « feed » pour l'imposer, « city » pour une mairie. Seuls les faits (titre, dates, lieu, lien) et un court extrait sont repris, avec la source.",
+      "sites": [
+        {
+          "name": "Communauté de communes Autour de Chenonceaux",
+          "url": "https://www.cc-autourdechenonceaux.fr/",
+          "dept": "37"
+        },
+        {
+          "name": "Ville de Blois",
+          "url": "https://www.blois.fr/",
+          "dept": "41",
+          "city": "Blois"
+        },
+        {
+          "name": "Agglopolys (Blois)",
+          "url": "https://www.agglopolys.fr/",
+          "dept": "41"
+        },
+        {
+          "name": "Ville de Vendôme",
+          "url": "https://www.vendome.fr/",
+          "dept": "41",
+          "city": "Vendôme"
+        },
+        {
+          "name": "Ville de Romorantin-Lanthenay",
+          "url": "https://www.romorantin.fr/",
+          "dept": "41",
+          "city": "Romorantin-Lanthenay"
+        },
+        {
+          "name": "Département de Loir-et-Cher",
+          "url": "https://www.departement41.fr/",
+          "dept": "41"
+        },
+        {
+          "name": "Office de tourisme Blois-Chambord",
+          "url": "https://www.bloischambord.co/",
+          "dept": "41"
+        }
+      ]
     }
   ],
   "maxDurationDays": 14,

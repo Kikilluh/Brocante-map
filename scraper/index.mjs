@@ -19,8 +19,9 @@ import * as datatourisme from './sources/datatourisme.mjs';
 import * as openagenda from './sources/openagenda.mjs';
 import * as manual from './sources/manual.mjs';
 import * as ticketmaster from './sources/ticketmaster.mjs';
+import * as feeds from './sources/feeds.mjs';
 
-const ADAPTERS = { 'structured-html': structuredHtml, datatourisme, openagenda, manual, ticketmaster };
+const ADAPTERS = { 'structured-html': structuredHtml, datatourisme, openagenda, manual, ticketmaster, feeds };
 const ROOT = dirname(fileURLToPath(import.meta.url));
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => a.replace(/^--/, '').split('=')));

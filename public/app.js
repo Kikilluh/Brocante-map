@@ -34,7 +34,7 @@ const EALL = Object.keys(ENVIES);
 const DEPT_NAMES = { '18': 'Cher', '28': 'Eure-et-Loir', '36': 'Indre', '37': 'Indre-et-Loire', '41': 'Loir-et-Cher', '38': 'Isère', '45': 'Loiret', '58': 'Nièvre' };
 const SOURCE_NAMES = {
   datatourisme: 'DATAtourisme', openagenda: 'OpenAgenda', manual: 'ajout manuel', ticketmaster: 'Ticketmaster',
-  museofile: 'Musées de France', festivals: 'Liste des festivals', 'datatourisme-lieux': 'DATAtourisme',
+  museofile: 'Musées de France', festivals: 'Liste des festivals', 'agendas-locaux': 'Agenda de la collectivité', 'datatourisme-lieux': 'DATAtourisme',
   'datatourisme-itineraires': 'DATAtourisme', 'osm-itineraires': 'OpenStreetMap',
 };
 const MOMENTS = { any: 'Peu importe', matin: 'le matin', aprem: "l'après-midi", soir: 'en soirée' };
