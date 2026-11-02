@@ -7,7 +7,7 @@
 //  - data.gouv.fr « Musées de France – Muséofile » et « Liste des festivals en France » (ministère de la Culture) :
 //    la licence est vérifiée à chaque collecte via l'API data.gouv.fr ; jeu ignoré si elle n'est pas ouverte.
 
-import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm, stat } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { configureHttp, fetchText } from './lib/http.mjs';
@@ -19,10 +19,11 @@ import { loadRoutes } from './lib/routes.mjs';
 import { deptBboxes } from './lib/depts.mjs';
 import { createElevation } from './lib/elevation.mjs';
 import { readPrevious, writeSplit, keepMissing, deptByBbox, DATA_DIR } from './lib/store.mjs';
+import { loadConfig, deptsFromArgs } from './lib/config.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const config = JSON.parse(await readFile(join(ROOT, 'config.json'), 'utf8'));
-const departments = config.departments;
+const config = await loadConfig();
+const departments = deptsFromArgs(config);
 configureHttp({ delayMs: config.requestDelayMs, userAgent: config.userAgent });
 const log = console.log;
 const arr = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
@@ -47,12 +48,33 @@ function kindOf(types, label) {
 }
 
 // ---------- DATAtourisme ----------
+// Les lieux changent peu : réponse gardée 6 jours (quota DATAtourisme : 1 000 pages par heure pour toute la France)
+const DT_MAX_AGE = 6 * 864e5;
 async function dtFetchAll(endpoint, fields) {
   const key = process.env.DATATOURISME_API_KEY;
   if (!key) {
     log('  DATATOURISME_API_KEY absent');
     return [];
   }
+  const cacheFile = join(ROOT, 'cache', `dt-${endpoint}-${departments.join('-')}.json`);
+  try {
+    const st = await stat(cacheFile);
+    if (Date.now() - st.mtimeMs < DT_MAX_AGE) {
+      const cached = JSON.parse(await readFile(cacheFile, 'utf8'));
+      if (cached.length) {
+        log(`  /${endpoint} : ${cached.length} objets (cache de ${Math.round((Date.now() - st.mtimeMs) / 864e5)} j)`);
+        return cached;
+      }
+    }
+  } catch { /* pas de cache */ }
+  const fresh = await dtFetchAllLive(endpoint, fields, key);
+  if (fresh.length) {
+    await mkdir(join(ROOT, 'cache'), { recursive: true });
+    await writeFile(cacheFile, JSON.stringify(fresh));
+  }
+  return fresh;
+}
+async function dtFetchAllLive(endpoint, fields, key) {
   const depts = departments.join(',');
   let url = new URL(`https://api.datatourisme.fr/v1/${endpoint}`);
   url.searchParams.set('filters', `isLocatedAt.address.hasAddressCity.isPartOfDepartment.insee[in]=${depts}`);
@@ -406,5 +428,5 @@ else {
   }
   await elevation.save();
   log(`${n} tracés d'itinéraires écrits`);
-  await writeSplit('places', located, { departments, sources: report });
+  await writeSplit('places', located, { departments, all: config.departments, sources: report });
 }

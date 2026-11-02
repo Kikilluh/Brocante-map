@@ -1,12 +1,15 @@
 name: Collecte des brocantes et déploiement
 
+# Une collecte par groupe de départements (région), en parallèle, puis une seule mise en ligne.
+# Les groupes sont définis dans scraper/config.json (« groups »).
+
 on:
   schedule:
     - cron: '17 4 * * *'   # tous les jours vers 5h/6h (heure de Paris)
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['public/**', 'scraper/**', 'data/**', 'firebase.json', '.github/workflows/**']
+    paths: ['public/**', 'scraper/**', 'data/**', 'firebase.json', 'firestore.rules', '.github/workflows/**']
 
 permissions:
   contents: read
@@ -16,46 +19,104 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update:
+  plan:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-    env:
-      HAS_FIREBASE: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+    outputs:
+      groups: ${{ steps.groups.outputs.groups }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tests du collecteur
+        run: npm test
+      - name: Groupes de départements
+        id: groups
+        run: echo "groups=$(node scraper/tools/groups.mjs)" >> "$GITHUB_OUTPUT"
 
+  collect:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 4   # ménage les services interrogés (OpenStreetMap, IGN, DATAtourisme)
+      matrix:
+        group: ${{ fromJson(needs.plan.outputs.groups) }}
+    name: collecte ${{ matrix.group.name }}
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Tests du collecteur
-        run: npm test
-
-      # Caches de géocodage et d'OpenStreetMap, conservés d'une collecte à l'autre (hors Git)
+      # Caches (géocodage, OpenStreetMap, altitudes, lieux DATAtourisme) propres à chaque groupe, hors Git
       - name: Caches de la collecte
         uses: actions/cache@v4
         with:
           path: scraper/cache
-          key: scraper-cache-${{ github.run_id }}
-          restore-keys: scraper-cache-
+          key: scraper-cache-${{ matrix.group.name }}-${{ github.run_id }}
+          restore-keys: |
+            scraper-cache-${{ matrix.group.name }}-
+            scraper-cache-
 
-      # Les données ne sont plus dans Git : on repart de celles en ligne (filet de sécurité si une source tombe)
+      # Filet de sécurité : les données en ligne de ces départements (si une source tombe)
       - name: Données actuellement en ligne
-        run: node scraper/tools/fetch-live.mjs
+        run: node scraper/tools/fetch-live.mjs --dept=${{ matrix.group.depts }}
 
-      - name: Collecte des événements
-        run: npm run scrape
+      - name: Collecte
+        run: |
+          node scraper/index.mjs --dept=${{ matrix.group.depts }}
+          node scraper/places.mjs --dept=${{ matrix.group.depts }}
         env:
           DATATOURISME_API_KEY: ${{ secrets.DATATOURISME_API_KEY }}
           DATATOURISME_FEED_URL: ${{ secrets.DATATOURISME_FEED_URL }}
           OPENAGENDA_KEY: ${{ secrets.OPENAGENDA_KEY }}
           TICKETMASTER_KEY: ${{ secrets.TICKETMASTER_KEY }}
 
-      - name: Bibliothèques de carte (Leaflet) intégrées au site
+      - name: Préparer le résultat
         run: |
-          bash scripts/vendor.sh
-          # pour mémoire : l'ancien lien CDN utilisé avant (diagnostic)
-          curl -s -o /dev/null -w "cdnjs leaflet.min.js -> %{http_code}\n" https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js || true
+          mkdir -p out
+          echo '${{ matrix.group.depts }}' | tr ',' '\n' | jq -R . | jq -s . > out/owned.json
+          cp public/data/index.json out/index.json
+          for d in $(echo '${{ matrix.group.depts }}' | tr ',' ' '); do
+            [ -d "public/data/$d" ] && cp -r "public/data/$d" out/
+          done
+          du -sh out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: data-${{ matrix.group.name }}
+          path: out
+          retention-days: 3
+
+  deploy:
+    needs: [plan, collect]
+    # même si une région a échoué : ses départements gardent leurs données en ligne
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HAS_FIREBASE: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Données actuellement en ligne (secours des régions en échec)
+        run: node scraper/tools/fetch-live.mjs
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: data-*
+          path: parts
+
+      - name: Fusion des régions
+        run: node scraper/tools/merge-parts.mjs parts
+
+      - name: Bibliothèques de carte (Leaflet) intégrées au site
+        run: bash scripts/vendor.sh
 
       - name: Déploiement Firebase Hosting
         if: env.HAS_FIREBASE == 'true'
@@ -66,8 +127,7 @@ jobs:
           channelId: live
           projectId: ${{ vars.FIREBASE_PROJECT_ID || 'brocante-map' }}
 
-      # Règles de sécurité Firestore (comptes). Nécessite le rôle « Firebase Rules Admin » pour le compte
-      # de service ; sinon l'étape échoue sans bloquer : coller firestore.rules dans la console.
+      # Règles de sécurité Firestore (comptes) ; non bloquant
       - name: Règles de sécurité Firestore
         if: env.HAS_FIREBASE == 'true'
         continue-on-error: true
@@ -82,10 +142,10 @@ jobs:
         if: env.HAS_FIREBASE == 'true'
         run: |
           sleep 10
-          echo "Configuration Firebase (/__/firebase/init.json) :"
-          curl -s -o /dev/null -w "%{http_code}\n" "https://brocante-map.web.app/__/firebase/init.json"
           for f in "" app.js style.css sw.js manifest.webmanifest mentions-legales.html icons/icon-192.png vendor/leaflet/leaflet.js vendor/markercluster/leaflet.markercluster.js data/index.json data/37/events.json data/37/places.json; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://brocante-map.web.app/$f")
             echo "/$f -> $code"
             [ "$code" = "200" ] || exit 1
           done
+          echo "Départements en ligne :"
+          curl -s "https://brocante-map.web.app/data/index.json" | jq -r '.depts | to_entries[] | "  \(.key) \(.value.name) : \(.value.events) événements, \(.value.places) lieux"'

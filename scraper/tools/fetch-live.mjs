@@ -16,7 +16,9 @@ const get = async (path) => {
 
 try {
   const index = await get('index.json');
-  const depts = Object.keys(JSON.parse(index).depts ?? {});
+  // --dept=37,45 : seulement ces départements (collecte d'un groupe)
+  const only = process.argv.find((x) => x.startsWith('--dept='))?.slice(7).split(',');
+  const depts = Object.keys(JSON.parse(index).depts ?? {}).filter((d) => !only || only.includes(d));
   for (const d of depts) {
     await mkdir(join(DATA_DIR, d), { recursive: true });
     for (const kind of ['events', 'places']) {

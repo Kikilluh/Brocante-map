@@ -13,6 +13,7 @@ import { createGeocoder } from './lib/geocode.mjs';
 import { dedupe } from './lib/dedupe.mjs';
 import { createVenueFinder } from './lib/venues.mjs';
 import { readPrevious, writeSplit, keepMissing } from './lib/store.mjs';
+import { loadConfig, deptsFromArgs } from './lib/config.mjs';
 import * as structuredHtml from './sources/structured-html.mjs';
 import * as datatourisme from './sources/datatourisme.mjs';
 import * as openagenda from './sources/openagenda.mjs';
@@ -23,8 +24,8 @@ const ADAPTERS = { 'structured-html': structuredHtml, datatourisme, openagenda, 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => a.replace(/^--/, '').split('=')));
-const config = JSON.parse(await readFile(join(ROOT, 'config.json'), 'utf8'));
-const departments = args.dept ? args.dept.split(',') : config.departments;
+const config = await loadConfig();
+const departments = deptsFromArgs(config);
 configureHttp({ delayMs: config.requestDelayMs, userAgent: config.userAgent });
 
 const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());

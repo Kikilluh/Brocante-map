@@ -1,10 +1,14 @@
 {
-  "_comment": "Départements couverts. Pour passer à la France entière, ajoutez les codes (\"01\" … \"95\", \"2A\", \"2B\", \"971\"…).",
-  "departments": [
-    "37",
-    "45",
-    "58"
-  ],
+  "_comment": "Départements couverts, regroupés par région : chaque groupe est collecté en parallèle (une tâche GitHub Actions par groupe). Pour ajouter un département, l'ajouter à son groupe ; pour une nouvelle région, créer un groupe. Codes : \"01\" … \"95\", \"2A\", \"2B\", \"971\"…",
+  "groups": {
+    "centre-val-de-loire": [
+      "37",
+      "45"
+    ],
+    "bourgogne-franche-comte": [
+      "58"
+    ]
+  },
   "horizonDays": 180,
   "requestDelayMs": 1500,
   "userAgent": "BrocanteMapBot/1.0 (+https://github.com/kikilluh/brocante-map)",
