@@ -16,9 +16,9 @@ const readJson = async (f, d = null) => { try { return JSON.parse(await readFile
 const index = await readJson(join(DATA_DIR, 'index.json'), {});
 const before = JSON.parse(JSON.stringify(index.depts ?? {}));
 index.depts ??= {};
-index.sources = {};
 let parts = [];
-try { parts = await readdir(partsDir); } catch { /* aucune partie */ }
+try { parts = await readdir(partsDir); } catch { /* aucune partie : simple remise en ligne */ }
+if (parts.length) index.sources = {};
 for (const part of parts) {
   const dir = join(partsDir, part);
   const owned = await readJson(join(dir, 'owned.json'), []);

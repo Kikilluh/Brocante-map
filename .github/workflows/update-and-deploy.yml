@@ -23,8 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       groups: ${{ steps.groups.outputs.groups }}
+      collect: ${{ steps.collect.outputs.collect }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -33,9 +36,25 @@ jobs:
       - name: Groupes de départements
         id: groups
         run: echo "groups=$(node scraper/tools/groups.mjs)" >> "$GITHUB_OUTPUT"
+      # Collecte complète : chaque matin (programmée) ou lancement manuel. Une simple modification du site
+      # (push) se contente de remettre en ligne les données actuelles, sauf si la liste des départements
+      # change (scraper/config.json) ou si le message du commit contient [collecte].
+      - name: Collecte nécessaire ?
+        id: collect
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          c=true
+          if [ "${{ github.event_name }}" = "push" ]; then
+            c=false
+            git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -qx 'scraper/config.json' && c=true
+            case "$MSG" in *"[collecte]"*) c=true ;; esac
+          fi
+          echo "collect=$c" | tee -a "$GITHUB_OUTPUT"
 
   collect:
     needs: plan
+    if: needs.plan.outputs.collect == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     strategy:
@@ -108,6 +127,8 @@ jobs:
         run: node scraper/tools/fetch-live.mjs
 
       - uses: actions/download-artifact@v4
+        if: needs.plan.outputs.collect == 'true'
+        continue-on-error: true
         with:
           pattern: data-*
           path: parts
