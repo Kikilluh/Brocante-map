@@ -103,3 +103,11 @@ test('jours de la semaine lus dans le texte', async () => {
   assert.equal(weekdaysFromText('Concert le samedi à 20 h'), null);
   assert.equal(weekdaysFromText('Marché Mistral'), null);
 });
+
+test('jour seul dans le titre', async () => {
+  const { weekdaysInTitle } = await import('../sources/datatourisme.mjs');
+  assert.deepEqual(weekdaysInTitle('Marché de Courtenay - Samedi'), [6]);
+  assert.deepEqual(weekdaysInTitle('Marché du mercredi et du samedi'), [3, 6]);
+  assert.equal(weekdaysInTitle('Concert samedi 14 novembre'), null);
+  assert.equal(weekdaysInTitle('Marché Mistral'), null);
+});

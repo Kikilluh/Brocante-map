@@ -29,6 +29,12 @@ export function weekdaysFromText(text = '') {
   }
   return days.size && days.size < 7 ? [...days].sort() : null;
 }
+/** Nom de jour seul dans un titre (« Marché de Courtenay - Samedi »), hors date précise (« samedi 12 »). */
+export function weekdaysInTitle(title = '') {
+  const t = String(title).toLowerCase();
+  const days = FR_DAYS.map((d, i) => (new RegExp(`\\b${d}s?\\b(?!\\s*\\d)`).test(t) ? i : -1)).filter((i) => i >= 0);
+  return days.length && days.length < 7 ? days : null;
+}
 /** Jours de la semaine (0 = dimanche … 6 = samedi) d'une période DATAtourisme, ou null si non précisés. */
 export function weekdaysOf(v) {
   if (v == null) return null;
@@ -169,7 +175,7 @@ export function mapNode(n) {
     };
   });
   // Jours non précisés sur une longue période : on les cherche dans le titre et la description
-  const textDays = weekdaysFromText(`${title} ${desc ?? ''}`);
+  const textDays = weekdaysFromText(`${title} ${desc ?? ''}`) ?? weekdaysInTitle(title);
   if (textDays) for (const o of occurrences) if (!o.days && o.start && o.end && (Date.parse(o.end) - Date.parse(o.start)) / 864e5 > 14) o.days = textDays;
   if (!occurrences.length) {
     const s = fr(get(n, 'startDate'));
