@@ -48,6 +48,11 @@
       <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 5h18v2H3zm4 6h10v2H7zm3 6h4v2h-4z" fill="currentColor"/></svg>
       <span class="dot-badge" id="filtersBadge" hidden></span>
     </button>
+    <button class="icon-btn account-btn" id="accountBtn" aria-label="Se connecter" title="Se connecter">
+      <svg class="acct-ico" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4 0-8 2-8 5v2h16v-2c0-3-4-5-8-5z" fill="currentColor"/></svg>
+      <img class="acct-photo" alt="" referrerpolicy="no-referrer" hidden>
+      <span class="acct-initial" hidden></span>
+    </button>
   </header>
 
   <div id="mapError" class="banner" hidden>La carte n'a pas pu se charger. La liste et les filtres restent utilisables.</div>
@@ -56,8 +61,8 @@
   <main class="layout">
     <div id="map" aria-label="Carte"></div>
     <div class="map-pills">
-      <button class="pill fav-pill" id="favPill" aria-label="Mes favoris et connexion au compte"><span aria-hidden="true">❤️</span> <span id="favCount">Favoris · Se connecter</span><span class="check-badge sm" aria-hidden="true">✓</span></button>
-      <button class="pill ev-only" id="periodPill"><span aria-hidden="true">📅</span> <span id="periodLabel">30 jours</span></button>
+      <button class="pill fav-pill" id="favPill" hidden aria-label="Mes favoris"><span aria-hidden="true">❤️</span> <span id="favCount">0</span></button>
+      <button class="pill filters-pill" id="periodPill" aria-label="Filtres"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 5h18v2H3zm4 6h10v2H7zm3 6h4v2h-4z" fill="currentColor"/></svg> <span id="periodLabel">30 jours</span><span class="dot-badge" id="pillBadge" hidden></span></button>
     </div>
     <button class="list-toggle" id="listToggle" aria-expanded="false" aria-controls="sheet">☰ Liste · <span id="listCount">0</span></button>
     <button class="locate-btn" id="locate" aria-label="Me localiser" title="Me localiser">

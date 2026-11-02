@@ -589,7 +589,8 @@ function syncControls() {
   $('groupBadge').hidden = !state.group.set;
   gb.title = state.group.set ? `Notre groupe : ${groupSummary()} (modifier)` : 'Qui sort ? Filtrer pour notre groupe';
   gb.setAttribute('aria-label', gb.title);
-  $('periodLabel').textContent = periodLabel();
+  $('periodLabel').textContent = state.mode === 'places' ? 'Filtres' : periodLabel();
+  $('pillBadge').hidden = $('filtersBadge').hidden;
   $('searchBadge').hidden = !state.q;
 }
 
@@ -837,10 +838,9 @@ function saveFavs(changed = false) {
   store.set('favoris', favs);
   store.set('favorisRetires', favsRemoved);
   if (changed) scheduleSync();
-  // Toujours visible : c'est aussi l'accès au compte
-  $('favCount').textContent = account.user ? (favs.length || 'Favoris') : `${favs.length || 'Favoris'} · Se connecter`;
-  $('favPill').classList.toggle('signed', !!account.user);
-  $('favPill').setAttribute('aria-label', account.user ? 'Mes favoris (compte connecté)' : 'Mes favoris et connexion au compte');
+  $('favCount').textContent = favs.length;
+  $('favPill').hidden = !favs.length;
+  updateAccountBtn();
 }
 function toggleFav(type, x) {
   const f = findFav(type, x);
@@ -959,8 +959,9 @@ function renderFavs() {
     return head + favEventItem(f);
   }).join('');
   $('favView').innerHTML = `<button class="back" data-favclose>← Retour à la liste</button>
-    <h2>❤️ Mes favoris</h2>
+    <h2>👤 Mon compte</h2>
     ${accountBox()}
+    <h2 class="fav-title">❤️ Mes favoris</h2>
     ${!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : ''}
     ${upcoming.length ? `<div class="fav-head"><h3>📅 Mon planning</h3><button type="button" class="btn small" data-icsall>Tout ajouter à mon agenda</button></div><ul class="list fav-list">${plan}</ul>` : ''}
     ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
@@ -980,6 +981,7 @@ function closeFavs() {
   if (state.selected) $('detail').hidden = false; else $('list').hidden = false;
 }
 $('favPill').addEventListener('click', openFavs);
+$('accountBtn').addEventListener('click', openFavs);
 document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs]')) { e.preventDefault(); openFavs(); } });
 $('favView').addEventListener('click', async (e) => {
   if (e.target.closest('[data-favclose]')) return closeFavs();
@@ -1094,6 +1096,23 @@ let lastFocusSync = 0;
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && account.user && Date.now() - lastFocusSync > 60000) { lastFocusSync = Date.now(); sync(); }
 });
+/** Bouton du compte (en haut à droite) : silhouette, puis photo de profil (ou initiale) une fois connecté. */
+function updateAccountBtn() {
+  const u = account.user;
+  const b = $('accountBtn');
+  const photo = b.querySelector('.acct-photo');
+  const initial = b.querySelector('.acct-initial');
+  const label = u ? `Mon compte (${u.email ?? u.displayName ?? 'connecté'})` : 'Se connecter';
+  b.title = label;
+  b.setAttribute('aria-label', label);
+  b.classList.toggle('signed', !!u);
+  photo.hidden = !u?.photoURL;
+  photo.onerror = () => { photo.hidden = true; initial.hidden = false; };
+  if (u?.photoURL && photo.getAttribute('src') !== u.photoURL) photo.src = u.photoURL;
+  initial.hidden = !u || !!u.photoURL;
+  initial.textContent = (u?.displayName ?? u?.email ?? '?').trim().charAt(0).toUpperCase();
+  b.querySelector('.acct-ico').style.display = u ? 'none' : '';
+}
 function accountBox() {
   const u = account.user;
   if (u) {
