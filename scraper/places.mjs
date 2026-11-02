@@ -14,7 +14,7 @@ import { configureHttp, fetchText } from './lib/http.mjs';
 import { createGeocoder } from './lib/geocode.mjs';
 import { cleanText, deptFromPostcode, slug } from './lib/normalize.mjs';
 import { splitVenue } from './lib/venues.mjs';
-import { fr, get, listOf, readImage } from './sources/datatourisme.mjs';
+import { fr, get, listOf, readImage, readPrices } from './sources/datatourisme.mjs';
 import { loadRoutes } from './lib/routes.mjs';
 import { deptBboxes } from './lib/depts.mjs';
 import { createElevation } from './lib/elevation.mjs';
@@ -56,7 +56,7 @@ async function dtFetchAll(endpoint, fields) {
     log('  DATATOURISME_API_KEY absent');
     return [];
   }
-  const cacheFile = join(ROOT, 'cache', `dt-${endpoint}-${departments.join('-')}.json`);
+  const cacheFile = join(ROOT, 'cache', `dt2-${endpoint}-${departments.join('-')}.json`);
   try {
     const st = await stat(cacheFile);
     if (Date.now() - st.mtimeMs < DT_MAX_AGE) {
@@ -115,11 +115,17 @@ function dtCommon(n) {
     description: fr(get(descNode, 'shortDescription')) ?? fr(get(descNode, 'description')),
     credit: fr(get(arr(get(n, 'hasBeenCreatedBy'))[0] ?? {}, 'legalName')),
     ...readImage(n),
+    ...placePrices(n),
   };
+}
+/** Tarifs d'un lieu (sans le texte des conditions). */
+function placePrices(n) {
+  const { priceMin, priceMax } = readPrices(n);
+  return priceMin != null ? { priceMin, priceMax: priceMax ?? priceMin, free: priceMin === 0 && !priceMax } : {};
 }
 
 async function datatourismePlaces() {
-  const items = await dtFetchAll('placeOfInterest', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName,hasMainRepresentation');
+  const items = await dtFetchAll('placeOfInterest', 'uuid,label,type,isLocatedAt.geo,isLocatedAt.address,hasDescription,hasContact.homepage,hasBeenCreatedBy.legalName,hasMainRepresentation,offers');
   const typeCount = new Map();
   const out = [];
   for (const n of items) {
@@ -396,7 +402,7 @@ const out = kept.map((p) => {
     o.trace = `r${p.osmId}`;
     traces.set(o.id, p.geom);
   }
-  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'minutes', 'shape', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
+  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'minutes', 'shape', 'priceMin', 'priceMax', 'free', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
     if (p[k] != null && p[k] !== '' && p[k] !== false) o[k] = p[k];
   }
   return o;

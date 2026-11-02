@@ -107,7 +107,7 @@
           <div class="types ev-only" data-types-container></div>
           <div class="types place-only" data-kinds-container></div>
         </section>
-        <section class="place-only">
+        <section class="place-only" id="randoSection" hidden>
           <h3>Randonnée et vélo</h3>
           <div id="randoFilters"></div>
         </section>
@@ -188,10 +188,12 @@
         <button type="button" class="step-tab" data-goto="1">📅 Quand</button>
         <button type="button" class="step-tab" data-goto="2">📍 Où</button>
         <button type="button" class="step-tab" data-goto="3">💶 Budget</button>
+        <button type="button" class="step-tab" data-goto="4">✨ Envies</button>
       </nav>
       <div class="modal-body">
         <section class="step" data-step="0">
           <h3>Qui sort ?</h3>
+          <div id="savedGroupsBox"></div>
           <div class="presets-group">
             <button type="button" class="chip" data-gpreset="solo">Solo</button>
             <button type="button" class="chip" data-gpreset="couple">En couple</button>
@@ -256,13 +258,18 @@
             <label><input type="radio" name="budgetMode" value="person" checked> par personne</label>
             <label><input type="radio" name="budgetMode" value="total"> pour tout le groupe</label>
           </div>
+        </section>
+
+        <section class="step" data-step="4" hidden>
           <h3>Envies</h3>
+          <p class="muted">Ce qui vous ferait plaisir (plusieurs choix possibles).</p>
           <div class="chips-wrap" id="envies"></div>
         </section>
       </div>
       <footer class="modal-foot">
         <button type="button" class="btn ghost" id="groupPrev">Retour</button>
         <button type="button" class="btn ghost" id="groupClear">Effacer</button>
+        <button type="button" class="btn ghost" id="groupSave" title="Enregistrer ce groupe dans mon profil" aria-label="Enregistrer ce groupe">⭐</button>
         <button type="button" class="btn primary" id="groupNext">Suivant</button>
       </footer>
     </form>

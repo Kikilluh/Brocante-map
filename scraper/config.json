@@ -157,7 +157,7 @@
       "id": "agendas-locaux",
       "type": "feeds",
       "enabled": true,
-      "_comment": "Agendas des collectivités (mairies, intercommunalités, offices de tourisme publics). Le flux est détecté automatiquement depuis l'adresse du site (iCal, WordPress The Events Calendar, données structurées) ; « feed » pour l'imposer, « city » pour une mairie. Seuls les faits (titre, dates, lieu, lien) et un court extrait sont repris, avec la source.",
+      "_comment": "Agendas des collectivités (mairies, intercommunalités, offices de tourisme publics). Le flux est détecté automatiquement depuis l'adresse du site (iCal, WordPress The Events Calendar, données structurées) ; « feed » pour l'imposer, « city » pour une mairie. Seuls les faits (titre, dates, lieu, lien) et un court extrait sont repris, avec la source. autoDiscover : en plus, toutes les mairies et intercommunalités de l'annuaire Service-Public.fr (150 nouveaux sites examinés par collecte et par région).",
       "sites": [
         {
           "name": "Communauté de communes Autour de Chenonceaux",
@@ -197,7 +197,9 @@
           "url": "https://www.bloischambord.co/",
           "dept": "41"
         }
-      ]
+      ],
+      "autoDiscover": true,
+      "maxDetectPerRun": 150
     }
   ],
   "maxDurationDays": 14,

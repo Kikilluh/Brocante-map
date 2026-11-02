@@ -256,7 +256,9 @@ function routeMinutes(p) {
 }
 const fmtMinutes = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ` ${String(m % 60).padStart(2, '0')}` : ''}`);
 const inRange = (v, r) => { const [a, b] = r.split('-'); return v >= +a && (b === '' || v < +b); };
-const randoActive = () => Object.values(state.rando).some(Boolean);
+/** Les filtres rando ne s'affichent (et ne s'appliquent) que si l'on a choisi randonnée ou vélo dans les types. */
+const randoVisible = () => state.kinds.size < KALL.length && (state.kinds.has('rando') || state.kinds.has('velo'));
+const randoActive = () => randoVisible() && Object.values(state.rando).some(Boolean);
 /** Un lieu passe-t-il les filtres rando ? (les lieux qui ne sont pas des itinéraires ne sont pas concernés) */
 function randoOk(p) {
   if (!isRouteKind(p) || !randoActive()) return true;
@@ -354,10 +356,28 @@ function filteredEvents() {
   else out.sort((a, b) => a._next.start.localeCompare(b._next.start) || (hourOf(a._next.hours) ?? 99) - (hourOf(b._next.hours) ?? 99));
   return out;
 }
+// Budget pour les lieux : un lieu sans tarif connu n'est PAS gratuit (escape game, salle de spectacle…).
+// Gratuits par nature : itinéraires de randonnée et de vélo, sites naturels.
+const FREE_KINDS = new Set(['rando', 'velo', 'nature']);
+const placeIsFree = (p) => p.free === true || p.priceMin === 0 || FREE_KINDS.has(p.kind);
+function placeBudgetOk(p) {
+  const g = state.group;
+  if (!g.set || g.budget == null) return true;
+  if (placeIsFree(p)) return true;
+  if (g.budget === 0) return false;
+  if (p.priceMin == null) return state.unknown;
+  const pp = g.budgetMode === 'total' ? g.budget / groupSize() : g.budget;
+  return p.priceMin <= pp;
+}
+function placePriceLabel(p) {
+  if (placeIsFree(p)) return p.free === true || p.priceMin === 0 ? 'Gratuit' : 'Accès libre';
+  if (p.priceMin == null) return '';
+  return p.priceMax && p.priceMax !== p.priceMin ? `${euro(p.priceMin)} à ${euro(p.priceMax)}` : `dès ${euro(p.priceMin)}`;
+}
 function filteredPlaces() {
   const kinds = effectiveKinds();
   const q = norm(state.q.trim());
-  const out = places.filter((p) => kinds.has(p.kind) && (!q || p._search.includes(q)) && inRadius(p) && randoOk(p));
+  const out = places.filter((p) => kinds.has(p.kind) && (!q || p._search.includes(q)) && inRadius(p) && randoOk(p) && placeBudgetOk(p));
   for (const p of out) p._dist = distFrom(refPoint(), p);
   if (refPoint()) out.sort((a, b) => a._dist - b._dist);
   else out.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
@@ -446,7 +466,7 @@ function eventItem(ev) {
     </span>${thumb(ev)}</button></li>`;
 }
 function placeItem(p) {
-  const facts = [p.distanceKm ? km(p.distanceKm) : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
+  const facts = [placePriceLabel(p), p.distanceKm ? km(p.distanceKm) : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
   return `<li><button class="item" data-id="${esc(p.id)}">
     <span class="ico sq" style="background:${kcolor(p.kind)}" aria-hidden="true">${KIND_ICONS[p.kind]}</span>
     <span class="body">
@@ -503,7 +523,7 @@ function eventDetail(ev) {
 }
 function placeDetail(p) {
   const isRoute = p.kind === 'rando' || p.kind === 'velo';
-  const facts = [p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.duration ?? (isRouteKind(p) && routeMinutes(p) ? `≈ ${fmtMinutes(routeMinutes(p))}` : ''), p.shape === 'boucle' ? 'boucle' : p.shape === 'lineaire' ? 'aller simple' : '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
+  const facts = [placePriceLabel(p), p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.duration ?? (isRouteKind(p) && routeMinutes(p) ? `≈ ${fmtMinutes(routeMinutes(p))}` : ''), p.shape === 'boucle' ? 'boucle' : p.shape === 'lineaire' ? 'aller simple' : '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
   const where = [p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', ');
   return `<button class="back" data-back>← Retour à la liste</button>
     <div class="badge-row">${plBadge(p)}${favBtn('places', p)}</div>
@@ -518,6 +538,7 @@ function placeDetail(p) {
       ${navBtn(p, isRoute ? 'Aller au départ' : 'Itinéraire')}
       <button data-share>Partager</button>
     </div>
+    ${state.group.set && state.group.budget != null && !placeIsFree(p) && p.priceMin == null ? '<p class="fitline warn">Tarif non précisé : vérifiez auprès du lieu.</p>' : ''}
     ${p.trace ? `<div class="elev" data-elev="${esc(p.id)}"></div>` : ''}
     ${hero(p)}
     ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ''}
@@ -529,7 +550,7 @@ function popupHtml(x, isEv) {
   const next = isEv ? (x._next ?? nextIn(x) ?? x.occurrences[0]) : null;
   const facts = isEv
     ? [priceLabel(x), ageLabel(x), x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean)
-    : [x.distanceKm ? km(x.distanceKm) : '', x.dplus != null ? `D+ ${x.dplus} m` : '', x.duration ?? (isRouteKind(x) && routeMinutes(x) ? `≈ ${fmtMinutes(routeMinutes(x))}` : ''), x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
+    : [placePriceLabel(x), x.distanceKm ? km(x.distanceKm) : '', x.dplus != null ? `D+ ${x.dplus} m` : '', x.duration ?? (isRouteKind(x) && routeMinutes(x) ? `≈ ${fmtMinutes(routeMinutes(x))}` : ''), x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
   const main = isEv
     ? evLink(x, true)
     : (x.trace ? `<button type="button" class="primary" data-trace="${esc(x.id)}">Voir le tracé</button>` : x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
@@ -755,6 +776,7 @@ function syncControls() {
   $('to').value = state.to;
   $('unknown').checked = state.unknown;
   $('vague').checked = state.vague;
+  $('randoSection').hidden = !randoVisible();
   $$('[data-preset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.preset === state.preset)));
   $$('[data-type]').forEach((b) => b.setAttribute('aria-pressed', String(state.cats.has(b.dataset.type))));
   $$('[data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(state.kinds.has(b.dataset.kind))));
@@ -777,8 +799,10 @@ function periodLabel() {
   return state.to ? (state.from === state.to ? f(state.from) : `${f(state.from)} → ${f(state.to)}`) : `dès le ${f(state.from)}`;
 }
 function groupSummary() {
-  const g = state.group;
-  if (!g.set) return 'Notre groupe : qui, quand, où, budget ?';
+  if (!state.group.set) return 'Notre groupe : qui, quand, où, budget ?';
+  return groupSummaryOf(state.group);
+}
+function groupSummaryOf(g) {
   const parts = [];
   parts.push(`${g.adults} adulte${g.adults > 1 ? 's' : ''}`);
   if (g.kids.length) parts.push(`${g.kids.length} enfant${g.kids.length > 1 ? 's' : ''} (${g.kids.join(', ')} ans)`);
@@ -787,6 +811,43 @@ function groupSummary() {
   if (g.moment !== 'any') parts.push(MOMENTS[g.moment]);
   return parts.join(' · ');
 }
+// ---------- Groupes enregistrés (favoris de groupe) ----------
+let savedGroups = store.get('groupesFavoris') ?? [];
+function saveSavedGroups(changed = false) {
+  store.set('groupesFavoris', savedGroups);
+  if (changed) scheduleSync();
+}
+function savedGroupChips() {
+  if (!savedGroups.length) return '';
+  return `<div class="saved-groups"><span class="rando-label">Mes groupes enregistrés</span><div class="chips-wrap">${
+    savedGroups.map((g) => `<button type="button" class="chip" data-loadgroup="${esc(g.id)}">⭐ ${esc(g.name)}</button>`).join('')}</div></div>`;
+}
+function rememberGroup(group) {
+  const who = group.kids.length ? 'Famille' : group.adults === 1 ? 'Solo' : group.adults === 2 ? 'En couple' : 'Entre amis';
+  const name = prompt('Nom de ce groupe (ex. « Famille », « Amis du samedi ») :', who);
+  if (!name?.trim()) return false;
+  const existing = savedGroups.find((g) => g.name.toLowerCase() === name.trim().toLowerCase());
+  const entry = { id: existing?.id ?? `g${Date.now().toString(36)}`, name: name.trim().slice(0, 40), group: { ...group, set: true }, savedAt: Date.now() };
+  savedGroups = [...savedGroups.filter((g) => g !== existing), entry];
+  saveSavedGroups(true);
+  return true;
+}
+function useSavedGroup(id) {
+  const g = savedGroups.find((x) => x.id === id);
+  if (!g) return;
+  state.group = { ...NEW_GROUP(), ...g.group, set: true };
+  saveGroup();
+  drawCenter();
+  if (state.group.center) map.setView([state.group.center.lat, state.group.center.lon], state.group.radius >= 40 ? 9 : state.group.radius >= 20 ? 10 : 11);
+  render();
+}
+function removeSavedGroup(id) {
+  favsRemoved.push({ key: `group:${id}`, at: Date.now() });
+  savedGroups = savedGroups.filter((g) => g.id !== id);
+  saveSavedGroups(true);
+  saveFavs(true);
+}
+
 function saveGroup() { store.set('groupe', state.group); store.set('groupeLe', Date.now()); scheduleSync(); }
 
 function chipsHtml(map, colorVar, attr, icons) {
@@ -864,6 +925,7 @@ $('locate').addEventListener('click', () => locateMe());
 // ---------- Assistant « Notre groupe » ----------
 let draft = null;
 let step = 0;
+const LAST_STEP = 4; // Qui, Quand, Où, Budget, Envies
 function openGroup() {
   draft = structuredClone({ ...state.group, set: true });
   step = 0;
@@ -874,7 +936,8 @@ function renderGroup() {
   $$('#groupDialog .step').forEach((s) => { s.hidden = +s.dataset.step !== step; });
   $$('#groupDialog .step-tab').forEach((b, i) => { b.classList.toggle('done', i < step); b.setAttribute('aria-current', i === step ? 'step' : 'false'); });
   $('groupPrev').hidden = step === 0;
-  $('groupNext').textContent = step === 3 ? 'Voir nos idées' : 'Suivant';
+  $('groupNext').textContent = step === LAST_STEP ? 'Voir nos idées' : 'Suivant';
+  $('savedGroupsBox').innerHTML = savedGroupChips();
   $('adults').textContent = draft.adults;
   const who = draft.kids.length ? 'famille' : draft.adults === 1 ? 'solo' : draft.adults === 2 ? 'couple' : draft.adults >= 3 ? 'amis' : null;
   $$('[data-gpreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.gpreset === who)));
@@ -894,6 +957,8 @@ $('periodPill').addEventListener('click', () => { syncControls(); $('filtersDial
 $('groupForm').addEventListener('click', (e) => {
   const t = e.target;
   if (t.closest('[data-goto]')) step = +t.closest('[data-goto]').dataset.goto;
+  else if (t.closest('[data-loadgroup]')) { const g = savedGroups.find((x) => x.id === t.closest('[data-loadgroup]').dataset.loadgroup); if (g) draft = structuredClone({ ...NEW_GROUP(), ...g.group, set: true }); }
+  else if (t.closest('#groupSave')) { if (rememberGroup(draft)) { const b = t.closest('#groupSave'); b.textContent = '✓'; b.title = 'Groupe enregistré dans votre profil'; } return; }
   else if (t.closest('[data-adults]')) draft.adults = Math.max(0, Math.min(20, draft.adults + +t.closest('[data-adults]').dataset.adults));
   else if (t.closest('[data-gpreset]')) {
     const p = t.closest('[data-gpreset]').dataset.gpreset;
@@ -934,7 +999,7 @@ $('groupForm').addEventListener('change', (e) => {
     const dy = e.changedTouches[0].clientY - sy;
     sx = null;
     if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-    const next = Math.max(0, Math.min(3, step + (dx < 0 ? 1 : -1)));
+    const next = Math.max(0, Math.min(LAST_STEP, step + (dx < 0 ? 1 : -1)));
     if (next === step) return;
     const dir = next > step ? 'left' : 'right';
     step = next;
@@ -947,7 +1012,7 @@ $('groupForm').addEventListener('change', (e) => {
 }
 $('groupPrev').addEventListener('click', () => { step = Math.max(0, step - 1); renderGroup(); });
 $('groupNext').addEventListener('click', () => {
-  if (step < 3) { step++; renderGroup(); return; }
+  if (step < LAST_STEP) { step++; renderGroup(); return; }
   state.group = draft;
   saveGroup();
   drawCenter();
@@ -1286,9 +1351,11 @@ function renderFavs() {
     return head + favEventItem(f);
   }).join('');
   $('favView').innerHTML = `<button class="back" data-favclose>← Retour à la liste</button>
-    <h2>👤 Mon compte</h2>
+    <h2>👤 Mon profil</h2>
     ${accountBox()}
-    <h2 class="fav-title">❤️ Mes favoris</h2>
+    <h2 class="fav-title">👥 Mes groupes</h2>
+    ${savedGroups.length ? `<ul class="list fav-list">${savedGroups.map((g) => `<li class="fav-row"><div class="item"><span class="ico" style="background:var(--accent-soft)" aria-hidden="true">⭐</span><span class="body"><span class="title" style="display:block">${esc(g.name)}</span><span class="where" style="display:block">${esc(groupSummaryOf({ ...NEW_GROUP(), ...g.group }))}</span></span></div><span class="fav-tools"><button type="button" class="btn small" data-usegroup="${esc(g.id)}">Utiliser</button><button type="button" class="icon-btn flat" data-rmgroup="${esc(g.id)}" aria-label="Supprimer ce groupe" title="Supprimer">✕</button></span></li>`).join('')}</ul>` : '<p class="muted">Dans « Qui sort ? », touchez ⭐ pour enregistrer un groupe (famille, amis…) et le retrouver ici en un geste.</p>'}
+    <h2 class="fav-title favs">❤️ Mes favoris</h2>
     ${!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : ''}
     ${upcoming.length ? `<div class="fav-head"><h3>📅 Mon planning</h3><button type="button" class="btn small" data-icsall>Tout ajouter à mon agenda</button></div><ul class="list fav-list">${plan}</ul>` : ''}
     ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
@@ -1308,11 +1375,13 @@ function closeFavs() {
   $('favView').hidden = true;
   if (state.selected) $('detail').hidden = false; else $('list').hidden = false;
 }
-$('favPill').addEventListener('click', openFavs);
+$('favPill').addEventListener('click', () => { openFavs(); $('favView').querySelector('.fav-title.favs')?.scrollIntoView({ block: 'start' }); });
 $('accountBtn').addEventListener('click', openFavs);
 document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs]')) { e.preventDefault(); openFavs(); } });
 $('favView').addEventListener('click', async (e) => {
   if (e.target.closest('[data-favclose]')) return closeFavs();
+  if (e.target.closest('[data-usegroup]')) { useSavedGroup(e.target.closest('[data-usegroup]').dataset.usegroup); closeFavs(); return; }
+  if (e.target.closest('[data-rmgroup]')) { removeSavedGroup(e.target.closest('[data-rmgroup]').dataset.rmgroup); return renderFavs(); }
   if (e.target.closest('[data-navreset]')) { e.preventDefault(); store.set('appliCarte', null); return renderFavs(); }
   if (e.target.closest('[data-icsall]')) {
     const t = today();
@@ -1384,6 +1453,14 @@ function mergeData(remote) {
     if (!byKey.has(k) || (byKey.get(k).savedAt ?? 0) < (f.savedAt ?? 0)) byKey.set(k, f);
   }
   favs = [...byKey.values()];
+  // groupes enregistrés : même principe (le plus récent gagne, retraits datés)
+  const groups = new Map();
+  for (const g of [...(remote?.groups ?? []), ...savedGroups]) {
+    if ((tomb.get(`group:${g.id}`) ?? 0) >= (g.savedAt ?? 0)) continue;
+    if (!groups.has(g.id) || (groups.get(g.id).savedAt ?? 0) < (g.savedAt ?? 0)) groups.set(g.id, g);
+  }
+  savedGroups = [...groups.values()];
+  saveSavedGroups();
   favsRemoved = [...tomb].map(([key, at]) => ({ key, at }));
   if (remote?.group && (remote.groupAt ?? 0) > (store.get('groupeLe') ?? 0)) {
     state.group = { ...NEW_GROUP(), ...remote.group };
@@ -1403,7 +1480,7 @@ async function sync() {
       const raw = doc?.fields?.data?.stringValue;
       mergeData(raw ? JSON.parse(raw) : null);
       saveFavs();
-      const data = { favs, removed: favsRemoved, group: state.group, groupAt: store.get('groupeLe') ?? 0 };
+      const data = { favs, removed: favsRemoved, group: state.group, groupAt: store.get('groupeLe') ?? 0, groups: savedGroups };
       await api('PATCH', { fields: { data: { stringValue: JSON.stringify(data) }, updatedAt: { timestampValue: new Date().toISOString() } } });
       account.status = '';
     } catch (e) {

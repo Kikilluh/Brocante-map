@@ -68,7 +68,7 @@ const minOf = (xs) => (xs.length ? Math.min(...xs) : null);
 const maxOf = (xs) => (xs.length ? Math.max(...xs) : null);
 
 /** Prix depuis offers[].priceSpecification[]. */
-function readPrices(n) {
+export function readPrices(n) {
   const specs = arr(get(n, 'offers')).flatMap((o) => arr(get(o, 'priceSpecification')));
   const values = [];
   let freeHint = false;

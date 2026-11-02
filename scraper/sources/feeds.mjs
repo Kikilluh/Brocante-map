@@ -140,8 +140,8 @@ const CANDIDATES = [
 ];
 
 async function readFeed({ type, url }) {
-  if (type === 'tribe') return parseTribe(await fetchText(url, { json: true }));
-  const text = await fetchText(url);
+  if (type === 'tribe') return parseTribe(await fetchText(url, { json: true, delayMs: 300 }));
+  const text = await fetchText(url, { delayMs: 300 });
   if (type === 'ical' || /BEGIN:VCALENDAR/.test(text.slice(0, 500))) return parseIcs(text);
   return extractEvents(text, url).map((r) => ({ ...r, occurrences: r.occurrences ?? [{ start: r.start, end: r.end ?? r.start, hours: r.hours ?? null }] }));
 }
@@ -153,14 +153,14 @@ async function detect(site, today, log) {
   const tried = [];
   // liens présents sur la page (flux iCal annoncés)
   try {
-    const html = await fetchText(site.url);
+    const html = await fetchText(site.url, { delayMs: 300 });
     const links = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => /\.ics\b|[?&]ical=|^webcal:/i.test(h));
     for (const h of links.slice(0, 3)) tried.push({ type: 'ical', url: new URL(h.replace(/^webcal:/, 'https:'), base).href });
     if (extractEvents(html, site.url).length) tried.push({ type: 'html', url: site.url });
   } catch (e) {
     log(`  ${site.name} : page inaccessible (${e.message})`);
   }
-  tried.push(...CANDIDATES.map((f) => f(base)));
+  tried.push(...(site.auto ? CANDIDATES.filter((_, i) => [0, 2, 4].includes(i)) : CANDIDATES).map((f) => f(base)));
   let best = null;
   for (const c of tried) {
     try {
@@ -171,20 +171,71 @@ async function detect(site, today, log) {
   return best;
 }
 
+// ---------- Annuaire de l'administration (Service-Public.fr, licence ouverte) ----------
+// Sites internet de toutes les mairies et intercommunalités d'un département, rafraîchis tous les 30 jours.
+const ANNUAIRE = 'https://api-lannuaire.service-public.fr/api/explore/v2.1/catalog/datasets/api-lannuaire-administration/records';
+const parseField = (v) => { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch { return null; } };
+async function annuaireSites(dept, log) {
+  const file = join(CACHE, `annuaire-${dept}.json`);
+  const cached = await readJson(file, null);
+  if (cached && Date.now() - cached.at < 30 * 864e5) return cached.sites;
+  const sites = [];
+  for (const kind of ['mairie', 'epci']) {
+    for (let offset = 0; offset < 2000; offset += 100) {
+      const url = new URL(ANNUAIRE);
+      url.searchParams.set('where', `pivot like "${kind}" and code_insee_commune like "${dept}*"`);
+      url.searchParams.set('select', 'nom,site_internet,adresse');
+      url.searchParams.set('limit', '100');
+      url.searchParams.set('offset', String(offset));
+      let data;
+      try {
+        data = await fetchText(url.href, { json: true, checkRobots: false, delayMs: 200 });
+      } catch (e) {
+        log(`  annuaire (${dept}, ${kind}) : ${e.message}`);
+        break;
+      }
+      for (const r of data.results ?? []) {
+        const site = parseField(r.site_internet)?.[0]?.valeur;
+        if (!site || !/^https?:\/\//.test(site)) continue;
+        const city = parseField(r.adresse)?.[0]?.nom_commune ?? null;
+        sites.push({ name: String(r.nom ?? '').replace(/^Mairie - /, 'Mairie de '), url: site, dept, city: kind === 'mairie' ? city : null, auto: true });
+      }
+      if ((data.results ?? []).length < 100) break;
+    }
+  }
+  await mkdir(CACHE, { recursive: true });
+  await writeFile(file, JSON.stringify({ at: Date.now(), sites }));
+  log(`  annuaire ${dept} : ${sites.length} sites de mairies et d'intercommunalités`);
+  return sites;
+}
+const hostOf = (u) => { try { return new URL(u).host.replace(/^www\./, ''); } catch { return u; } };
+
 export async function run(source, { departments, log }) {
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date());
   const detectFile = join(CACHE, 'feeds-detect.json');
   const detected = await readJson(detectFile, {});
   const raws = [];
-  for (const site of source.sites ?? []) {
-    if (!departments.includes(site.dept)) continue;
+  // Sites suivis : ceux de la configuration + (autoDiscover) toutes les mairies et intercommunalités de l'annuaire
+  const sites = [...(source.sites ?? [])].filter((s) => departments.includes(s.dept));
+  if (source.autoDiscover) {
+    const known = new Set(sites.map((s) => hostOf(s.url)));
+    for (const d of departments) for (const s of await annuaireSites(d, log)) if (!known.has(hostOf(s.url))) { known.add(hostOf(s.url)); sites.push(s); }
+  }
+  // Balayage progressif : au plus maxDetectPerRun nouvelles détections par collecte ; résultat gardé 30 jours
+  // (7 jours pour les sites de la configuration)
+  let budget = source.maxDetectPerRun ?? 60;
+  let silent = 0;
+  for (const site of sites) {
     let feed = detected[site.url];
-    if (!feed || Date.now() - (feed.at ?? 0) > WEEK) {
-      const found = await detect(site, today, log);
+    const maxAge = site.auto ? 30 * 864e5 : WEEK;
+    if (!feed || Date.now() - (feed.at ?? 0) > maxAge) {
+      if (budget <= 0) continue;
+      budget--;
+      const found = await detect(site, today, site.auto ? () => {} : log);
       feed = { ...(found ?? { none: true }), at: Date.now() };
       detected[site.url] = feed;
     }
-    if (feed.none) { log(`  ${site.name} : aucun agenda exploitable trouvé`); continue; }
+    if (feed.none) { if (site.auto) silent++; else log(`  ${site.name} : aucun agenda exploitable trouvé`); continue; }
     let items = [];
     try {
       items = await readFeed(feed);
@@ -216,6 +267,8 @@ export async function run(source, { departments, log }) {
     }
     log(`  ${site.name} : ${n} événement(s) à venir (${feed.type} ${feed.url})`);
   }
+  const scanned = sites.filter((s) => detected[s.url]).length;
+  log(`  ${sites.length} sites suivis, ${scanned} déjà examinés, ${silent} sans agenda exploitable`);
   await mkdir(CACHE, { recursive: true });
   await writeFile(detectFile, JSON.stringify(detected, null, 1));
   return raws;
