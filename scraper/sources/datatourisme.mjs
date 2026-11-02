@@ -12,6 +12,23 @@ import { isEventUrl } from '../lib/normalize.mjs';
 
 const arr = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]);
 const DAY_NAMES = [/Sunday|dimanche/i, /Monday|lundi/i, /Tuesday|mardi/i, /Wednesday|mercredi/i, /Thursday|jeudi/i, /Friday|vendredi/i, /Saturday|samedi/i];
+const FR_DAYS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+/**
+ * Jours de la semaine écrits dans un texte : « tous les mardis », « chaque samedi », « le jeudi matin »,
+ * « les mercredis et samedis ». Une date précise (« le samedi 12 novembre ») ne compte pas.
+ */
+export function weekdaysFromText(text = '') {
+  const t = String(text).toLowerCase();
+  const days = new Set();
+  const re = /\b(tous les|chaque|les|le)\s+((?:(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)s?(?:\s*(?:,|et|&)\s*)?)+)(?!\s*\d)/g;
+  for (const m of t.matchAll(re)) {
+    const list = m[2];
+    // « le samedi » seul n'est retenu que s'il est suivi d'un moment de la journée (« le samedi matin »)
+    if (m[1] === 'le' && !/^\s*(matin|midi|après-midi|apres-midi|soir)/.test(t.slice(m.index + m[0].length))) continue;
+    FR_DAYS.forEach((d, i) => { if (new RegExp(`\\b${d}s?\\b`).test(list)) days.add(i); });
+  }
+  return days.size && days.size < 7 ? [...days].sort() : null;
+}
 /** Jours de la semaine (0 = dimanche … 6 = samedi) d'une période DATAtourisme, ou null si non précisés. */
 export function weekdaysOf(v) {
   if (v == null) return null;
@@ -151,6 +168,9 @@ export function mapNode(n) {
       days: weekdaysOf(get(p, 'appliesOnDay')),
     };
   });
+  // Jours non précisés sur une longue période : on les cherche dans le titre et la description
+  const textDays = weekdaysFromText(`${title} ${desc ?? ''}`);
+  if (textDays) for (const o of occurrences) if (!o.days && o.start && o.end && (Date.parse(o.end) - Date.parse(o.start)) / 864e5 > 14) o.days = textDays;
   if (!occurrences.length) {
     const s = fr(get(n, 'startDate'));
     if (s) occurrences.push({ start: s, end: fr(get(n, 'endDate')) });

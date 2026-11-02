@@ -92,3 +92,14 @@ test('période longue « tous les mardis » → une date par mardi', async () =>
   // période courte : inchangée (jours retirés)
   assert.deepEqual(expandRecurring([{ start: '2026-11-07', end: '2026-11-08', days: [6, 0] }], { today: '2026-11-02', horizon: '2026-12-31' }), [{ start: '2026-11-07', end: '2026-11-08' }]);
 });
+
+test('jours de la semaine lus dans le texte', async () => {
+  const { weekdaysFromText } = await import('../sources/datatourisme.mjs');
+  assert.deepEqual(weekdaysFromText('Marché tous les mardis et vendredis matin'), [2, 5]);
+  assert.deepEqual(weekdaysFromText('Chaque samedi, place du marché'), [6]);
+  assert.deepEqual(weekdaysFromText('Ouvert le jeudi matin'), [4]);
+  assert.deepEqual(weekdaysFromText('Les mercredis, samedis et dimanches'), [0, 3, 6]);
+  assert.equal(weekdaysFromText('Rendez-vous le samedi 12 novembre'), null);
+  assert.equal(weekdaysFromText('Concert le samedi à 20 h'), null);
+  assert.equal(weekdaysFromText('Marché Mistral'), null);
+});
