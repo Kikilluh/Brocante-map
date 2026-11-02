@@ -64,3 +64,5 @@ lines.push('', alerts.length ? `**${alerts.length} alerte(s)**\n\n${alerts.map((
 const report = lines.join('\n');
 console.log(report);
 if (process.env.GITHUB_STEP_SUMMARY) await writeFile(process.env.GITHUB_STEP_SUMMARY, report + '\n', { flag: 'a' });
+// copie pour l'envoi par e-mail (tools/send-report.mjs)
+await writeFile('rapport-collecte.md', report + '\n');

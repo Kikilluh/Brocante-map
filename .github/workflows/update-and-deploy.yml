@@ -149,3 +149,13 @@ jobs:
           done
           echo "Départements en ligne :"
           curl -s "https://brocante-map.web.app/data/index.json" | jq -r '.depts | to_entries[] | "  \(.key) \(.value.name) : \(.value.events) événements, \(.value.places) lieux"'
+
+      # Rapport par e-mail (Resend) : collecte quotidienne programmée, lancement manuel, ou en cas d'échec
+      - name: Rapport par e-mail
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || failure())
+        continue-on-error: true
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          REPORT_TO: ${{ vars.REPORT_EMAIL || 'j.dullin@hotmail.fr' }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node scraper/tools/send-report.mjs ${{ job.status }}
