@@ -1,7 +1,7 @@
 // Itinéraires balisés (randonnée, vélo, VTT) depuis OpenStreetMap (licence ODbL, à citer).
 // Une requête Overpass par département, géométrie découpée à l'emprise du département,
-// puis on ne garde que le point de départ (ou d'entrée dans le département), la longueur et les liens.
-// Résultat mis en cache 7 jours dans scraper/cache/routes-<dept>.json.
+// puis on garde le point de départ (ou d'entrée dans le département), la longueur, les liens et le tracé
+// simplifié (affiché sur la carte du site). Résultat mis en cache 7 jours dans scraper/cache/routes-v3-<dept>.json.
 
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -9,7 +9,6 @@ import { join } from 'node:path';
 const OVERPASS = 'https://overpass-api.de/api/interpreter';
 const MAX_AGE_MS = 7 * 864e5;
 
-// Emprise (sud, ouest, nord, est) de chaque département couvert
 // Emprise (sud, ouest, nord, est) de chaque département couvert
 export const BBOX = {
   '37': [46.73, -0.06, 47.72, 1.37], // Indre-et-Loire
@@ -43,6 +42,43 @@ export function startPoint(ways) {
   return same(a, n[0]) || same(a, n.at(-1)) ? b : a;
 }
 
+/** Simplification Douglas-Peucker (tolérance en degrés, ~0,00015° ≈ 15 m). */
+export function simplify(pts, tol = 0.00015) {
+  if (pts.length < 3) return pts;
+  const keep = new Uint8Array(pts.length);
+  keep[0] = keep[pts.length - 1] = 1;
+  const stack = [[0, pts.length - 1]];
+  while (stack.length) {
+    const [a, b] = stack.pop();
+    const [ax, ay] = [pts[a].lon, pts[a].lat];
+    const [dx, dy] = [pts[b].lon - ax, pts[b].lat - ay];
+    const len2 = dx * dx + dy * dy;
+    let best = -1;
+    let far = 0;
+    for (let i = a + 1; i < b; i++) {
+      let t = len2 ? ((pts[i].lon - ax) * dx + (pts[i].lat - ay) * dy) / len2 : 0;
+      t = Math.max(0, Math.min(1, t));
+      const d = Math.hypot(pts[i].lon - (ax + t * dx), pts[i].lat - (ay + t * dy));
+      if (d > far) { far = d; best = i; }
+    }
+    if (far > tol) { keep[best] = 1; stack.push([a, best], [best, b]); }
+  }
+  return pts.filter((_, i) => keep[i]);
+}
+
+/** Enchaîne les tronçons qui se touchent, simplifie et arrondit : [[ [lat, lon], … ], …]. */
+export function traceOf(ways) {
+  const lines = [];
+  for (const w of ways) {
+    const last = lines.at(-1);
+    if (last && same(last.at(-1), w[0])) last.push(...w.slice(1));
+    else if (last && same(last.at(-1), w.at(-1))) last.push(...[...w].reverse().slice(1));
+    else lines.push([...w]);
+  }
+  const r5 = (x) => Math.round(x * 1e5) / 1e5;
+  return lines.map((l) => simplify(l).map((p) => [r5(p.lat), r5(p.lon)])).filter((l) => l.length >= 2);
+}
+
 /** Convertit une relation Overpass (out geom) en itinéraire. */
 export function mapRelation(rel) {
   const t = rel.tags ?? {};
@@ -68,11 +104,12 @@ export function mapRelation(rel) {
     url: t.website ?? t['contact:website'] ?? null,
     description: t.description ?? null,
     operator: t.operator ?? null,
+    geom: traceOf(ways),
   };
 }
 
 export async function loadRoutes(dept, cacheDir, log = () => {}) {
-  const file = join(cacheDir, `routes-v2-${dept}.json`);
+  const file = join(cacheDir, `routes-v3-${dept}.json`);
   try {
     if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) {
       const cached = JSON.parse(await readFile(file, 'utf8'));

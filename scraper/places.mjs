@@ -7,7 +7,7 @@
 //  - data.gouv.fr « Musées de France – Muséofile » et « Liste des festivals en France » (ministère de la Culture) :
 //    la licence est vérifiée à chaque collecte via l'API data.gouv.fr ; jeu ignoré si elle n'est pas ouverte.
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { configureHttp, fetchText } from './lib/http.mjs';
@@ -16,7 +16,7 @@ import { cleanText, deptFromPostcode, slug } from './lib/normalize.mjs';
 import { splitVenue } from './lib/venues.mjs';
 import { fr, get, listOf, readImage } from './sources/datatourisme.mjs';
 import { loadRoutes, BBOX } from './lib/routes.mjs';
-import { readPrevious, writeSplit, keepMissing, deptByBbox } from './lib/store.mjs';
+import { readPrevious, writeSplit, keepMissing, deptByBbox, DATA_DIR } from './lib/store.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const config = JSON.parse(await readFile(join(ROOT, 'config.json'), 'utf8'));
@@ -346,7 +346,7 @@ for (const p of places) {
   const twin = kept.find((q) => (q.kind === p.kind || (isRoute(q) && isRoute(p))) && near(p, q)
     && (key(q.name).includes(key(p.name)) || key(p.name).includes(key(q.name))));
   if (twin) {
-    for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network', 'image', 'imageCredit']) twin[k] ??= p[k];
+    for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network', 'image', 'imageCredit', 'geom', 'osmId']) twin[k] ??= p[k];
     twin.sources.push({ id: p.source, url: p.sourceUrl ?? null });
     continue;
   }
@@ -362,8 +362,14 @@ const stableId = (p) => {
   usedIds.add(id);
   return id;
 };
+const traces = new Map();
 const out = kept.map((p) => {
   const o = { id: stableId(p), dept: p.dept || deptByBbox(p, BBOX) || null };
+  // Tracé de l'itinéraire : fichier à part, chargé seulement quand on l'affiche
+  if (p.geom?.length && p.osmId) {
+    o.trace = `r${p.osmId}`;
+    traces.set(o.id, p.geom);
+  }
   for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
     if (p[k] != null && p[k] !== '' && p[k] !== false) o[k] = p[k];
   }
@@ -379,4 +385,17 @@ const counts = Object.fromEntries([...new Set(located.map((p) => p.kind))].map((
 const perDept = departments.map((d) => `${d}: ${located.filter((p) => p.dept === d).length}`).join(', ');
 log(`\n${located.length} lieux écrits (${perDept}) : ${JSON.stringify(counts)}`);
 if (!located.length) log('Aucun lieu : fichiers précédents conservés.');
-else await writeSplit('places', located, { departments, sources: report });
+else {
+  // Tracés : data/<dept>/traces/r<id OSM>.json (les anciens sont remplacés)
+  for (const d of departments) await rm(join(DATA_DIR, d, 'traces'), { recursive: true, force: true });
+  let n = 0;
+  for (const p of located) {
+    const geom = traces.get(p.id);
+    if (!geom) { delete p.trace; continue; } // lieu repris de la veille : pas de fichier de tracé
+    await mkdir(join(DATA_DIR, p.dept, 'traces'), { recursive: true });
+    await writeFile(join(DATA_DIR, p.dept, 'traces', `${p.trace}.json`), JSON.stringify({ name: p.name, lines: geom }));
+    n++;
+  }
+  log(`${n} tracés d'itinéraires écrits`);
+  await writeSplit('places', located, { departments, sources: report });
+}

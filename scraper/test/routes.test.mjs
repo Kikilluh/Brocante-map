@@ -27,3 +27,12 @@ test('relation OSM → itinéraire avec lien Waymarked Trails', () => {
   assert.equal(v.partial, true);
   assert.match(v.routeUrl, /cycling\.waymarkedtrails/);
 });
+
+test('tracé : tronçons enchaînés, simplifiés et arrondis', async () => {
+  const { traceOf, simplify } = await import('../lib/routes.mjs');
+  // points alignés → seules les extrémités restent
+  assert.equal(simplify([p(47, 0.5), p(47.001, 0.5), p(47.002, 0.5), p(47.003, 0.5)]).length, 2);
+  const lines = traceOf([[p(47.0, 0.5), p(47.01, 0.5)], [p(47.02, 0.51), p(47.01, 0.5)], [p(48, 1), p(48.1, 1)]]);
+  assert.equal(lines.length, 2); // 2 premiers tronçons raccordés (le 2e à l'envers), 3e séparé
+  assert.deepEqual(lines[0], [[47, 0.5], [47.01, 0.5], [47.02, 0.51]]);
+});

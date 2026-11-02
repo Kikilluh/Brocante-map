@@ -440,9 +440,10 @@ function placeDetail(p) {
     ${where ? `<p class="muted">${isRoute ? (p.partial ? 'Entrée dans le département : ' : 'Départ : ') : ''}${esc(where)}</p>` : ''}
     ${facts.length ? `<div class="facts">${facts.map((f) => `<span>${esc(f)}</span>`).join('')}</div>` : ''}
     <div class="actions sticky">
-      ${p.routeUrl ? link(p.routeUrl, "Voir l'itinéraire", 'primary') : p.url ? link(p.url, 'Site / infos', 'primary') : ''}
-      ${p.gpx ? link(p.gpx, 'Trace GPX') : ''}
-      ${p.routeUrl && p.url ? link(p.url, 'Site') : ''}
+      ${p.trace ? `<button type="button" class="primary" data-trace="${esc(p.id)}">🗺️ Voir le tracé</button>` : p.routeUrl ? link(p.routeUrl, "Voir l'itinéraire", 'primary') : p.url ? link(p.url, 'Site / infos', 'primary') : ''}
+      ${p.trace ? `<button type="button" data-gpxdl="${esc(p.id)}">Télécharger le GPX</button>` : p.gpx ? link(p.gpx, 'Trace GPX') : ''}
+      ${p.trace && p.routeUrl ? link(p.routeUrl, 'Dénivelé et détails') : ''}
+      ${p.url && (p.routeUrl || p.trace) ? link(p.url, 'Site') : ''}
       ${link(`https://www.openstreetmap.org/directions?to=${p.lat},${p.lon}`, isRoute ? 'Aller au départ' : 'Itinéraire')}
       <button data-share>Partager</button>
     </div>
@@ -459,7 +460,7 @@ function popupHtml(x, isEv) {
     : [x.distanceKm ? km(x.distanceKm) : '', x.duration ?? '', x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
   const main = isEv
     ? evLink(x, true)
-    : (x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
+    : (x.trace ? `<button type="button" class="primary" data-trace="${esc(x.id)}">Voir le tracé</button>` : x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
   const heart = favBtn(isEv ? 'events' : 'places', x, true);
   return `<div class="popcard">
     ${x.image ? heart : ''}
@@ -496,6 +497,7 @@ function showOnMap(id) {
 function select(type, id, { fromMap = false, open = false } = {}) {
   const item = (type === 'events' ? events : places).find((x) => x.id === id);
   if (!item) return;
+  if (state.selected?.id !== id) clearTrace();
   state.selected = { type, id, dept: item.dept };
   if (state.mode !== type) { state.mode = type; render(); }
   item._dist = distFrom(refPoint(), item);
@@ -513,6 +515,7 @@ function select(type, id, { fromMap = false, open = false } = {}) {
   writeHash();
 }
 function unselect() {
+  clearTrace();
   state.selected = null;
   $('detail').hidden = true;
   $('favView').hidden = true;
@@ -838,6 +841,71 @@ $('addr').addEventListener('input', () => {
     $('addrSuggest').hidden = !feats.length;
   }, 250);
 });
+
+// ---------- Tracés des itinéraires (randonnée, vélo) ----------
+// Le tracé (OpenStreetMap, ODbL) est dessiné sur notre carte, centrée et zoomée dessus.
+const traceCache = new Map();
+let traceLayer = null;
+async function getTrace(p) {
+  if (!p.trace) return null;
+  const url = `data/${p.dept}/traces/${p.trace}.json`;
+  if (!traceCache.has(url)) traceCache.set(url, getJson(url));
+  return traceCache.get(url);
+}
+function clearTrace() {
+  if (traceLayer) { map.removeLayer(traceLayer); traceLayer = null; }
+}
+async function showTrace(p) {
+  const t = await getTrace(p);
+  if (!t?.lines?.length) { if (p.routeUrl) window.open(p.routeUrl, '_blank', 'noopener'); return; }
+  clearTrace();
+  const color = getComputedStyle(document.documentElement).getPropertyValue('--accent-strong').trim() || '#c8644a';
+  const lines = L.polyline(t.lines, { color, weight: 5, opacity: 0.9, lineJoin: 'round' });
+  const halo = L.polyline(t.lines, { color: '#fff', weight: 9, opacity: 0.8, interactive: false });
+  const start = L.circleMarker([p.lat, p.lon], { radius: 8, color: '#fff', weight: 3, fillColor: '#2f8f57', fillOpacity: 1 }).bindTooltip(p.partial ? 'Entrée dans le département' : 'Départ', { direction: 'top', offset: [0, -8] });
+  traceLayer = L.layerGroup([halo, lines, start]).addTo(map);
+  map.closePopup();
+  // Mobile : on replie le panneau pour laisser la carte au tracé
+  if (isMobile()) setSheet('peek');
+  const pad = isMobile() ? { paddingTopLeft: [24, 120], paddingBottomRight: [24, 140] } : { padding: [50, 50] };
+  map.flyToBounds(lines.getBounds(), { ...pad, duration: 0.7, maxZoom: 16 });
+}
+function gpxText(p, lines) {
+  const x = (s) => String(s ?? '').replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
+  const segs = lines.map((l) => `    <trkseg>\n${l.map(([la, lo]) => `      <trkpt lat="${la}" lon="${lo}"/>`).join('\n')}\n    </trkseg>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Brocante Map" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>${x(p.name)}</name>
+    <copyright author="Contributeurs OpenStreetMap"><license>https://opendatacommons.org/licenses/odbl/</license></copyright>
+    <link href="https://www.openstreetmap.org/relation/${x(String(p.trace).slice(1))}"><text>OpenStreetMap</text></link>
+  </metadata>
+  <trk>
+    <name>${x(p.name)}</name>
+${segs}
+  </trk>
+</gpx>
+`;
+}
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-trace],[data-gpxdl]');
+  if (!b) return;
+  e.stopPropagation();
+  const p = itemById('places', b.dataset.trace ?? b.dataset.gpxdl);
+  if (!p) return;
+  if (b.dataset.trace) {
+    if (!state.selected || state.selected.id !== p.id) select('places', p.id, { fromMap: true });
+    return showTrace(p);
+  }
+  const t = await getTrace(p);
+  if (!t?.lines?.length) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([gpxText(p, t.lines)], { type: 'application/gpx+xml' }));
+  a.download = `${slugName(p.name)}.gpx`;
+  document.body.append(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}, true);
 
 // ---------- Favoris et planning (enregistrés sur l'appareil, sans compte) ----------
 // Chaque favori garde un instantané de l'élément : le planning reste lisible même si l'élément n'est plus
