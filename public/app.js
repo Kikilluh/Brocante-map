@@ -108,7 +108,7 @@ const km = (x) => (x < 1 ? "moins d'1 km" : `${String(Math.round(x * 10) / 10).r
 const NEW_GROUP = () => ({ set: false, adults: 2, kids: [], moment: 'any', center: null, radius: 0, budget: null, budgetMode: 'person', envies: [...EALL] });
 const state = {
   mode: 'events', preset: '30', from: '', to: '', cats: new Set(ALL), kinds: new Set(KALL), q: '',
-  unknown: true, sort: 'date', me: null, rando: { len: '', dur: '', dplus: '', shape: '' }, group: { ...NEW_GROUP(), ...(store.get('groupe') ?? {}) }, selected: null,
+  unknown: true, vague: true, sort: 'date', me: null, rando: { len: '', dur: '', dplus: '', shape: '' }, group: { ...NEW_GROUP(), ...(store.get('groupe') ?? {}) }, selected: null,
 };
 let events = [];
 let places = [];
@@ -129,6 +129,7 @@ function readHash() {
   if (h.get('k')) state.kinds = new Set(h.get('k').split(',').filter((t) => t in KINDS));
   if (h.get('q')) state.q = h.get('q');
   if (h.get('inc') === '0') state.unknown = false;
+  if (h.get('jv') === '0') state.vague = false;
   if (h.get('r')) { const [len = '', dur = '', dplus = '', shape = ''] = h.get('r').split('_'); state.rando = { len, dur, dplus, shape }; }
   if (h.get('m') === 'lieux') state.mode = 'places';
   const g = h.get('g') && decodeGroup(h.get('g'));
@@ -144,6 +145,7 @@ function writeHash() {
   if (state.kinds.size !== KALL.length) h.set('k', [...state.kinds].join(','));
   if (state.q) h.set('q', state.q);
   if (!state.unknown) h.set('inc', '0');
+  if (!state.vague) h.set('jv', '0');
   if (randoActive()) h.set('r', [state.rando.len, state.rando.dur, state.rando.dplus, state.rando.shape].join('_'));
   if (state.mode === 'places') h.set('m', 'lieux');
   if (state.group.set) h.set('g', encodeGroup(state.group));
@@ -161,9 +163,21 @@ if (!(window.L && window.L.markerClusterGroup)) {
 const map = L.map('map', { zoomControl: !isMobile(), attributionControl: true }).setView([47.25, 0.7], 9);
 const planIGN = L.tileLayer(
   'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
-  { maxZoom: 19, attribution: '© <a href="https://www.ign.fr/">IGN</a>' },
+  { maxZoom: 19, keepBuffer: 4, attribution: '© <a href="https://www.ign.fr/">IGN</a>' },
 ).addTo(map);
-const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, keepBuffer: 4, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+// Tuile qui ne se charge pas (serveur lent, limite de requêtes) : nouvel essai, puis la même tuile OpenStreetMap
+planIGN.on('tileerror', ({ tile, coords }) => {
+  const tries = Number(tile.dataset.tries ?? 0);
+  tile.dataset.tries = String(tries + 1);
+  if (tries === 0) setTimeout(() => { tile.src = `${planIGN.getTileUrl(coords)}&essai=2`; }, 700);
+  else if (tries === 1) tile.src = osm.getTileUrl(coords);
+});
+osm.on('tileerror', ({ tile, coords }) => {
+  if (tile.dataset.tries) return;
+  tile.dataset.tries = '1';
+  setTimeout(() => { tile.src = `${osm.getTileUrl(coords)}?essai=2`; }, 700);
+});
 L.control.layers({ 'Plan IGN': planIGN, OpenStreetMap: osm }, null, { position: 'bottomleft' }).addTo(map);
 // Le zoom au clic sur un groupe est géré plus bas (zoom progressif)
 const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });
@@ -325,6 +339,7 @@ function filteredEvents() {
   for (const ev of events) {
     if (!cats.has(ev.category)) continue;
     if (q && !ev._search.includes(q)) continue;
+    if (ev.daysUnknown && !state.vague) continue;
     const occ = ev.occurrences.filter((o) => (!state.from || o.end >= state.from) && (!state.to || o.start <= state.to));
     const next = occ.find(momentOk);
     if (!next || !inRadius(ev)) continue;
@@ -423,6 +438,7 @@ function eventItem(ev) {
     <span class="ico" style="background:${color(ev.category)}" aria-hidden="true">${CAT_ICONS[ev.category]}</span>
     <span class="body">
       <span class="when">${esc(occLabel(ev._next))}${ev._next.hours ? ` · ${esc(ev._next.hours)}` : ''}</span>
+      ${ev.daysUnknown ? '<span class="vague">⚠️ Jours à vérifier</span>' : ''}
       <span class="title" style="display:block">${esc(ev.title)}</span>
       ${ev.venue ? `<span class="venue" style="display:block">${esc(ev.venue)}</span>` : ''}
       <span class="where" style="display:block">${esc(ev.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
@@ -466,6 +482,7 @@ function eventDetail(ev) {
     <div class="badge-row">${evBadge(ev)}${favBtn('events', ev)}</div>
     <h2>${esc(ev.title)}</h2>
     <p class="when">${esc(occLabel(next))}${next.hours ? ` · ${esc(next.hours)}` : ''}</p>
+    ${ev.daysUnknown ? '<p class="vague-box">⚠️ <strong>Jours non précisés par l\'organisateur.</strong> L\'événement a lieu certains jours de cette période seulement : vérifiez auprès de l\'organisateur avant de vous déplacer.</p>' : ''}
     ${ev.venue ? `<p class="venue">${esc(ev.venue)}</p>` : ''}
     ${where ? `<p class="muted">${esc(where)}</p>` : ''}
     ${ev.organizer && ev.organizer !== ev.venue ? `<p class="muted">Organisé par ${esc(ev.organizer)}</p>` : ''}
@@ -524,6 +541,7 @@ function popupHtml(x, isEv) {
       ${x.image ? (isEv ? evBadge(x) : plBadge(x)) : `<span class="pop-badges">${isEv ? evBadge(x) : plBadge(x)}${heart.replace('fav-btn sm', 'fav-btn sm inline')}</span>`}
       <strong class="poptitle">${esc(x.title ?? x.name)}</strong>
       ${isEv ? `<span class="popwhen">${esc(occLabel(next))}${next.hours ? ` · ${esc(next.hours)}` : ''}</span>` : ''}
+      ${isEv && x.daysUnknown ? '<span class="vague">⚠️ Jours non précisés, à vérifier</span>' : ''}
       <span class="popwhere">${esc([x.venue, x.city].filter(Boolean).join(' · '))}</span>
       ${facts.length ? `<span class="popfacts">${esc(facts.join(' · '))}</span>` : ''}
       ${isEv && x._notes?.length && state.group.set ? `<span class="fit">${esc(x._notes[0])}</span>` : ''}
@@ -736,12 +754,13 @@ function syncControls() {
   $('from').value = state.from;
   $('to').value = state.to;
   $('unknown').checked = state.unknown;
+  $('vague').checked = state.vague;
   $$('[data-preset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.preset === state.preset)));
   $$('[data-type]').forEach((b) => b.setAttribute('aria-pressed', String(state.cats.has(b.dataset.type))));
   $$('[data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(state.kinds.has(b.dataset.kind))));
   const full = state.mode === 'places' ? state.kinds.size === KALL.length : state.cats.size === ALL.length;
   $('allTypes').textContent = full ? 'Tout décocher' : 'Tout cocher';
-  $('filtersBadge').hidden = full && state.unknown && (state.preset === '30' || state.mode === 'places') && !(state.mode === 'places' && randoActive());
+  $('filtersBadge').hidden = full && state.unknown && state.vague && (state.preset === '30' || state.mode === 'places') && !(state.mode === 'places' && randoActive());
   const gb = $('openGroup');
   gb.classList.toggle('set', state.group.set);
   $('groupBadge').hidden = !state.group.set;
@@ -812,8 +831,9 @@ for (const id of ['from', 'to']) {
   });
 }
 $('unknown').addEventListener('change', () => { state.unknown = $('unknown').checked; render(); });
+$('vague').addEventListener('change', () => { state.vague = $('vague').checked; render(); });
 $('reset').addEventListener('click', () => {
-  Object.assign(state, { preset: '30', cats: new Set(ALL), kinds: new Set(KALL), unknown: true, q: '', rando: { ...NO_RANDO } });
+  Object.assign(state, { preset: '30', cats: new Set(ALL), kinds: new Set(KALL), unknown: true, vague: true, q: '', rando: { ...NO_RANDO } });
   renderRandoFilters();
   [state.from, state.to] = presetRange('30');
   $('q').value = '';

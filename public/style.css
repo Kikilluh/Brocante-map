@@ -147,7 +147,9 @@ button { cursor: pointer; }
 
 /* ---------- Carte + panneau ---------- */
 .layout { flex: 1; position: relative; min-height: 0; }
-#map { position: absolute; inset: 0; background: var(--surface-2); }
+/* fond proche de celui du plan IGN : une tuile en cours de chargement ne fait pas de « carré noir » */
+#map { position: absolute; inset: 0; background: #ece9e1; }
+.leaflet-container { background: #ece9e1; }
 .locate-btn {
   position: absolute; right: 10px; top: 10px; z-index: 900; width: 44px; height: 44px; border-radius: 50%;
   border: 0; background: var(--surface); color: var(--text); box-shadow: var(--shadow); display: grid; place-items: center;
@@ -522,3 +524,8 @@ button { cursor: pointer; }
 .dept-bubble strong { font-size: 14px; }
 .dept-bubble span { font-size: 10.5px; font-weight: 700; opacity: .75; }
 .dept-bubble:hover { filter: brightness(1.05); transform: scale(1.04); }
+
+/* Événements récurrents dont les jours ne sont pas précisés */
+.vague { display: inline-block; align-self: flex-start; font-size: 12px; font-weight: 700; color: var(--warn-ink); background: var(--warn-bg); border-radius: 999px; padding: 1px 8px; margin: 2px 0; }
+.vague-box { background: var(--warn-bg); color: var(--warn-ink); border-radius: 12px; padding: 8px 12px; font-size: 13.5px; line-height: 1.4; margin: 8px 0; }
+.popactions { flex-wrap: wrap; }

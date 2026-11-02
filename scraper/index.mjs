@@ -84,10 +84,12 @@ for (const ev of collected) {
     (o) => o.end >= today && o.start <= horizon && (LONG_OK.has(ev.category) || (Date.parse(o.end) - Date.parse(o.start)) / 864e5 <= maxDays),
   );
   if (!ev.occurrences.length) {
-    // diagnostic : un exemple de période longue écartée, pour voir comment la source décrit les récurrences
-    if (!dropped.tropLong && ev._raw) console.log(`  exemple de période longue écartée : ${ev.title} → ${JSON.stringify(ev._raw).slice(0, 600)}`);
+    // Longue période sans jours précis (« Marché … du 1er janvier au 31 décembre ») : gardée, mais signalée
+    // sur le site « jours non précisés par l'organisateur, à vérifier »
+    ev.occurrences = upcoming;
+    ev.daysUnknown = true;
+    if (!dropped.tropLong && ev._raw) console.log(`  exemple de période longue sans jours : ${ev.title} → ${JSON.stringify(ev._raw).slice(0, 400)}`);
     dropped.tropLong++;
-    continue;
   }
   ev.start = ev.occurrences[0].start;
   ev.end = ev.occurrences.at(-1).end;
@@ -97,7 +99,7 @@ for (const ev of collected) {
   if (!ev.dept || !departments.includes(ev.dept)) { dropped.horsZone++; continue; }
   inScope.push(ev);
 }
-console.log(`Écartés : ${dropped.passe} passés ou hors horizon, ${dropped.tropLong} périodes trop longues sans jours précis, ${dropped.horsZone} hors zone, ${dropped.nonLocalise} non localisés ; ${expanded} récurrences développées en dates`);
+console.log(`Écartés : ${dropped.passe} passés ou hors horizon, ${dropped.tropLong} périodes longues sans jours précis (gardées, signalées), ${dropped.horsZone} hors zone, ${dropped.nonLocalise} non localisés ; ${expanded} récurrences développées en dates`);
 await geocoder.save();
 
 // Nom du lieu manquant : lieu nommé OpenStreetMap le plus proche (seulement si la position est précise)
