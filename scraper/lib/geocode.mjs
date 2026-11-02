@@ -47,6 +47,8 @@ export async function createGeocoder(cachePath) {
   return {
     /** Complète lat/lon/city/postcode/dept d'un événement. */
     async geocode(ev) {
+      // code postal saisi avec une espace (« 38 630 ») : on le normalise, sinon l'API le refuse
+      if (ev.postcode) { const pc = String(ev.postcode).replace(/\s/g, ''); ev.postcode = /^\d{5}$/.test(pc) ? pc : null; }
       if (ev.lat != null && ev.lon != null && ev.postcode) return ev;
       let r = null;
       if (ev.address && ev.city) r = await query(`${ev.address} ${ev.city}`, { postcode: ev.postcode });
