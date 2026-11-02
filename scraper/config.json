@@ -2,7 +2,11 @@
   "_comment": "Départements couverts, regroupés par région : chaque groupe est collecté en parallèle (une tâche GitHub Actions par groupe). Pour ajouter un département, l'ajouter à son groupe ; pour une nouvelle région, créer un groupe. Codes : \"01\" … \"95\", \"2A\", \"2B\", \"971\"…",
   "groups": {
     "centre-val-de-loire": [
+      "18",
+      "28",
+      "36",
       "37",
+      "41",
       "45"
     ],
     "bourgogne-franche-comte": [
@@ -129,7 +133,9 @@
         355525
       ],
       "discover": [],
-      "maxPages": 10
+      "maxPages": 10,
+      "discoverPerDept": true,
+      "maxPerDept": 12
     },
     {
       "id": "ticketmaster",

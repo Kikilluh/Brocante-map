@@ -5,6 +5,14 @@
 
 import { fetchText } from '../lib/http.mjs';
 import { deptFromPostcode } from '../lib/normalize.mjs';
+import { DEPT_NAMES } from '../lib/store.mjs';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const CACHE = join(dirname(fileURLToPath(import.meta.url)), '..', 'cache');
+const readJson = async (f, d) => { try { return JSON.parse(await readFile(f, 'utf8')); } catch { return d; } };
+const MONTH = 30 * 864e5;
 
 const API = 'https://api.openagenda.com/v2';
 const tr = (v) => (v && typeof v === 'object' && !Array.isArray(v) ? v.fr ?? Object.values(v)[0] : v);
@@ -71,6 +79,28 @@ export async function run(source, { departments, log }) {
     const found = await discoverAgendas(key, source.discover, log);
     found.slice(0, source.maxDiscovered ?? 40).forEach((uid) => agendas.add(uid));
   }
+  // Découverte automatique par département (recherche du nom du département), refaite tous les 30 jours.
+  // Un agenda découvert qui n'a donné aucun événement dans la zone est mis de côté 30 jours.
+  const fixed = new Set(agendas);
+  const yields = await readJson(join(CACHE, 'oa-yield.json'), {});
+  if (source.discoverPerDept) {
+    await mkdir(CACHE, { recursive: true });
+    for (const d of departments) {
+      const file = join(CACHE, `oa-discover-${d}.json`);
+      let disc = await readJson(file, null);
+      if (!disc || Date.now() - disc.at > MONTH) {
+        const uids = (await discoverAgendas(key, [DEPT_NAMES[d] ?? d], log)).slice(0, source.maxPerDept ?? 12);
+        disc = { at: Date.now(), uids };
+        await writeFile(file, JSON.stringify(disc));
+      }
+      for (const uid of disc.uids) {
+        const y = yields[uid];
+        if (y && y.n === 0 && Date.now() - y.at < MONTH) continue;
+        agendas.add(uid);
+      }
+    }
+    log(`  ${agendas.size - fixed.size} agenda(s) découvert(s) automatiquement`);
+  }
   log(`  ${agendas.size} agenda(s) interrogé(s)`);
 
   const raws = [];
@@ -111,7 +141,9 @@ export async function run(source, { departments, log }) {
       after = data.after;
     }
     if (n) log(`  agenda ${uid} → ${n} événement(s) dans la zone`);
+    if (!fixed.has(uid)) yields[uid] = { at: Date.now(), n };
   }
+  if (source.discoverPerDept) await writeFile(join(CACHE, 'oa-yield.json'), JSON.stringify(yields));
   if (closed) log(`  ${closed} événement(s) écarté(s) : licence non ouverte`);
   return raws;
 }
