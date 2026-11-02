@@ -19,27 +19,13 @@ jobs:
           probe() { # $1 = nom court, $2 = URL
             curl -sS -L --max-time 40 -A "$UA" -o "$1.body" -D "$1.headers" -w "$1 -> %{http_code} %{content_type} %{url_effective}\n" "$2" >> report.txt 2>&1 || echo "$1 -> échec" >> report.txt
           }
-          # Agenda culturel du Loir-et-Cher (Licence Ouverte) : page, flux éventuels
-          probe c41-agenda "http://culture41.fr/Agenda-culturel/"
-          probe c41-robots "http://culture41.fr/robots.txt"
-          probe c41-rss    "http://culture41.fr/spip.php?page=backend"
-          probe c41-ical   "http://culture41.fr/spip.php?page=ical"
-          head -c 6000 c41-agenda.body > c41-agenda-extrait.txt || true
-          grep -oE 'href="[^"]*"' c41-agenda.body | sort -u | head -80 > c41-liens.txt || true
-          # Itinéraires du Parc du Vercors (GeoPackage) : tables, colonnes, système de coordonnées, exemples
-          curl -sS -L --max-time 120 -A "$UA" -o vercors.gpkg "https://static.data.gouv.fr/resources/itineraires-de-randonnee-sur-le-parc-du-vercors/20250106-105438/itineraires.gpkg"
-          python3 - <<'PY' > vercors.txt
-          import sqlite3
-          c = sqlite3.connect('vercors.gpkg')
-          print(c.execute("select table_name, data_type, srs_id from gpkg_contents").fetchall())
-          print(c.execute("select srs_id, organization, organization_coordsys_id from gpkg_spatial_ref_sys").fetchall())
-          for (t,) in c.execute("select table_name from gpkg_contents where data_type='features'").fetchall():
-              cols = [r[1] for r in c.execute(f'pragma table_info("{t}")')]
-              print('TABLE', t, c.execute(f'select count(*) from "{t}"').fetchone()[0], cols)
-              for row in c.execute(f'select * from "{t}" limit 3'):
-                  print({k: (v if not isinstance(v, bytes) else f'<{len(v)} octets>') for k, v in zip(cols, row)})
-          PY
-          rm -f vercors.gpkg
+          # Annuaire de l'administration (Service-Public.fr) : sites internet des mairies et intercommunalités
+          A="https://api-lannuaire.service-public.fr/api/explore/v2.1/catalog/datasets/api-lannuaire-administration"
+          probe annuaire-meta "$A"
+          probe annuaire-mairies37 "$A/records?limit=5&where=pivot%20like%20%22mairie%22%20and%20code_insee_commune%20like%20%2237%2A%22"
+          probe annuaire-search "$A/records?limit=3&where=search(%22mairie%20de%20dierre%22)"
+          probe annuaire-epci37 "$A/records?limit=3&where=search(%22communaut%C3%A9%20de%20communes%22)%20and%20code_insee_commune%20like%20%2237%2A%22"
+          for f in annuaire-*.body; do echo "=== $f" >> annuaire.txt; head -c 5000 "$f" >> annuaire.txt; echo >> annuaire.txt; done
           # Résumé : ce que contiennent les pages (données structurées, flux)
           for f in *.body; do
             n="${f%.body}"
