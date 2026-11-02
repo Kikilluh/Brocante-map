@@ -28,7 +28,8 @@ for (const part of parts) {
     await cp(join(dir, d), join(DATA_DIR, d), { recursive: true });
     if (pidx.depts?.[d]) index.depts[d] = pidx.depts[d];
   }
-  index.sources[part.replace(/^data-/, '')] = { departments: owned, ...(pidx.sources ?? {}) };
+  // seulement le rapport de cette collecte (événements / lieux), jamais l'index précédent imbriqué
+  index.sources[part.replace(/^data-/, '')] = { departments: owned, events: pidx.sources?.events ?? null, places: pidx.sources?.places ?? null };
   console.log(`  ${part} : ${owned.join(', ')}`);
 }
 // départements retirés de la configuration

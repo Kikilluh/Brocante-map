@@ -115,7 +115,10 @@ export async function writeSplit(kind, items, { departments, all = departments, 
   index.departments = all;
   index.generatedAt = new Date().toISOString();
   index.updated = { ...index.updated, [kind]: index.generatedAt };
-  index.sources = { ...index.sources, [kind]: sources };
+  // rapport des sources de cette collecte uniquement (pas d'imbrication des rapports précédents)
+  index.sources = { events: index.sources?.events ?? null, places: index.sources?.places ?? null, [kind]: sources };
+  if (index.sources.events?.events || index.sources.events?.departments) index.sources.events = null;
+  if (index.sources.places?.places || index.sources.places?.departments) index.sources.places = null;
   await writeFile(join(DATA_DIR, 'index.json'), JSON.stringify(index, null, 1));
   // anciens fichiers uniques (avant le découpage)
   for (const f of await readdir(DATA_DIR)) if (['events.json', 'places.json', 'brocantes.json'].includes(f)) await rm(join(DATA_DIR, f));
