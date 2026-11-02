@@ -1,7 +1,7 @@
-name: Exploration des API (diagnostic)
+name: Exploration des sources (diagnostic)
 
-# Lancement manuel : récupère la documentation et des exemples de réponses des API
-# et les enregistre sur la branche "exploration" (clés API masquées).
+# Lancement manuel : sonde des sources possibles (sites de communes, agendas, données ouvertes)
+# et enregistre les résultats sur la branche "exploration". Aucune donnée n'est publiée sur le site.
 on:
   workflow_dispatch:
 
@@ -12,27 +12,46 @@ jobs:
   explore:
     runs-on: ubuntu-latest
     steps:
-      - name: Récupérer docs et exemples
-        env:
-          DT: ${{ secrets.DATATOURISME_API_KEY }}
-          OA: ${{ secrets.OPENAGENDA_KEY }}
+      - name: Sonder les sources
         run: |
           mkdir out && cd out
-          get() { curl -sS -L --max-time 60 -o "$1" "$2" -w "$1 -> %{http_code} %{content_type}\n" || echo "$1 -> échec"; }
-          get dt-docs.html            "https://api.datatourisme.fr/v1/docs"
-          get dt-swagger.html         "https://api.datatourisme.fr/v1/swagger"
-          for p in swagger.json openapi.json swagger/json docs/json swagger.yaml openapi.yaml api-docs; do
-            get "dt-$(echo $p | tr '/.' '__')" "https://api.datatourisme.fr/v1/$p"
+          UA="BrocanteMapBot/1.0 (+https://github.com/kikilluh/brocante-map)"
+          probe() { # $1 = nom court, $2 = URL
+            curl -sS -L --max-time 40 -A "$UA" -o "$1.body" -D "$1.headers" -w "$1 -> %{http_code} %{content_type} %{url_effective}\n" "$2" >> report.txt 2>&1 || echo "$1 -> échec" >> report.txt
+          }
+          # Exemple « soirée moules-frites à Dierre »
+          probe ccac-event   "https://www.cc-autourdechenonceaux.fr/events/soiree-moules-frites-a-dierre/"
+          probe ccac-robots  "https://www.cc-autourdechenonceaux.fr/robots.txt"
+          probe ccac-tribe   "https://www.cc-autourdechenonceaux.fr/wp-json/tribe/events/v1/events?per_page=5"
+          probe ccac-ical    "https://www.cc-autourdechenonceaux.fr/events/?ical=1"
+          probe ccac-feed    "https://www.cc-autourdechenonceaux.fr/events/feed/"
+          probe dierre-page  "https://www.dierre37.fr/actualites/516895"
+          probe dierre-home  "https://www.dierre37.fr/"
+          probe dierre-robots "https://www.dierre37.fr/robots.txt"
+          # Randonnée : conditions de Visorando, instances Geotrek et jeux de données ouverts
+          probe visorando-robots "https://www.visorando.com/robots.txt"
+          probe visorando-cgu "https://www.visorando.com/cgu.html"
+          probe dg-geotrek   "https://www.data.gouv.fr/api/1/datasets/?q=geotrek&page_size=50"
+          probe dg-rando38   "https://www.data.gouv.fr/api/1/datasets/?q=randonn%C3%A9e%20is%C3%A8re&page_size=30"
+          probe dg-rando     "https://www.data.gouv.fr/api/1/datasets/?q=itin%C3%A9raires%20de%20randonn%C3%A9e&page_size=50"
+          probe dg-agenda    "https://www.data.gouv.fr/api/1/datasets/?q=agenda%20%C3%A9v%C3%A9nements&page_size=50"
+          # Résumé : ce que contiennent les pages (données structurées, flux)
+          for f in *.body; do
+            n="${f%.body}"
+            {
+              echo "== $n"
+              grep -io '<meta name="generator"[^>]*>' "$f" | head -3
+              echo "JSON-LD : $(grep -c 'application/ld+json' "$f")  Event : $(grep -c '"@type" *: *"Event"' "$f")"
+              grep -ioE 'href="[^"]*(ical|\.ics|webcal|/feed|rss)[^"]*"' "$f" | sort -u | head -8
+              grep -ioE 'tribe-events|the-events-calendar|wp-json|intramuros|panneaupocket|illiwap|openagenda|campagnol|e-monsite|kalisport' "$f" | sort | uniq -c | head -10
+            } >> summary.txt
           done
-          get dt-catalog.json         "https://api.datatourisme.fr/v1/catalog?api_key=$DT&page_size=3"
-          uuid=$(jq -r '.objects[0].uuid // empty' dt-catalog.json)
-          [ -n "$uuid" ] && get dt-detail.json "https://api.datatourisme.fr/v1/catalog/$uuid?api_key=$DT"
-          get dt-search-concert.json  "https://api.datatourisme.fr/v1/catalog?api_key=$DT&page_size=3&search=concert%20Tours"
-          get oa-events.json          "https://api.openagenda.com/v2/agendas/54621/events?key=$OA&size=3&detailed=1"
-          # liens trouvés dans la doc (pour suivre des sous-pages)
-          grep -oE 'href="[^"]+"|"/v1/[^"]+"' dt-docs.html dt-swagger.html 2>/dev/null | sort -u > dt-links.txt || true
-          # masquer les clés partout
-          for f in *; do sed -i "s/$DT/REDACTED/g; s/$OA/REDACTED/g" "$f"; done
+          # Listes de jeux data.gouv : titre, organisation, licence
+          for f in dg-*.body; do
+            echo "== $f" >> datasets.txt
+            jq -r '.data[] | "\(.title) | \(.organization.name // "-") | \(.license) | \(.page)"' "$f" >> datasets.txt 2>/dev/null || true
+          done
+          rm -f dg-*.body
           ls -la
       - name: Enregistrer sur la branche exploration
         run: |
@@ -40,5 +59,5 @@ jobs:
           git init -q -b exploration
           git config user.name "brocante-map-bot"
           git config user.email "brocante-map-bot@users.noreply.github.com"
-          git add -A && git commit -q -m "Exploration API $(date -u +%F)"
+          git add -A && git commit -q -m "Exploration des sources $(date -u +%F)"
           git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" exploration

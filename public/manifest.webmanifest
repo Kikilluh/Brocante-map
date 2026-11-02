@@ -1,7 +1,7 @@
 {
   "name": "Brocante Map – que faire près de chez vous",
   "short_name": "Brocante Map",
-  "description": "Que faire avec votre groupe en Centre-Val de Loire et dans la Nièvre : sorties, lieux, activités et randonnées filtrés selon les âges, le budget et la distance.",
+  "description": "Que faire avec votre groupe près de chez vous : sorties, lieux, activités et randonnées filtrés selon les âges, le budget et la distance.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
