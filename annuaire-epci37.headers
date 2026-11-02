@@ -1,0 +1,23 @@
+HTTP/2 200 
+server: openresty
+date: Mon, 02 Nov 2026 15:17:29 GMT
+content-type: application/json; charset=utf-8
+content-length: 8708
+x-ratelimit-remaining: 499996
+x-ratelimit-limit: 500000
+x-ratelimit-reset: 2026-11-03 00:00:00+00:00
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+vary: Accept-Language, Cookie, Host
+content-language: fr-fr
+access-control-allow-origin: *
+access-control-allow-methods: POST, GET, OPTIONS
+access-control-max-age: 1000
+access-control-allow-headers: Authorization, X-Requested-With, Origin, ODS-API-Analytics-App, ODS-API-Analytics-Embed-Type, ODS-API-Analytics-Embed-Referrer, ODS-Widgets-Version, Accept
+access-control-expose-headers: ODS-Explore-API-Deprecation, Link, X-RateLimit-Remaining, X-RateLimit-Limit, X-RateLimit-Reset, X-RateLimit-dataset-Remaining, X-RateLimit-dataset-Limit, X-RateLimit-dataset-Reset
+strict-transport-security: max-age=31536000;includeSubdomains
+x-content-type-options: nosniff
+referrer-policy: strict-origin-when-cross-origin
+content-security-policy: upgrade-insecure-requests; 
+x-ua-compatible: IE=edge
+permissions-policy: midi=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self),payment=()
+
