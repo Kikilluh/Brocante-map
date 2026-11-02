@@ -36,3 +36,11 @@ test('tracé : tronçons enchaînés, simplifiés et arrondis', async () => {
   assert.equal(lines.length, 2); // 2 premiers tronçons raccordés (le 2e à l'envers), 3e séparé
   assert.deepEqual(lines[0], [[47, 0.5], [47.01, 0.5], [47.02, 0.51]]);
 });
+
+test('dénivelé : bruit ignoré, montées et descentes cumulées', async () => {
+  const { climb, pick } = await import('../lib/elevation.mjs');
+  assert.deepEqual(climb([100, 101, 100, 101, 100]), { up: 0, down: 0 }); // bruit < 3 m
+  const c = climb([100, 110, 120, 130, 120, 110, 100]);
+  assert.ok(c.up >= 15 && c.up <= 30 && c.down >= 15 && c.down <= 30);
+  assert.deepEqual(pick([1, 2, 3, 4, 5, 6, 7, 8, 9], 3), [1, 5, 9]);
+});

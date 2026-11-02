@@ -421,7 +421,7 @@ function eventDetail(ev) {
     <div class="actions sticky">
       ${evLink(ev)}
       ${!ev.url || ev.urlKind === 'site' ? searchLink(ev) : ''}
-      ${link(`https://www.openstreetmap.org/directions?to=${ev.lat},${ev.lon}`, 'Itinéraire')}
+      ${navBtn(ev, 'Itinéraire')}
       <button type="button" data-ics="${esc(ev.id)}">📅 Agenda</button>
       <button data-share>Partager</button>
     </div>
@@ -432,7 +432,7 @@ function eventDetail(ev) {
 }
 function placeDetail(p) {
   const isRoute = p.kind === 'rando' || p.kind === 'velo';
-  const facts = [p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.duration ?? '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
+  const facts = [p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.duration ?? '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
   const where = [p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', ');
   return `<button class="back" data-back>← Retour à la liste</button>
     <div class="badge-row">${plBadge(p)}${favBtn('places', p)}</div>
@@ -442,11 +442,12 @@ function placeDetail(p) {
     <div class="actions sticky">
       ${p.trace ? `<button type="button" class="primary" data-trace="${esc(p.id)}">🗺️ Voir le tracé</button>` : p.routeUrl ? link(p.routeUrl, "Voir l'itinéraire", 'primary') : p.url ? link(p.url, 'Site / infos', 'primary') : ''}
       ${p.trace ? `<button type="button" data-gpxdl="${esc(p.id)}">Télécharger le GPX</button>` : p.gpx ? link(p.gpx, 'Trace GPX') : ''}
-      ${p.trace && p.routeUrl ? link(p.routeUrl, 'Dénivelé et détails') : ''}
+      ${p.trace && p.routeUrl ? link(p.routeUrl, 'Plus de détails') : ''}
       ${p.url && (p.routeUrl || p.trace) ? link(p.url, 'Site') : ''}
-      ${link(`https://www.openstreetmap.org/directions?to=${p.lat},${p.lon}`, isRoute ? 'Aller au départ' : 'Itinéraire')}
+      ${navBtn(p, isRoute ? 'Aller au départ' : 'Itinéraire')}
       <button data-share>Partager</button>
     </div>
+    ${p.trace ? `<div class="elev" data-elev="${esc(p.id)}"></div>` : ''}
     ${hero(p)}
     ${p.description ? `<p class="desc">${esc(p.description)}</p>` : ''}
     ${sourcesLine(p)}`;
@@ -457,7 +458,7 @@ function popupHtml(x, isEv) {
   const next = isEv ? (x._next ?? nextIn(x) ?? x.occurrences[0]) : null;
   const facts = isEv
     ? [priceLabel(x), ageLabel(x), x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean)
-    : [x.distanceKm ? km(x.distanceKm) : '', x.duration ?? '', x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
+    : [x.distanceKm ? km(x.distanceKm) : '', x.dplus != null ? `D+ ${x.dplus} m` : '', x.duration ?? '', x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
   const main = isEv
     ? evLink(x, true)
     : (x.trace ? `<button type="button" class="primary" data-trace="${esc(x.id)}">Voir le tracé</button>` : x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
@@ -475,7 +476,7 @@ function popupHtml(x, isEv) {
     </div>
     <div class="popactions">
       ${main}
-      ${link(`https://www.openstreetmap.org/directions?to=${x.lat},${x.lon}`, 'Itinéraire')}
+      ${navBtn(x, 'Itinéraire')}
       ${isEv ? `<button type="button" class="ics-mini" data-ics="${esc(x.id)}" aria-label="Ajouter à mon agenda" title="Ajouter à mon agenda">📅</button>` : ''}
       <button type="button" data-more="${esc(x.id)}">Plus d'infos</button>
     </div>
@@ -512,6 +513,7 @@ function select(type, id, { fromMap = false, open = false } = {}) {
   else if (m) map.panTo(m.getLatLng());
   if (isMobile()) setSheet(open ? 'full' : 'half');
   else setListOpen(true);
+  if (type === 'places' && item.trace) fillElevation(item);
   writeHash();
 }
 function unselect() {
@@ -859,7 +861,7 @@ async function showTrace(p) {
   const t = await getTrace(p);
   if (!t?.lines?.length) { if (p.routeUrl) window.open(p.routeUrl, '_blank', 'noopener'); return; }
   clearTrace();
-  const color = getComputedStyle(document.documentElement).getPropertyValue('--accent-strong').trim() || '#c8644a';
+  const color = '#c0473f'; // rouge profond, pas trop vif
   const lines = L.polyline(t.lines, { color, weight: 5, opacity: 0.9, lineJoin: 'round' });
   const halo = L.polyline(t.lines, { color: '#fff', weight: 9, opacity: 0.8, interactive: false });
   const start = L.circleMarker([p.lat, p.lon], { radius: 8, color: '#fff', weight: 3, fillColor: '#2f8f57', fillOpacity: 1 }).bindTooltip(p.partial ? 'Entrée dans le département' : 'Départ', { direction: 'top', offset: [0, -8] });
@@ -869,6 +871,28 @@ async function showTrace(p) {
   if (isMobile()) setSheet('peek');
   const pad = isMobile() ? { paddingTopLeft: [24, 120], paddingBottomRight: [24, 140] } : { padding: [50, 50] };
   map.flyToBounds(lines.getBounds(), { ...pad, duration: 0.7, maxZoom: 16 });
+}
+/** Profil altimétrique (calculé à la collecte avec les altitudes IGN), dessiné en SVG dans la fiche. */
+async function fillElevation(p) {
+  const t = await getTrace(p);
+  const box = $('detail').querySelector(`[data-elev="${CSS.escape(p.id)}"]`);
+  if (!box) return;
+  const e = t?.ele;
+  if (!e?.profile?.length) { box.remove(); return; }
+  const W = 300, H = 96, B = 16, T = 8;
+  const span = Math.max(e.max - e.min, 30);
+  const base = e.min - (span - (e.max - e.min)) / 2;
+  const y = (z) => (H - B - ((z - base) / span) * (H - B - T)).toFixed(1);
+  const n = e.profile.length;
+  const pts = e.profile.map((z, i) => `${((i / (n - 1)) * W).toFixed(1)},${y(z)}`).join(' ');
+  box.innerHTML = `<p class="elev-facts"><strong>Dénivelé</strong> : D+ ${e.up} m · D− ${e.down} m · altitude ${e.min} à ${e.max} m</p>
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Profil altimétrique, de ${e.min} à ${e.max} mètres">
+      <polygon points="0,${H - B} ${pts} ${W},${H - B}" class="elev-area"/>
+      <polyline points="${pts}" class="elev-line"/>
+      <line x1="0" y1="${H - B}" x2="${W}" y2="${H - B}" class="elev-axis"/>
+    </svg>
+    <div class="elev-scale"><span>0 km</span><span>${km(e.km)}</span></div>
+    <p class="src">Altitudes : IGN (Géoplateforme), valeurs indicatives.</p>`;
 }
 function gpxText(p, lines) {
   const x = (s) => String(s ?? '').replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
@@ -906,6 +930,44 @@ document.addEventListener('click', async (e) => {
   a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }, true);
+
+// ---------- Y aller : choix de l'application de navigation ----------
+const isAndroid = () => /android/i.test(navigator.userAgent);
+const NAV_APPS = {
+  google: { label: 'Google Maps', url: (a, o) => `https://www.google.com/maps/dir/?api=1&destination=${a},${o}` },
+  apple: { label: 'Plans (Apple)', url: (a, o, name) => `https://maps.apple.com/?daddr=${a},${o}&q=${encodeURIComponent(name)}`, only: () => isIOS() || /Macintosh/.test(navigator.userAgent) },
+  waze: { label: 'Waze', url: (a, o) => `https://waze.com/ul?ll=${a},${o}&navigate=yes`, only: () => isMobile() },
+  geo: { label: 'Autre application du téléphone', url: (a, o, name) => `geo:${a},${o}?q=${a},${o}(${encodeURIComponent(name)})`, only: () => isAndroid() },
+  osm: { label: 'OpenStreetMap', url: (a, o) => `https://www.openstreetmap.org/directions?to=${a},${o}#map=16/${a}/${o}` },
+};
+const navBtn = (x, label) => `<button type="button" data-nav="${x.lat},${x.lon}" data-navname="${esc(x.title ?? x.name ?? '')}">${label}</button>`;
+let navTarget = null;
+function openNav(app, t) {
+  const url = NAV_APPS[app].url(t.lat, t.lon, t.name);
+  if (url.startsWith('geo:')) location.href = url;
+  else window.open(url, '_blank', 'noopener');
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-nav]');
+  if (!b) return;
+  e.stopPropagation();
+  const [lat, lon] = b.dataset.nav.split(',');
+  navTarget = { lat, lon, name: b.dataset.navname };
+  const saved = store.get('appliCarte');
+  if (saved && NAV_APPS[saved] && (!NAV_APPS[saved].only || NAV_APPS[saved].only())) return openNav(saved, navTarget);
+  $('navApps').innerHTML = Object.entries(NAV_APPS).filter(([, a]) => !a.only || a.only())
+    .map(([k, a]) => `<button type="button" class="btn" data-navapp="${k}">${a.label}</button>`).join('');
+  $('navRemember').checked = false;
+  $('navDialog').showModal();
+}, true);
+$('navApps').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-navapp]');
+  if (!b || !navTarget) return;
+  if ($('navRemember').checked) store.set('appliCarte', b.dataset.navapp);
+  $('navDialog').close();
+  openNav(b.dataset.navapp, navTarget);
+  if (!$('favView').hidden) renderFavs();
+});
 
 // ---------- Favoris et planning (enregistrés sur l'appareil, sans compte) ----------
 // Chaque favori garde un instantané de l'élément : le planning reste lisible même si l'élément n'est plus
@@ -1061,6 +1123,7 @@ function renderFavs() {
     ${upcoming.length ? `<div class="fav-head"><h3>📅 Mon planning</h3><button type="button" class="btn small" data-icsall>Tout ajouter à mon agenda</button></div><ul class="list fav-list">${plan}</ul>` : ''}
     ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
     ${past.length ? `<details><summary>${past.length} événement${past.length > 1 ? 's' : ''} passé${past.length > 1 ? 's' : ''}</summary><ul class="list fav-list">${past.map((f) => favEventItem(f, true)).join('')}</ul><button type="button" class="btn small" data-clearpast>Effacer les événements passés</button></details>` : ''}
+    ${store.get('appliCarte') && NAV_APPS[store.get('appliCarte')] ? `<p class="src">Itinéraires ouverts avec ${esc(NAV_APPS[store.get('appliCarte')].label)} · <a href="#" data-navreset>changer</a></p>` : ''}
     <p class="src">${account.user ? 'Vos favoris et votre groupe sont enregistrés sur cet appareil et synchronisés avec votre compte.' : 'Sans compte, vos favoris sont enregistrés uniquement sur cet appareil (rien n\'est envoyé).'}</p>`;
 }
 function openFavs() {
@@ -1080,6 +1143,7 @@ $('accountBtn').addEventListener('click', openFavs);
 document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs]')) { e.preventDefault(); openFavs(); } });
 $('favView').addEventListener('click', async (e) => {
   if (e.target.closest('[data-favclose]')) return closeFavs();
+  if (e.target.closest('[data-navreset]')) { e.preventDefault(); store.set('appliCarte', null); return renderFavs(); }
   if (e.target.closest('[data-icsall]')) {
     const t = today();
     return downloadIcs(favs.filter((f) => f.type === 'events' && f.occurrences.some((o) => o.end >= t)), 'mon-planning');

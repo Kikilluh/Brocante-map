@@ -16,6 +16,7 @@ import { cleanText, deptFromPostcode, slug } from './lib/normalize.mjs';
 import { splitVenue } from './lib/venues.mjs';
 import { fr, get, listOf, readImage } from './sources/datatourisme.mjs';
 import { loadRoutes, BBOX } from './lib/routes.mjs';
+import { createElevation } from './lib/elevation.mjs';
 import { readPrevious, writeSplit, keepMissing, deptByBbox, DATA_DIR } from './lib/store.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
@@ -389,13 +390,18 @@ else {
   // Tracés : data/<dept>/traces/r<id OSM>.json (les anciens sont remplacés)
   for (const d of departments) await rm(join(DATA_DIR, d, 'traces'), { recursive: true, force: true });
   let n = 0;
+  // Dénivelé (altitudes IGN) : D+ dans la fiche, profil dans le fichier du tracé
+  const elevation = await createElevation(join(ROOT, 'cache', 'elevation.json'), log);
   for (const p of located) {
     const geom = traces.get(p.id);
     if (!geom) { delete p.trace; continue; } // lieu repris de la veille : pas de fichier de tracé
+    const ele = await elevation.profile(p.trace, geom);
+    if (ele) { p.dplus = ele.up; p.dminus = ele.down; }
     await mkdir(join(DATA_DIR, p.dept, 'traces'), { recursive: true });
-    await writeFile(join(DATA_DIR, p.dept, 'traces', `${p.trace}.json`), JSON.stringify({ name: p.name, lines: geom }));
+    await writeFile(join(DATA_DIR, p.dept, 'traces', `${p.trace}.json`), JSON.stringify({ name: p.name, lines: geom, ele }));
     n++;
   }
+  await elevation.save();
   log(`${n} tracés d'itinéraires écrits`);
   await writeSplit('places', located, { departments, sources: report });
 }
