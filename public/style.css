@@ -293,8 +293,9 @@ button { cursor: pointer; }
   .sheet-handle { cursor: default; padding-top: 10px; }
   .grip { display: none; }
   .sheet[data-state="peek"] .sheet-body { overflow-y: auto; }
-  .modal { width: min(560px, 92vw); height: auto; max-height: 86vh; margin: auto; border-radius: 18px; box-shadow: var(--shadow); }
-  .modal-inner { max-height: 86vh; }
+  .modal { width: min(560px, 92vw); height: fit-content; max-height: 86vh; margin: auto; border-radius: 18px; box-shadow: var(--shadow); }
+  .modal-inner { height: auto; max-height: 86vh; }
+  .modal-body { flex: 0 1 auto; min-height: 0; }
   /* Liste repliée par défaut sur PC */
   .sheet { width: 0; border-left: 0; overflow: hidden; transition: width .25s ease; }
   .list-open .sheet { width: 420px; border-left: 1px solid var(--border); }
@@ -486,3 +487,25 @@ button { cursor: pointer; }
 .elev-axis { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .elev-scale { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
 .elev .src { margin-top: 4px; }
+
+/* ---------- Fiche d'aperçu reliée au marqueur ---------- */
+.callout-layer { position: absolute; inset: 0; z-index: 900; pointer-events: none; }
+.callout-layer[hidden] { display: none; }
+.callout-line { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.callout-line line { stroke: var(--accent-strong); stroke-width: 2; stroke-linecap: round; }
+.callout-line circle { fill: var(--accent-strong); stroke: #fff; stroke-width: 2; }
+.callout {
+  position: absolute; pointer-events: auto; width: min(290px, calc(100% - 24px));
+  background: var(--surface); color: var(--text); border-radius: 16px; overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,.25); border: 1px solid var(--border);
+  animation: callout-in .16s ease-out;
+}
+@keyframes callout-in { from { opacity: 0; transform: scale(.97); } }
+@media (prefers-reduced-motion: reduce) { .callout { animation: none; } }
+.callout-close {
+  position: absolute; top: 8px; right: 8px; z-index: 3; width: 30px; height: 30px; border-radius: 50%;
+  border: 0; background: rgba(255,255,255,.9); color: #333; font-size: 15px; line-height: 1; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.callout .popbody { padding-right: 44px; }
+/* Bulle du nom au survol : largeur selon le texte (évite un mot par ligne) */
+.leaflet-tooltip.tip { width: max-content; }

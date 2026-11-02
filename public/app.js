@@ -315,15 +315,15 @@ function render() {
   layer.addLayers(list.map((x) => {
     const name = x.title ?? x.name;
     const m = L.marker([x.lat, x.lon], { icon: isEv ? pinIcon(x.category) : placeIcon(x.kind), name, alt: name, keyboard: true });
-    if (canHover()) {
-      m.bindTooltip(esc(name), { direction: 'top', offset: [0, isEv ? -38 : -16], className: 'tip', opacity: 1 });
-      m.on('popupopen', () => m.closeTooltip());
-    }
-    m.bindPopup(() => popupHtml(x, isEv), { maxWidth: 290, minWidth: 250, className: 'pop', autoPanPaddingTopLeft: [12, isMobile() ? 175 : 70], autoPanPaddingBottomRight: [12, isMobile() ? 120 : 20] });
+    if (canHover()) m.bindTooltip(esc(name), { direction: 'top', offset: [0, isEv ? -38 : -16], className: 'tip', opacity: 1 });
+    m.item = x;
+    m.isEv = isEv;
+    m.on('click', () => { m.closeTooltip(); openCallout(m); });
     markers.set(x.id, m);
     return m;
   }));
 
+  closeCallout();
   current = list;
   renderList();
   syncControls();
@@ -482,17 +482,89 @@ function popupHtml(x, isEv) {
     </div>
   </div>`;
 }
-$('map').addEventListener('click', (e) => {
+// ---------- Fiche d'aperçu : fixe au centre de la carte, reliée au marqueur par un trait ----------
+// La carte ne bouge pas quand on touche un marqueur ; la fiche se place au centre de la zone visible
+// (ou au-dessus / au-dessous du marqueur s'il serait caché), et le trait suit le marqueur.
+const calloutLayer = L.DomUtil.create('div', 'callout-layer', map.getContainer());
+calloutLayer.innerHTML = '<svg class="callout-line" aria-hidden="true"><line/><circle r="4"/></svg><div class="callout" role="dialog" aria-label="Aperçu"></div>';
+calloutLayer.hidden = true;
+const calloutCard = calloutLayer.querySelector('.callout');
+L.DomEvent.disableClickPropagation(calloutCard);
+L.DomEvent.disableScrollPropagation(calloutCard);
+let calloutMarker = null;
+function markerPoint(m) {
+  // marqueur caché dans un groupe après un zoom : on vise le groupe
+  const group = m.isEv ? cluster : placeCluster;
+  const shown = group.getVisibleParent?.(m) ?? m;
+  const pt = map.latLngToContainerPoint(shown.getLatLng());
+  return shown === m && m.isEv ? pt.subtract([0, 22]) : pt;
+}
+function placeCallout(firstTime = false) {
+  if (!calloutMarker) return;
+  const size = map.getSize();
+  const top = 56;
+  const bottom = size.y - (isMobile() ? 96 : 12);
+  const cw = calloutCard.offsetWidth;
+  const ch = calloutCard.offsetHeight;
+  const pt = markerPoint(calloutMarker);
+  if (firstTime) {
+    let x = (size.x - cw) / 2;
+    let y = top + Math.max(0, (bottom - top - ch) / 2);
+    const hides = pt.x > x - 20 && pt.x < x + cw + 20 && pt.y > y - 20 && pt.y < y + ch + 20;
+    if (hides) {
+      const below = pt.y + 34;
+      const above = pt.y - 40 - ch;
+      if (pt.y < (top + bottom) / 2 && below + ch <= bottom) y = below;
+      else if (above >= top) y = above;
+      else x = pt.x < size.x / 2 ? Math.min(size.x - cw - 8, pt.x + 30) : Math.max(8, pt.x - 30 - cw);
+    }
+    calloutCard.style.left = `${Math.round(x)}px`;
+    calloutCard.style.top = `${Math.round(Math.max(8, y))}px`;
+  }
+  // trait : du bord de la fiche le plus proche jusqu'au marqueur
+  const x0 = calloutCard.offsetLeft;
+  const y0 = calloutCard.offsetTop;
+  const cx = Math.min(Math.max(pt.x, x0 + 14), x0 + cw - 14);
+  const cy = Math.min(Math.max(pt.y, y0 + 14), y0 + ch - 14);
+  const inside = pt.x >= x0 && pt.x <= x0 + cw && pt.y >= y0 && pt.y <= y0 + ch;
+  const visible = pt.x >= 0 && pt.y >= 0 && pt.x <= size.x && pt.y <= size.y && !inside;
+  const svg = calloutLayer.querySelector('svg');
+  svg.style.display = visible ? '' : 'none';
+  const line = svg.querySelector('line');
+  line.setAttribute('x1', cx); line.setAttribute('y1', cy); line.setAttribute('x2', pt.x); line.setAttribute('y2', pt.y);
+  const dot = svg.querySelector('circle');
+  dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
+}
+function openCallout(m) {
+  calloutMarker = m;
+  calloutCard.innerHTML = `<button type="button" class="callout-close" data-calloutclose aria-label="Fermer">✕</button>${popupHtml(m.item, m.isEv)}`;
+  calloutLayer.hidden = false;
+  if (isMobile() && $('sheet').dataset.state !== 'peek') setSheet('peek');
+  placeCallout(true);
+  // l'image peut arriver après : on recale
+  calloutCard.querySelector('img')?.addEventListener('load', () => placeCallout(true), { once: true });
+}
+function closeCallout() {
+  calloutMarker = null;
+  calloutLayer.hidden = true;
+  calloutCard.innerHTML = '';
+}
+map.on('move zoom zoomend resize', () => placeCallout(false));
+map.on('resize', () => placeCallout(true));
+map.on('click', closeCallout);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && calloutMarker) closeCallout(); });
+calloutCard.addEventListener('click', (e) => {
+  if (e.target.closest('[data-calloutclose]')) return closeCallout();
   const b = e.target.closest('[data-more]');
   if (!b) return;
-  map.closePopup();
+  closeCallout();
   select(state.mode, b.dataset.more, { fromMap: true, open: true });
 });
-/** Centre la carte sur un élément et ouvre sa bulle. */
+/** Montre un élément sur la carte (zoom si besoin) et ouvre sa fiche d'aperçu. */
 function showOnMap(id) {
   const m = markers.get(id);
   if (!m) return;
-  (state.mode === 'events' ? cluster : placeCluster).zoomToShowLayer(m, () => m.openPopup());
+  (state.mode === 'events' ? cluster : placeCluster).zoomToShowLayer(m, () => openCallout(m));
 }
 
 function select(type, id, { fromMap = false, open = false } = {}) {
@@ -866,7 +938,7 @@ async function showTrace(p) {
   const halo = L.polyline(t.lines, { color: '#fff', weight: 9, opacity: 0.8, interactive: false });
   const start = L.circleMarker([p.lat, p.lon], { radius: 8, color: '#fff', weight: 3, fillColor: '#2f8f57', fillOpacity: 1 }).bindTooltip(p.partial ? 'Entrée dans le département' : 'Départ', { direction: 'top', offset: [0, -8] });
   traceLayer = L.layerGroup([halo, lines, start]).addTo(map);
-  map.closePopup();
+  closeCallout();
   // Mobile : on replie le panneau pour laisser la carte au tracé
   if (isMobile()) setSheet('peek');
   const pad = isMobile() ? { paddingTopLeft: [24, 120], paddingBottomRight: [24, 140] } : { padding: [50, 50] };
@@ -942,10 +1014,33 @@ const NAV_APPS = {
 };
 const navBtn = (x, label) => `<button type="button" data-nav="${x.lat},${x.lon}" data-navname="${esc(x.title ?? x.name ?? '')}">${label}</button>`;
 let navTarget = null;
+// Ouvrir l'application elle-même sur téléphone (et non son site) :
+// - Android : liens « intent » (l'appli si installée, sinon le site en secours)
+// - iPhone : schémas d'URL des applis (comgooglemaps://, waze://), le site si rien ne s'ouvre ; Plans s'ouvre directement
+const APP_LINKS = {
+  google: {
+    android: (a, o, web) => `intent://maps.google.com/maps?daddr=${a},${o}#Intent;scheme=https;package=com.google.android.apps.maps;S.browser_fallback_url=${encodeURIComponent(web)};end`,
+    ios: (a, o) => `comgooglemaps://?daddr=${a},${o}&directionsmode=driving`,
+  },
+  waze: {
+    android: (a, o, web) => `intent://?ll=${a},${o}&navigate=yes#Intent;scheme=waze;package=com.waze;S.browser_fallback_url=${encodeURIComponent(web)};end`,
+    ios: (a, o) => `waze://?ll=${a},${o}&navigate=yes`,
+  },
+};
+function tryAppThenWeb(appUrl, web) {
+  // si l'appli s'ouvre, la page passe en arrière-plan : on annule le secours
+  const fallback = setTimeout(() => { if (document.visibilityState === 'visible') location.href = web; }, 1600);
+  document.addEventListener('visibilitychange', () => clearTimeout(fallback), { once: true });
+  location.href = appUrl;
+}
 function openNav(app, t) {
-  const url = NAV_APPS[app].url(t.lat, t.lon, t.name);
-  if (url.startsWith('geo:')) location.href = url;
-  else window.open(url, '_blank', 'noopener');
+  const web = NAV_APPS[app].url(t.lat, t.lon, t.name);
+  const links = APP_LINKS[app];
+  if (web.startsWith('geo:')) { location.href = web; return; }
+  if (isAndroid() && links?.android) { location.href = links.android(t.lat, t.lon, web); return; }
+  if (isIOS() && links?.ios) { tryAppThenWeb(links.ios(t.lat, t.lon), web); return; }
+  if (isIOS() && app === 'apple') { location.href = web; return; } // maps.apple.com ouvre l'appli Plans
+  window.open(web, '_blank', 'noopener');
 }
 document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-nav]');
