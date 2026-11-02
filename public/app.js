@@ -448,6 +448,7 @@ function popupHtml(x, isEv) {
     <div class="popactions">
       ${main}
       ${link(`https://www.openstreetmap.org/directions?to=${x.lat},${x.lon}`, 'Itinéraire')}
+      ${isEv ? `<button type="button" class="ics-mini" data-ics="${esc(x.id)}" aria-label="Ajouter à mon agenda" title="Ajouter à mon agenda">📅</button>` : ''}
       <button type="button" data-more="${esc(x.id)}">Plus d'infos</button>
     </div>
   </div>`;
@@ -608,7 +609,7 @@ function groupSummary() {
   if (g.moment !== 'any') parts.push(MOMENTS[g.moment]);
   return parts.join(' · ');
 }
-function saveGroup() { store.set('groupe', state.group); }
+function saveGroup() { store.set('groupe', state.group); store.set('groupeLe', Date.now()); scheduleSync(); }
 
 function chipsHtml(map, colorVar, attr, icons) {
   return Object.entries(map).map(([k, v]) => `<button type="button" class="chip type" data-${attr}="${k}"><span class="cico" style="background:var(--${colorVar}-${k})" aria-hidden="true">${icons[k]}</span>${v}</button>`).join('');
@@ -829,15 +830,21 @@ function favBtn(type, x, small = false) {
   const on = !!findFav(type, x);
   return `<button type="button" class="fav-btn${small ? ' sm' : ''}" data-fav="${type}|${esc(x.id)}" aria-pressed="${on}" aria-label="${on ? 'Retirer des favoris' : 'Ajouter aux favoris'}" title="${on ? 'Retirer des favoris' : 'Ajouter aux favoris'}">${on ? '❤️' : '🤍'}</button>`;
 }
-function saveFavs() {
+// Retraits datés : empêchent un favori retiré sur un appareil de revenir par la synchronisation
+let favsRemoved = store.get('favorisRetires') ?? [];
+const favKeyOf = (f) => `${f.type}:${f.id}`;
+function saveFavs(changed = false) {
   store.set('favoris', favs);
+  store.set('favorisRetires', favsRemoved);
+  if (changed) scheduleSync();
   $('favCount').textContent = favs.length;
-  $('favPill').hidden = !favs.length;
+  $('favPill').hidden = !favs.length && !account.user;
 }
 function toggleFav(type, x) {
   const f = findFav(type, x);
+  if (f) favsRemoved.push({ key: favKeyOf(f), at: Date.now() });
   favs = f ? favs.filter((y) => y !== f) : [...favs, snapshot(type, x)];
-  saveFavs();
+  saveFavs(true);
   return !f;
 }
 const itemById = (type, id) => (type === 'events' ? events : places).find((x) => x.id === id);
@@ -848,7 +855,7 @@ document.addEventListener('click', (e) => {
   const [type, id] = [b.dataset.fav.slice(0, b.dataset.fav.indexOf('|')), b.dataset.fav.slice(b.dataset.fav.indexOf('|') + 1)];
   const x = itemById(type, id) ?? favs.find((f) => f.type === type && f.id === id);
   if (!x) return;
-  const on = itemById(type, id) ? toggleFav(type, x) : (favs = favs.filter((f) => f !== x), saveFavs(), false);
+  const on = itemById(type, id) ? toggleFav(type, x) : (favsRemoved.push({ key: favKeyOf(x), at: Date.now() }), favs = favs.filter((f) => f !== x), saveFavs(true), false);
   $$(`[data-fav="${CSS.escape(b.dataset.fav)}"]`).forEach((el) => {
     el.setAttribute('aria-pressed', String(on));
     el.textContent = on ? '❤️' : '🤍';
@@ -912,7 +919,7 @@ document.addEventListener('click', (e) => {
   if (!b) return;
   const ev = itemById('events', b.dataset.ics) ?? favs.find((f) => f.type === 'events' && f.id === b.dataset.ics);
   if (ev) downloadIcs([ev], slugName(ev.title));
-});
+}, true);
 const slugName = (s) => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'evenement';
 
 // --- Vue « Mes favoris » (dans le panneau, à la place de la liste) ---
@@ -951,11 +958,12 @@ function renderFavs() {
   }).join('');
   $('favView').innerHTML = `<button class="back" data-favclose>← Retour à la liste</button>
     <h2>❤️ Mes favoris</h2>
+    ${accountBox()}
     ${!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : ''}
     ${upcoming.length ? `<div class="fav-head"><h3>📅 Mon planning</h3><button type="button" class="btn small" data-icsall>Tout ajouter à mon agenda</button></div><ul class="list fav-list">${plan}</ul>` : ''}
     ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
     ${past.length ? `<details><summary>${past.length} événement${past.length > 1 ? 's' : ''} passé${past.length > 1 ? 's' : ''}</summary><ul class="list fav-list">${past.map((f) => favEventItem(f, true)).join('')}</ul><button type="button" class="btn small" data-clearpast>Effacer les événements passés</button></details>` : ''}
-    <p class="src">Vos favoris sont enregistrés uniquement sur cet appareil (aucun compte, rien n'est envoyé).</p>`;
+    <p class="src">${account.user ? 'Vos favoris et votre groupe sont enregistrés sur cet appareil et synchronisés avec votre compte.' : 'Sans compte, vos favoris sont enregistrés uniquement sur cet appareil (rien n\'est envoyé).'}</p>`;
 }
 function openFavs() {
   renderFavs();
@@ -970,6 +978,7 @@ function closeFavs() {
   if (state.selected) $('detail').hidden = false; else $('list').hidden = false;
 }
 $('favPill').addEventListener('click', openFavs);
+document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs]')) { e.preventDefault(); openFavs(); } });
 $('favView').addEventListener('click', async (e) => {
   if (e.target.closest('[data-favclose]')) return closeFavs();
   if (e.target.closest('[data-icsall]')) {
@@ -978,8 +987,9 @@ $('favView').addEventListener('click', async (e) => {
   }
   if (e.target.closest('[data-clearpast]')) {
     const t = today();
+    for (const f of favs) if (f.type === 'events' && !f.occurrences.some((o) => o.end >= t)) favsRemoved.push({ key: favKeyOf(f), at: Date.now() });
     favs = favs.filter((f) => f.type !== 'events' || f.occurrences.some((o) => o.end >= t));
-    saveFavs();
+    saveFavs(true);
     return renderFavs();
   }
   const b = e.target.closest('[data-favopen]');
@@ -997,6 +1007,163 @@ $('favView').addEventListener('click', async (e) => {
   select(type, x.id, { open: true });
   map.setView([x.lat, x.lon], Math.max(map.getZoom(), 13));
 });
+
+// ---------- Compte (facultatif) : synchronise favoris et groupe entre appareils ----------
+// Firebase Authentication (Google ou lien par e-mail) + un document Firestore par utilisateur, lu et écrit
+// via l'API REST (pas de gros SDK). Les bibliothèques ne sont chargées que si on utilise un compte.
+const FB_VERSION = '10.14.1';
+const account = { user: null, mod: null, auth: null, cfg: null, status: '', syncing: null, timer: null };
+async function firebase() {
+  if (account.mod) return account.mod;
+  const cfg = await (await fetch('/__/firebase/init.json')).json();
+  const base = `https://www.gstatic.com/firebasejs/${FB_VERSION}`;
+  const [app, auth] = await Promise.all([import(`${base}/firebase-app.js`), import(`${base}/firebase-auth.js`)]);
+  account.cfg = cfg;
+  account.auth = auth.getAuth(app.initializeApp(cfg));
+  auth.useDeviceLanguage(account.auth);
+  account.mod = auth;
+  auth.onAuthStateChanged(account.auth, (u) => {
+    account.user = u;
+    store.set('compte', !!u);
+    saveFavs();
+    if (!$('favView').hidden) renderFavs();
+    if (u) sync();
+  });
+  return auth;
+}
+const docUrl = () => `https://firestore.googleapis.com/v1/projects/${account.cfg.projectId}/databases/(default)/documents/users/${account.user.uid}`;
+async function api(method, body) {
+  const token = await account.user.getIdToken();
+  const r = await fetch(docUrl(), { method, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
+  if (r.status === 404 && method === 'GET') return null;
+  if (!r.ok) throw new Error(`Firestore ${r.status}`);
+  return method === 'DELETE' ? null : r.json();
+}
+function mergeData(remote) {
+  // retraits : on garde le plus récent par élément, 180 jours au plus
+  const limit = Date.now() - 180 * 864e5;
+  const tomb = new Map();
+  for (const t of [...favsRemoved, ...(remote?.removed ?? [])]) if (t.at > limit && !(tomb.get(t.key) >= t.at)) tomb.set(t.key, t.at);
+  const byKey = new Map();
+  for (const f of [...(remote?.favs ?? []), ...favs]) {
+    const k = favKeyOf(f);
+    if ((tomb.get(k) ?? 0) >= (f.savedAt ?? 0)) continue;
+    if (!byKey.has(k) || (byKey.get(k).savedAt ?? 0) < (f.savedAt ?? 0)) byKey.set(k, f);
+  }
+  favs = [...byKey.values()];
+  favsRemoved = [...tomb].map(([key, at]) => ({ key, at }));
+  if (remote?.group && (remote.groupAt ?? 0) > (store.get('groupeLe') ?? 0)) {
+    state.group = { ...NEW_GROUP(), ...remote.group };
+    store.set('groupe', state.group);
+    store.set('groupeLe', remote.groupAt);
+    drawCenter();
+    render();
+  }
+}
+/** Lit le document du compte, fusionne avec l'appareil, puis réécrit le résultat. */
+async function sync() {
+  if (!account.user) return;
+  if (account.syncing) return account.syncing;
+  account.syncing = (async () => {
+    try {
+      const doc = await api('GET');
+      const raw = doc?.fields?.data?.stringValue;
+      mergeData(raw ? JSON.parse(raw) : null);
+      saveFavs();
+      const data = { favs, removed: favsRemoved, group: state.group, groupAt: store.get('groupeLe') ?? 0 };
+      await api('PATCH', { fields: { data: { stringValue: JSON.stringify(data) }, updatedAt: { timestampValue: new Date().toISOString() } } });
+      account.status = '';
+    } catch (e) {
+      account.status = 'Synchronisation impossible pour le moment (hors connexion ?).';
+      console.warn(e);
+    } finally {
+      account.syncing = null;
+      if (!$('favView').hidden) renderFavs();
+    }
+  })();
+  return account.syncing;
+}
+function scheduleSync() {
+  if (!account.user) return;
+  clearTimeout(account.timer);
+  account.timer = setTimeout(sync, 1000);
+}
+let lastFocusSync = 0;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && account.user && Date.now() - lastFocusSync > 60000) { lastFocusSync = Date.now(); sync(); }
+});
+function accountBox() {
+  const u = account.user;
+  if (u) {
+    return `<div class="acct-box on"><p>✓ Compte : <strong>${esc(u.email ?? u.displayName ?? 'connecté')}</strong><br><span class="muted">Favoris et groupe synchronisés sur vos appareils.</span></p>
+      ${account.status ? `<p class="warn">${esc(account.status)}</p>` : ''}
+      <div class="acct-actions"><button type="button" class="btn small" data-logout>Se déconnecter</button><button type="button" class="btn small ghost danger" data-delacct>Supprimer mon compte</button></div></div>`;
+  }
+  return `<div class="acct-box"><p><strong>Retrouvez vos favoris sur tous vos appareils</strong><br><span class="muted">Compte gratuit, facultatif. Seuls vos favoris et votre groupe y sont enregistrés.</span></p>
+    <button type="button" class="btn google" data-login-google><span aria-hidden="true">G</span> Continuer avec Google</button>
+    <form class="mail-login" data-login-mail><input type="email" name="email" required placeholder="ou votre e-mail" autocomplete="email"><button class="btn">Recevoir un lien</button></form>
+    ${account.status ? `<p class="muted">${esc(account.status)}</p>` : ''}</div>`;
+}
+$('favView').addEventListener('click', async (e) => {
+  try {
+    if (e.target.closest('[data-login-google]')) {
+      const a = await firebase();
+      const provider = new a.GoogleAuthProvider();
+      try { await a.signInWithPopup(account.auth, provider); } catch (err) {
+        if (/popup-blocked|operation-not-supported/.test(err.code ?? '')) { try { sessionStorage.setItem('connexionRedirect', '1'); } catch { /* */ } await a.signInWithRedirect(account.auth, provider); }
+        else if (!/popup-closed|cancelled-popup/.test(err.code ?? '')) throw err;
+      }
+    } else if (e.target.closest('[data-logout]')) {
+      const a = await firebase();
+      await a.signOut(account.auth);
+    } else if (e.target.closest('[data-delacct]')) {
+      if (!confirm('Supprimer votre compte et les favoris enregistrés en ligne ? Ceux de cet appareil sont conservés.')) return;
+      const a = await firebase();
+      await api('DELETE');
+      try { await a.deleteUser(account.user); } catch (err) {
+        if (/requires-recent-login/.test(err.code ?? '')) { account.status = 'Par sécurité, reconnectez-vous puis recommencez la suppression.'; await a.signOut(account.auth); }
+        else throw err;
+      }
+    }
+  } catch (err) {
+    console.warn(err);
+    account.status = 'Connexion impossible pour le moment.';
+    renderFavs();
+  }
+});
+$('favView').addEventListener('submit', async (e) => {
+  if (!e.target.matches('[data-login-mail]')) return;
+  e.preventDefault();
+  const email = e.target.email.value.trim();
+  try {
+    const a = await firebase();
+    await a.sendSignInLinkToEmail(account.auth, email, { url: `${location.origin}/`, handleCodeInApp: true });
+    store.set('emailConnexion', email);
+    account.status = `Lien envoyé à ${email} : ouvrez-le sur cet appareil pour vous connecter.`;
+  } catch (err) {
+    console.warn(err);
+    account.status = "Envoi impossible pour le moment. Vérifiez l'adresse.";
+  }
+  renderFavs();
+});
+/** Au chargement : session existante, retour de connexion Google (redirection) ou lien reçu par e-mail. */
+async function restoreAccount() {
+  const viaMail = /[?&]oobCode=/.test(location.search) && /mode=signIn/.test(location.search);
+  let redirect = false;
+  try { redirect = !!sessionStorage.getItem('connexionRedirect'); sessionStorage.removeItem('connexionRedirect'); } catch { /* */ }
+  if (!store.get('compte') && !viaMail && !redirect) return;
+  try {
+    const a = await firebase();
+    if (viaMail && a.isSignInWithEmailLink(account.auth, location.href)) {
+      const email = store.get('emailConnexion') || prompt('Pour terminer la connexion, confirmez votre adresse e-mail :');
+      if (email) await a.signInWithEmailLink(account.auth, email, location.href);
+      history.replaceState(null, '', `${location.pathname}${location.hash}`);
+      openFavs();
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
 
 // ---------- Données (un fichier par département, chargé quand il devient visible) ----------
 async function getJson(url) {
@@ -1075,7 +1242,7 @@ async function ensureData() {
   $('zone').textContent = codes.length > 3 ? `${codes.length} départements` : codes.map((d) => deptInfo[d]?.name ?? DEPT_NAMES[d] ?? `Département ${d}`).join(' · ');
   $('meta').innerHTML = `${meta?.generatedAt ? `Mis à jour le ${new Date(meta.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. ` : ''}`
     + 'Données : DATAtourisme et OpenAgenda (Licence Ouverte), Ticketmaster, ministère de la Culture, © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). '
-    + '<a href="mentions-legales.html">Mentions légales et confidentialité</a> · <a href="#" data-install>📲 Installer l\'appli</a>';
+    + '<a href="#" data-openfavs>❤️ Favoris et compte</a> · <a href="mentions-legales.html">Mentions légales et confidentialité</a> · <a href="#" data-install>📲 Installer l\'appli</a>';
 
   // Vue de départ : élément partagé, zone du groupe, sinon toute la zone couverte
   const sel = state.selected;
@@ -1094,6 +1261,7 @@ async function ensureData() {
   await ensureData();
   render();
   if (sel) { state.selected = null; setTimeout(() => showOnMap(sel.id), 300); }
+  restoreAccount();
   // Par défaut : carte centrée sur la position de l'utilisateur, s'il l'autorise
   if (!sel && !(state.group.set && state.group.center)) {
     locateMe((me) => { map.setView([me.lat, me.lon], 11); render(); }, true);

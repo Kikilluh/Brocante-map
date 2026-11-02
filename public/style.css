@@ -432,3 +432,17 @@ button { cursor: pointer; }
 }
 .pop-badges { display: flex; align-items: center; gap: 8px; }
 .fav-btn.sm.inline { position: static; box-shadow: none; width: 30px; height: 30px; font-size: 15px; }
+.popactions .ics-mini { flex: 0 0 38px; padding: 0; font-size: 17px; }
+
+/* ---------- Compte ---------- */
+.acct-box { margin: 10px 0 6px; padding: 12px 14px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--border); }
+.acct-box p { margin: 0 0 10px; font-size: 14px; line-height: 1.4; }
+.acct-box.on { background: var(--ok-bg); border-color: transparent; }
+.acct-box .warn { color: var(--accent-strong); }
+.acct-box .btn.google { display: flex; align-items: center; width: 100%; justify-content: center; gap: 8px; font-weight: 600; }
+.acct-box .btn.google span { font-weight: 800; color: #4285f4; }
+.mail-login { display: flex; gap: 6px; margin-top: 8px; }
+.mail-login input { flex: 1; min-width: 0; height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 16px; }
+.mail-login .btn { flex: none; }
+.acct-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn.danger { color: #b3261e; }

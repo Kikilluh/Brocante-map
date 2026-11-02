@@ -1,0 +1,14 @@
+rules_version = '2';
+// Brocante Map : un document par utilisateur (favoris + groupe), lisible et modifiable
+// uniquement par son propriétaire connecté. Tout le reste est fermé.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['data', 'updatedAt'])
+        && request.resource.data.data is string
+        && request.resource.data.data.size() < 500000;
+    }
+  }
+}

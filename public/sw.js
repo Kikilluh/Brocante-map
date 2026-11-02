@@ -1,5 +1,5 @@
 // Service worker : l'application s'ouvre même sans réseau (dernières données connues).
-const VERSION = 'v12';
+const VERSION = 'v13';
 const SHELL = [
   './', 'index.html', 'app.js', 'style.css', 'manifest.webmanifest', 'mentions-legales.html',
   'icons/icon.svg', 'icons/icon-192.png',
@@ -16,6 +16,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return; // tuiles, géocodage : réseau direct
+  if (url.pathname.startsWith('/__/')) return; // URL réservées de Firebase (configuration, connexion)
   // Réseau d'abord (données et pages toujours à jour), cache en secours hors connexion
   e.respondWith(
     fetch(e.request)

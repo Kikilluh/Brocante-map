@@ -66,10 +66,24 @@ jobs:
           channelId: live
           projectId: ${{ vars.FIREBASE_PROJECT_ID || 'brocante-map' }}
 
+      # Règles de sécurité Firestore (comptes). Nécessite le rôle « Firebase Rules Admin » pour le compte
+      # de service ; sinon l'étape échoue sans bloquer : coller firestore.rules dans la console.
+      - name: Règles de sécurité Firestore
+        if: env.HAS_FIREBASE == 'true'
+        continue-on-error: true
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx --yes firebase-tools@latest deploy --only firestore:rules --project ${{ vars.FIREBASE_PROJECT_ID || 'brocante-map' }} --non-interactive
+          rm -f "$RUNNER_TEMP/sa.json"
+
       - name: Vérifier le site en ligne
         if: env.HAS_FIREBASE == 'true'
         run: |
           sleep 10
+          echo "Configuration Firebase (/__/firebase/init.json) :"
+          curl -s -o /dev/null -w "%{http_code}\n" "https://brocante-map.web.app/__/firebase/init.json"
           for f in "" app.js style.css sw.js manifest.webmanifest mentions-legales.html icons/icon-192.png vendor/leaflet/leaflet.js vendor/markercluster/leaflet.markercluster.js data/index.json data/37/events.json data/37/places.json; do
             code=$(curl -s -o /dev/null -w "%{http_code}" "https://brocante-map.web.app/$f")
             echo "/$f -> $code"
