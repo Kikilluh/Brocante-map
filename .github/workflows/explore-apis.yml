@@ -19,22 +19,25 @@ jobs:
           probe() { # $1 = nom court, $2 = URL
             curl -sS -L --max-time 40 -A "$UA" -o "$1.body" -D "$1.headers" -w "$1 -> %{http_code} %{content_type} %{url_effective}\n" "$2" >> report.txt 2>&1 || echo "$1 -> échec" >> report.txt
           }
-          # Exemple « soirée moules-frites à Dierre »
-          probe ccac-event   "https://www.cc-autourdechenonceaux.fr/events/soiree-moules-frites-a-dierre/"
-          probe ccac-robots  "https://www.cc-autourdechenonceaux.fr/robots.txt"
-          probe ccac-tribe   "https://www.cc-autourdechenonceaux.fr/wp-json/tribe/events/v1/events?per_page=5"
-          probe ccac-ical    "https://www.cc-autourdechenonceaux.fr/events/?ical=1"
-          probe ccac-feed    "https://www.cc-autourdechenonceaux.fr/events/feed/"
-          probe dierre-page  "https://www.dierre37.fr/actualites/516895"
-          probe dierre-home  "https://www.dierre37.fr/"
-          probe dierre-robots "https://www.dierre37.fr/robots.txt"
-          # Randonnée : conditions de Visorando, instances Geotrek et jeux de données ouverts
-          probe visorando-robots "https://www.visorando.com/robots.txt"
-          probe visorando-cgu "https://www.visorando.com/cgu.html"
-          probe dg-geotrek   "https://www.data.gouv.fr/api/1/datasets/?q=geotrek&page_size=50"
-          probe dg-rando38   "https://www.data.gouv.fr/api/1/datasets/?q=randonn%C3%A9e%20is%C3%A8re&page_size=30"
-          probe dg-rando     "https://www.data.gouv.fr/api/1/datasets/?q=itin%C3%A9raires%20de%20randonn%C3%A9e&page_size=50"
-          probe dg-agenda    "https://www.data.gouv.fr/api/1/datasets/?q=agenda%20%C3%A9v%C3%A9nements&page_size=50"
+          # Jeux de données ouverts à intégrer : liste des fichiers (format, lien) + début de chaque fichier
+          for slug in \
+            plan-departemental-des-itineraires-de-promenades-et-de-randonnees-departement-de-lisere \
+            itineraires-de-randonnee-sur-le-parc-du-vercors \
+            plan-departemental-des-itineraires-de-promenade-et-de-randonnee-pdipr-3 \
+            agenda-des-evenements-culturels-en-loir-et-cher; do
+            curl -sS -L --max-time 40 -A "$UA" "https://www.data.gouv.fr/api/1/datasets/$slug/" -o "ds-$slug.json"
+            {
+              echo "=== $slug"
+              jq -r '"licence: \(.license) | org: \(.organization.name // "-") | maj: \(.last_update)"' "ds-$slug.json"
+              jq -r '.resources[] | "- \(.title) | \(.format) | \(.filesize // "?") o | \(.url)"' "ds-$slug.json"
+            } >> resources.txt
+            # début des fichiers exploitables (geojson, json, csv)
+            jq -r '.resources[] | select((.format // "" | ascii_downcase) | test("geojson|json|csv")) | .url' "ds-$slug.json" | head -3 | while read -r u; do
+              echo "--- $u" >> samples.txt
+              curl -sS -L --max-time 60 -A "$UA" "$u" | head -c 3000 >> samples.txt
+              echo >> samples.txt
+            done
+          done
           # Résumé : ce que contiennent les pages (données structurées, flux)
           for f in *.body; do
             n="${f%.body}"
