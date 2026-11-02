@@ -377,6 +377,7 @@ function render() {
 
   closeCallout();
   current = list;
+  renderOverview();
   renderList();
   syncControls();
   writeHash();
@@ -394,6 +395,7 @@ function visibleBounds() {
 }
 function renderList() {
   const isEv = state.mode === 'events';
+  if (isOverview()) return renderOverviewList();
   const b = visibleBounds();
   const inView = b?.contains ? current.filter((x) => b.contains([x.lat, x.lon])) : current;
   const n = inView.length;
@@ -1531,10 +1533,56 @@ function loadDept(kind, d) {
   return pending.get(key);
 }
 const deptBounds = (i) => L.latLngBounds([i.bbox[0], i.bbox[1]], [i.bbox[2], i.bbox[3]]);
+// ---------- Vue d'ensemble (carte dézoomée sur beaucoup de départements) ----------
+// Au-delà de quelques départements, une carte très dézoomée chargerait tout : on montre une pastille par
+// département avec son nombre d'éléments, et le détail se charge en zoomant.
+const OVERVIEW_ZOOM = 8;
+const overviewLayer = L.layerGroup();
+const isOverview = () => !!dataIndex && Object.keys(dataIndex.depts ?? {}).length > 4 && map.getZoom() < OVERVIEW_ZOOM;
+const deptCount = (i) => (state.mode === 'events' ? i.events : i.places) ?? 0;
+function renderOverview() {
+  const on = isOverview();
+  if (!on) { map.removeLayer(overviewLayer); return; }
+  map.removeLayer(cluster);
+  map.removeLayer(placeCluster);
+  closeCallout?.();
+  overviewLayer.clearLayers();
+  for (const [d, i] of Object.entries(dataIndex.depts)) {
+    if (!i.bbox) continue;
+    const n = deptCount(i);
+    const label = n >= 1000 ? `${(n / 1000).toFixed(1).replace('.', ',').replace(',0', '')} k` : String(n);
+    const icon = L.divIcon({ className: '', html: `<button type="button" class="dept-bubble" aria-label="${esc(i.name)}"><strong>${label}</strong><span>${d}</span></button>`, iconSize: [52, 40], iconAnchor: [26, 20] });
+    const m = L.marker(deptBounds(i).getCenter(), { icon, keyboard: true });
+    if (canHover()) m.bindTooltip(`${esc(i.name)} : ${n.toLocaleString('fr-FR')} ${state.mode === 'events' ? 'événements' : 'lieux et activités'}`, { direction: 'top', offset: [0, -20], className: 'tip', opacity: 1 });
+    m.on('click', () => map.flyToBounds(deptBounds(i), { padding: [20, 20], duration: 0.7 }));
+    overviewLayer.addLayer(m);
+  }
+  overviewLayer.addTo(map);
+}
+function renderOverviewList() {
+  const depts = Object.entries(dataIndex.depts).filter(([, i]) => i.bbox).sort((a, b) => a[1].name.localeCompare(b[1].name, 'fr'));
+  const total = depts.reduce((n, [, i]) => n + deptCount(i), 0);
+  const noun = state.mode === 'events' ? 'événements' : 'lieux et activités';
+  $('count').textContent = `${total.toLocaleString('fr-FR')} ${noun} · zoomez sur un département`;
+  $('listCount').textContent = total.toLocaleString('fr-FR');
+  $('list').innerHTML = depts.map(([d, i]) => `<li><button class="item" data-dept="${d}"><span class="body"><span class="title" style="display:block">${esc(i.name)} (${d})</span><span class="where" style="display:block">${deptCount(i).toLocaleString('fr-FR')} ${noun} (avant filtres)</span></span></button></li>`).join('');
+}
+$('list').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-dept]');
+  if (!b) return;
+  e.stopImmediatePropagation();
+  if (isMobile()) setSheet('peek');
+  map.flyToBounds(deptBounds(dataIndex.depts[b.dataset.dept]), { padding: [20, 20], duration: 0.7 });
+}, true);
+map.on('zoomend', () => {
+  const was = map.hasLayer(overviewLayer);
+  if (was !== isOverview()) render();
+});
+
 /** Départements qui recoupent la carte (avec une marge) ou le rayon du groupe. */
 function wantedDepts() {
-  if (!dataIndex) return [];
-  const view = map.getBounds().pad(0.25);
+  if (!dataIndex || isOverview()) return [];
+  const view = map.getBounds().pad(0.1);
   const g = state.group;
   const zone = g.set && g.center && g.radius ? L.latLng(g.center.lat, g.center.lon).toBounds(g.radius * 2000) : null;
   return Object.entries(dataIndex.depts ?? {})
@@ -1583,7 +1631,7 @@ async function ensureData() {
   const all = Object.values(deptInfo).filter((i) => i.bbox);
   if (sel) state.mode = sel.type;
   else if (state.group.set && state.group.center) map.setView([state.group.center.lat, state.group.center.lon], 10);
-  else if (all.length) map.fitBounds(all.map(deptBounds).reduce((a, b) => a.extend(b)), { maxZoom: 11 });
+  else if (all.length) map.fitBounds(all.map(deptBounds).reduce((a, b) => a.extend(b)), { maxZoom: 11, animate: false });
   else if (events.length) map.fitBounds(L.latLngBounds(events.map((e) => [e.lat, e.lon])).pad(0.05), { maxZoom: 11 });
 
   drawCenter();
