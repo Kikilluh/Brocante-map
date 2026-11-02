@@ -5,15 +5,11 @@
 
 import { fetchText } from '../lib/http.mjs';
 import { deptFromPostcode } from '../lib/normalize.mjs';
+import { deptBbox, circleOf } from '../lib/depts.mjs';
 
 const API = 'https://app.ticketmaster.com/discovery/v2/events.json';
 
-// Centre et rayon couvrant chaque département (ajouter une entrée par département couvert)
-const AREAS = {
-  '37': { lat: 47.26, lon: 0.69, radiusKm: 75 }, // Indre-et-Loire
-  '45': { lat: 47.91, lon: 2.30, radiusKm: 75 }, // Loiret
-  '58': { lat: 47.12, lon: 3.52, radiusKm: 75 }, // Nièvre
-};
+// Zone de recherche de chaque département : cercle couvrant son emprise (calculée, voir lib/depts.mjs)
 
 const B32 = '0123456789bcdefghjkmnpqrstuvwxyz';
 /** Encode une position en geohash (paramètre geoPoint de l'API). */
@@ -78,11 +74,9 @@ export async function run(source, { departments, log }) {
   const raws = [];
   const seen = new Set();
   for (const dept of departments) {
-    const area = AREAS[dept];
-    if (!area) {
-      log(`  pas de zone définie pour le ${dept} (voir AREAS)`);
-      continue;
-    }
+    const bb = await deptBbox(dept, log);
+    if (!bb) continue;
+    const area = circleOf(bb);
     // L'API limite la pagination à 1000 résultats (page × size < 1000)
     for (let page = 0; page < 5; page++) {
       const url = new URL(API);

@@ -15,7 +15,8 @@ import { createGeocoder } from './lib/geocode.mjs';
 import { cleanText, deptFromPostcode, slug } from './lib/normalize.mjs';
 import { splitVenue } from './lib/venues.mjs';
 import { fr, get, listOf, readImage } from './sources/datatourisme.mjs';
-import { loadRoutes, BBOX } from './lib/routes.mjs';
+import { loadRoutes } from './lib/routes.mjs';
+import { deptBboxes } from './lib/depts.mjs';
 import { createElevation } from './lib/elevation.mjs';
 import { readPrevious, writeSplit, keepMissing, deptByBbox, DATA_DIR } from './lib/store.mjs';
 
@@ -364,6 +365,7 @@ const stableId = (p) => {
   usedIds.add(id);
   return id;
 };
+const BBOX = await deptBboxes(departments, log);
 const traces = new Map();
 const out = kept.map((p) => {
   const o = { id: stableId(p), dept: p.dept || deptByBbox(p, BBOX) || null };

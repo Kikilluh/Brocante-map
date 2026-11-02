@@ -9,12 +9,7 @@ import { join } from 'node:path';
 const OVERPASS = 'https://overpass-api.de/api/interpreter';
 const MAX_AGE_MS = 7 * 864e5;
 
-// Emprise (sud, ouest, nord, est) de chaque département couvert
-export const BBOX = {
-  '37': [46.73, -0.06, 47.72, 1.37], // Indre-et-Loire
-  '45': [47.47, 1.50, 48.35, 3.14], // Loiret
-  '58': [46.64, 2.84, 47.60, 4.24], // Nièvre
-};
+import { deptBbox } from './depts.mjs';
 
 const VIEWERS = {
   hiking: 'https://hiking.waymarkedtrails.org/#route?id=',
@@ -122,11 +117,8 @@ export async function loadRoutes(dept, cacheDir, log = () => {}) {
   } catch {
     /* pas de cache */
   }
-  const bb = BBOX[dept];
-  if (!bb) {
-    log(`  pas d'emprise définie pour le ${dept} (voir BBOX dans lib/routes.mjs)`);
-    return [];
-  }
+  const bb = await deptBbox(dept, log);
+  if (!bb) return [];
   const q = `[out:json][timeout:240][maxsize:536870912];
 area["ref:INSEE"="${dept}"]["admin_level"="6"]->.d;
 rel(area.d)["type"="route"]["route"~"^(hiking|foot|bicycle|mtb)$"];
