@@ -156,6 +156,6 @@ jobs:
         continue-on-error: true
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          REPORT_TO: ${{ vars.REPORT_EMAIL || 'j.dullin@hotmail.fr' }}
+          REPORT_TO: ${{ vars.REPORT_EMAIL || 'kikill26300@gmail.com' }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: node scraper/tools/send-report.mjs ${{ job.status }}
