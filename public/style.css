@@ -509,3 +509,6 @@ button { cursor: pointer; }
 .callout .popbody { padding-right: 44px; }
 /* Bulle du nom au survol : largeur selon le texte (évite un mot par ligne) */
 .leaflet-tooltip.tip { width: max-content; }
+/* Filtres randonnée */
+.rando-row { margin: 0 0 10px; }
+.rando-label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin: 0 0 6px; }

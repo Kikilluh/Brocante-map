@@ -124,6 +124,7 @@ async function datatourismeTours() {
       // trace GPX/KML fournie par l'office de tourisme (lien direct vers son fichier)
       gpx: JSON.stringify(get(n, 'hasRepresentation') ?? '').match(/https?:[^"\\]+\.(gpx|kml)\b[^"\\]*/i)?.[0] ?? null,
       duration: dur && /^\d+$/.test(dur) ? `${Math.floor(+dur / 60)} h ${String(+dur % 60).padStart(2, '0')}` : null,
+      minutes: dur && /^\d+$/.test(dur) && +dur > 0 ? +dur : null,
       source: 'datatourisme',
     };
   }).filter((p) => p.name && !/projet d[ée]mo|\btest\b/i.test(p.name));
@@ -347,7 +348,7 @@ for (const p of places) {
   const twin = kept.find((q) => (q.kind === p.kind || (isRoute(q) && isRoute(p))) && near(p, q)
     && (key(q.name).includes(key(p.name)) || key(p.name).includes(key(q.name))));
   if (twin) {
-    for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network', 'image', 'imageCredit', 'geom', 'osmId']) twin[k] ??= p[k];
+    for (const k of ['url', 'address', 'description', 'period', 'discipline', 'routeUrl', 'gpx', 'distanceKm', 'network', 'image', 'imageCredit', 'geom', 'osmId', 'shape', 'minutes']) twin[k] ??= p[k];
     twin.sources.push({ id: p.source, url: p.sourceUrl ?? null });
     continue;
   }
@@ -371,7 +372,7 @@ const out = kept.map((p) => {
     o.trace = `r${p.osmId}`;
     traces.set(o.id, p.geom);
   }
-  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
+  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'minutes', 'shape', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
     if (p[k] != null && p[k] !== '' && p[k] !== false) o[k] = p[k];
   }
   return o;

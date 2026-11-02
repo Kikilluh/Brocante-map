@@ -108,7 +108,7 @@ const km = (x) => (x < 1 ? "moins d'1 km" : `${String(Math.round(x * 10) / 10).r
 const NEW_GROUP = () => ({ set: false, adults: 2, kids: [], moment: 'any', center: null, radius: 0, budget: null, budgetMode: 'person', envies: [...EALL] });
 const state = {
   mode: 'events', preset: '30', from: '', to: '', cats: new Set(ALL), kinds: new Set(KALL), q: '',
-  unknown: true, sort: 'date', me: null, group: { ...NEW_GROUP(), ...(store.get('groupe') ?? {}) }, selected: null,
+  unknown: true, sort: 'date', me: null, rando: { len: '', dur: '', dplus: '', shape: '' }, group: { ...NEW_GROUP(), ...(store.get('groupe') ?? {}) }, selected: null,
 };
 let events = [];
 let places = [];
@@ -129,6 +129,7 @@ function readHash() {
   if (h.get('k')) state.kinds = new Set(h.get('k').split(',').filter((t) => t in KINDS));
   if (h.get('q')) state.q = h.get('q');
   if (h.get('inc') === '0') state.unknown = false;
+  if (h.get('r')) { const [len = '', dur = '', dplus = '', shape = ''] = h.get('r').split('_'); state.rando = { len, dur, dplus, shape }; }
   if (h.get('m') === 'lieux') state.mode = 'places';
   const g = h.get('g') && decodeGroup(h.get('g'));
   if (g) state.group = { ...NEW_GROUP(), ...g, set: true };
@@ -143,6 +144,7 @@ function writeHash() {
   if (state.kinds.size !== KALL.length) h.set('k', [...state.kinds].join(','));
   if (state.q) h.set('q', state.q);
   if (!state.unknown) h.set('inc', '0');
+  if (randoActive()) h.set('r', [state.rando.len, state.rando.dur, state.rando.dplus, state.rando.shape].join('_'));
   if (state.mode === 'places') h.set('m', 'lieux');
   if (state.group.set) h.set('g', encodeGroup(state.group));
   if (state.selected) h.set(state.selected.type === 'events' ? 'e' : 'l', state.selected.id);
@@ -220,6 +222,56 @@ function effectiveCats() {
   const allowed = new Set(e.flatMap((k) => ENVIES[k].cats));
   return new Set([...state.cats].filter((c) => allowed.has(c)));
 }
+// ---------- Filtres propres aux randonnées et au vélo ----------
+const NO_RANDO = { len: '', dur: '', dplus: '', shape: '' };
+const RANDO_FILTERS = {
+  len: { label: 'Longueur', opts: [['', 'Toutes'], ['0-5', '< 5 km'], ['5-10', '5 à 10 km'], ['10-20', '10 à 20 km'], ['20-', '> 20 km']] },
+  dur: { label: 'Durée estimée', opts: [['', 'Toutes'], ['0-60', '< 1 h'], ['60-120', '1 à 2 h'], ['120-240', '2 à 4 h'], ['240-', '> 4 h']] },
+  dplus: { label: 'Dénivelé positif', opts: [['', 'Tous'], ['0-100', 'Plat (< 100 m)'], ['100-300', 'Modéré (100 à 300 m)'], ['300-', 'Sportif (> 300 m)']] },
+  shape: { label: 'Parcours', opts: [['', 'Tous'], ['boucle', 'Boucle'], ['lineaire', 'Aller simple']] },
+};
+const isRouteKind = (p) => p.kind === 'rando' || p.kind === 'velo';
+/** Durée : celle de l'office de tourisme, sinon estimée (marche : 4 km/h et 300 m de montée par heure ; vélo : 15 km/h). */
+function routeMinutes(p) {
+  if (p.minutes) return p.minutes;
+  if (!p.distanceKm || p.partial) return null;
+  if (p.kind === 'velo') return Math.round((p.distanceKm / 15 + (p.dplus ?? 0) / 600) * 60);
+  const h = p.distanceKm / 4;
+  const v = (p.dplus ?? 0) / 300;
+  return Math.round((Math.max(h, v) + Math.min(h, v) / 2) * 60);
+}
+const fmtMinutes = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ` ${String(m % 60).padStart(2, '0')}` : ''}`);
+const inRange = (v, r) => { const [a, b] = r.split('-'); return v >= +a && (b === '' || v < +b); };
+const randoActive = () => Object.values(state.rando).some(Boolean);
+/** Un lieu passe-t-il les filtres rando ? (les lieux qui ne sont pas des itinéraires ne sont pas concernés) */
+function randoOk(p) {
+  if (!isRouteKind(p) || !randoActive()) return true;
+  const r = state.rando;
+  const checks = [
+    [r.len, p.partial ? null : p.distanceKm, (v) => inRange(v, r.len)],
+    [r.dur, routeMinutes(p), (v) => inRange(v, r.dur)],
+    [r.dplus, p.dplus, (v) => inRange(v, r.dplus)],
+    [r.shape, p.shape, (v) => v === r.shape],
+  ];
+  for (const [want, value, ok] of checks) {
+    if (!want) continue;
+    if (value == null) { if (!state.unknown) return false; continue; }
+    if (!ok(value)) return false;
+  }
+  return true;
+}
+function renderRandoFilters() {
+  $('randoFilters').innerHTML = Object.entries(RANDO_FILTERS).map(([k, f]) => `<div class="rando-row"><span class="rando-label">${f.label}</span><div class="chips-wrap">${
+    f.opts.map(([v, l]) => `<button type="button" class="chip" data-rando="${k}" data-v="${v}" aria-pressed="${state.rando[k] === v}">${l}</button>`).join('')}</div></div>`).join('');
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-rando]');
+  if (!b) return;
+  state.rando = { ...state.rando, [b.dataset.rando]: b.dataset.v };
+  renderRandoFilters();
+  render();
+});
+
 function effectiveKinds() {
   const e = state.group.envies;
   if (!state.group.set || e.length === EALL.length) return state.kinds;
@@ -290,7 +342,7 @@ function filteredEvents() {
 function filteredPlaces() {
   const kinds = effectiveKinds();
   const q = norm(state.q.trim());
-  const out = places.filter((p) => kinds.has(p.kind) && (!q || p._search.includes(q)) && inRadius(p));
+  const out = places.filter((p) => kinds.has(p.kind) && (!q || p._search.includes(q)) && inRadius(p) && randoOk(p));
   for (const p of out) p._dist = distFrom(refPoint(), p);
   if (refPoint()) out.sort((a, b) => a._dist - b._dist);
   else out.sort((a, b) => a.name.localeCompare(b.name, 'fr'));
@@ -376,7 +428,7 @@ function eventItem(ev) {
     </span>${thumb(ev)}</button></li>`;
 }
 function placeItem(p) {
-  const facts = [p.distanceKm ? km(p.distanceKm) : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
+  const facts = [p.distanceKm ? km(p.distanceKm) : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
   return `<li><button class="item" data-id="${esc(p.id)}">
     <span class="ico sq" style="background:${kcolor(p.kind)}" aria-hidden="true">${KIND_ICONS[p.kind]}</span>
     <span class="body">
@@ -432,7 +484,7 @@ function eventDetail(ev) {
 }
 function placeDetail(p) {
   const isRoute = p.kind === 'rando' || p.kind === 'velo';
-  const facts = [p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.duration ?? '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
+  const facts = [p.distanceKm ? `${km(p.distanceKm)}${p.partial ? ' dans le département' : ''}` : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.duration ?? (isRouteKind(p) && routeMinutes(p) ? `≈ ${fmtMinutes(routeMinutes(p))}` : ''), p.shape === 'boucle' ? 'boucle' : p.shape === 'lineaire' ? 'aller simple' : '', p.network ?? '', p.period ?? '', p.discipline ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean);
   const where = [p.address, p.postcode && p.city ? `${p.postcode} ${p.city}` : p.city].filter(Boolean).join(', ');
   return `<button class="back" data-back>← Retour à la liste</button>
     <div class="badge-row">${plBadge(p)}${favBtn('places', p)}</div>
@@ -458,7 +510,7 @@ function popupHtml(x, isEv) {
   const next = isEv ? (x._next ?? nextIn(x) ?? x.occurrences[0]) : null;
   const facts = isEv
     ? [priceLabel(x), ageLabel(x), x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean)
-    : [x.distanceKm ? km(x.distanceKm) : '', x.dplus != null ? `D+ ${x.dplus} m` : '', x.duration ?? '', x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
+    : [x.distanceKm ? km(x.distanceKm) : '', x.dplus != null ? `D+ ${x.dplus} m` : '', x.duration ?? (isRouteKind(x) && routeMinutes(x) ? `≈ ${fmtMinutes(routeMinutes(x))}` : ''), x.period ?? '', x._dist != null ? `à ${km(x._dist)}` : ''].filter(Boolean);
   const main = isEv
     ? evLink(x, true)
     : (x.trace ? `<button type="button" class="primary" data-trace="${esc(x.id)}">Voir le tracé</button>` : x.routeUrl ? link(x.routeUrl, 'Itinéraire balisé', 'primary') : x.url ? link(x.url, 'Site', 'primary') : '');
@@ -687,7 +739,7 @@ function syncControls() {
   $$('[data-kind]').forEach((b) => b.setAttribute('aria-pressed', String(state.kinds.has(b.dataset.kind))));
   const full = state.mode === 'places' ? state.kinds.size === KALL.length : state.cats.size === ALL.length;
   $('allTypes').textContent = full ? 'Tout décocher' : 'Tout cocher';
-  $('filtersBadge').hidden = full && state.unknown && (state.preset === '30' || state.mode === 'places');
+  $('filtersBadge').hidden = full && state.unknown && (state.preset === '30' || state.mode === 'places') && !(state.mode === 'places' && randoActive());
   const gb = $('openGroup');
   gb.classList.toggle('set', state.group.set);
   $('groupBadge').hidden = !state.group.set;
@@ -759,7 +811,8 @@ for (const id of ['from', 'to']) {
 }
 $('unknown').addEventListener('change', () => { state.unknown = $('unknown').checked; render(); });
 $('reset').addEventListener('click', () => {
-  Object.assign(state, { preset: '30', cats: new Set(ALL), kinds: new Set(KALL), unknown: true, q: '' });
+  Object.assign(state, { preset: '30', cats: new Set(ALL), kinds: new Set(KALL), unknown: true, q: '', rando: { ...NO_RANDO } });
+  renderRandoFilters();
   [state.from, state.to] = presetRange('30');
   $('q').value = '';
   render();
@@ -1496,6 +1549,7 @@ async function ensureData() {
 
 (async () => {
   readHash();
+  renderRandoFilters();
   $('q').value = state.q;
   saveFavs();
   dataIndex = await getJson('data/index.json');

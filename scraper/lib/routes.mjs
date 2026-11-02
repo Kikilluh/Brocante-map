@@ -1,7 +1,7 @@
 // Itinéraires balisés (randonnée, vélo, VTT) depuis OpenStreetMap (licence ODbL, à citer).
 // Une requête Overpass par département, géométrie découpée à l'emprise du département,
 // puis on garde le point de départ (ou d'entrée dans le département), la longueur, les liens et le tracé
-// simplifié (affiché sur la carte du site). Résultat mis en cache 7 jours dans scraper/cache/routes-v3-<dept>.json.
+// simplifié (affiché sur la carte du site). Résultat mis en cache 7 jours dans scraper/cache/routes-v4-<dept>.json.
 
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -30,6 +30,7 @@ function distM(a, b) {
   const h = Math.sin(r(b.lat - a.lat) / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(r(b.lon - a.lon) / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
+const toPt = ([lat, lon]) => ({ lat, lon });
 const same = (a, b) => a && b && Math.abs(a.lat - b.lat) < 1e-6 && Math.abs(a.lon - b.lon) < 1e-6;
 
 /** Point de départ : extrémité du 1er tronçon qui ne touche pas le 2e. */
@@ -88,6 +89,7 @@ export function mapRelation(rel) {
   let len = 0;
   for (const w of ways) for (let i = 1; i < w.length; i++) len += distM(w[i - 1], w[i]);
   const declared = parseFloat(String(t.distance ?? '').replace(',', '.'));
+  const geom = traceOf(ways);
   return {
     osmId: rel.id,
     name: t.name ?? t.ref,
@@ -104,12 +106,14 @@ export function mapRelation(rel) {
     url: t.website ?? t['contact:website'] ?? null,
     description: t.description ?? null,
     operator: t.operator ?? null,
-    geom: traceOf(ways),
+    geom,
+    // boucle (départ ≈ arrivée, à moins de 400 m) ou aller simple ; inconnu si le tracé est en morceaux
+    shape: geom.length === 1 ? (distM(toPt(geom[0][0]), toPt(geom[0].at(-1))) < 400 ? 'boucle' : 'lineaire') : null,
   };
 }
 
 export async function loadRoutes(dept, cacheDir, log = () => {}) {
-  const file = join(cacheDir, `routes-v3-${dept}.json`);
+  const file = join(cacheDir, `routes-v4-${dept}.json`);
   try {
     if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) {
       const cached = JSON.parse(await readFile(file, 'utf8'));

@@ -44,3 +44,10 @@ test('dénivelé : bruit ignoré, montées et descentes cumulées', async () => 
   assert.ok(c.up >= 15 && c.up <= 30 && c.down >= 15 && c.down <= 30);
   assert.deepEqual(pick([1, 2, 3, 4, 5, 6, 7, 8, 9], 3), [1, 5, 9]);
 });
+
+test('forme du parcours : boucle ou aller simple', () => {
+  const loop = mapRelation({ id: 1, tags: { route: 'hiking', name: 'Boucle' }, members: [{ type: 'way', geometry: [p(47, 0.5), p(47.01, 0.5)] }, { type: 'way', geometry: [p(47.01, 0.5), p(47.0, 0.501)] }] });
+  assert.equal(loop.shape, 'boucle');
+  const line = mapRelation({ id: 2, tags: { route: 'hiking', name: 'Ligne' }, members: [{ type: 'way', geometry: [p(47, 0.5), p(47.05, 0.5)] }] });
+  assert.equal(line.shape, 'lineaire');
+});
