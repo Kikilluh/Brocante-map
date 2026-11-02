@@ -163,8 +163,30 @@ const planIGN = L.tileLayer(
 ).addTo(map);
 const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
 L.control.layers({ 'Plan IGN': planIGN, OpenStreetMap: osm }, null, { position: 'bottomleft' }).addTo(map);
-const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45 });
-const placeCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45 });
+// Le zoom au clic sur un groupe est géré plus bas (zoom progressif)
+const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });
+const placeCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });
+// Souris (PC) : bulle immédiate avec le nom au survol des marqueurs et des groupes
+const canHover = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
+for (const group of [cluster, placeCluster]) {
+  // Clic sur un groupe : zoom animé (rapide mais progressif) ; groupe indivisible → éventail
+  group.on('clusterclick', (e) => {
+    const c = e.layer;
+    c.closeTooltip?.();
+    const bounds = c.getBounds();
+    const target = Math.min(map.getBoundsZoom(bounds.pad(0.15)), map.getMaxZoom());
+    if (target <= map.getZoom() || map.getZoom() >= map.getMaxZoom() || bounds.getNorthEast().equals(bounds.getSouthWest())) c.spiderfy();
+    else map.flyToBounds(bounds, { padding: [40, 40], duration: 0.65, easeLinearity: 0.4, maxZoom: Math.max(target, map.getZoom() + 1) });
+  });
+  group.on('clustermouseover', (e) => {
+    if (!canHover()) return;
+    const kids = e.layer.getAllChildMarkers();
+    const names = kids.slice(0, 10).map((m) => `<li>${esc(m.options.name ?? '')}</li>`).join('');
+    const more = kids.length > 10 ? `<p class="tip-more">et ${kids.length - 10} autre${kids.length - 10 > 1 ? 's' : ''}…</p>` : '';
+    e.layer.unbindTooltip().bindTooltip(`<ul class="tip-list">${names}</ul>${more}`, { direction: 'top', offset: [0, -16], className: 'tip', opacity: 1 }).openTooltip();
+  });
+  group.on('clustermouseout', (e) => e.layer.closeTooltip());
+}
 map.addLayer(cluster);
 let centerLayer = null;
 let meMarker = null;
@@ -291,7 +313,12 @@ function render() {
   layer.clearLayers();
   markers.clear();
   layer.addLayers(list.map((x) => {
-    const m = L.marker([x.lat, x.lon], { icon: isEv ? pinIcon(x.category) : placeIcon(x.kind), title: x.title ?? x.name });
+    const name = x.title ?? x.name;
+    const m = L.marker([x.lat, x.lon], { icon: isEv ? pinIcon(x.category) : placeIcon(x.kind), name, alt: name, keyboard: true });
+    if (canHover()) {
+      m.bindTooltip(esc(name), { direction: 'top', offset: [0, isEv ? -38 : -16], className: 'tip', opacity: 1 });
+      m.on('popupopen', () => m.closeTooltip());
+    }
     m.bindPopup(() => popupHtml(x, isEv), { maxWidth: 290, minWidth: 250, className: 'pop', autoPanPaddingTopLeft: [12, isMobile() ? 175 : 70], autoPanPaddingBottomRight: [12, isMobile() ? 120 : 20] });
     markers.set(x.id, m);
     return m;
