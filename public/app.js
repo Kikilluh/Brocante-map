@@ -837,8 +837,10 @@ function saveFavs(changed = false) {
   store.set('favoris', favs);
   store.set('favorisRetires', favsRemoved);
   if (changed) scheduleSync();
-  $('favCount').textContent = favs.length;
-  $('favPill').hidden = !favs.length && !account.user;
+  // Toujours visible : c'est aussi l'accès au compte
+  $('favCount').textContent = account.user ? (favs.length || 'Favoris') : `${favs.length || 'Favoris'} · Se connecter`;
+  $('favPill').classList.toggle('signed', !!account.user);
+  $('favPill').setAttribute('aria-label', account.user ? 'Mes favoris (compte connecté)' : 'Mes favoris et connexion au compte');
 }
 function toggleFav(type, x) {
   const f = findFav(type, x);

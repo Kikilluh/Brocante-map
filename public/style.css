@@ -446,3 +446,6 @@ button { cursor: pointer; }
 .mail-login .btn { flex: none; }
 .acct-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .btn.danger { color: #b3261e; }
+.fav-pill { position: relative; overflow: visible; }
+.fav-pill .check-badge.sm { display: none; top: -5px; right: -5px; width: 15px; height: 15px; font-size: 9px; background: #2f8f57; }
+.fav-pill.signed .check-badge.sm { display: grid; }
