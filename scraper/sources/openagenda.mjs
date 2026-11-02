@@ -68,13 +68,22 @@ export function mapEvent(ev, uid) {
   };
 }
 
+/** Agendas à interroger : liste simple, ou par région ({ "*": nationaux, "<groupe>": [...] }). */
+async function agendasFor(source, departments) {
+  const a = source.agendas ?? [];
+  if (Array.isArray(a)) return a;
+  const { loadConfig } = await import('../lib/config.mjs');
+  const groups = Object.entries((await loadConfig()).groups ?? {}).filter(([, ds]) => ds.some((d) => departments.includes(d))).map(([g]) => g);
+  return [...(a['*'] ?? []), ...groups.flatMap((g) => a[g] ?? [])];
+}
+
 export async function run(source, { departments, log }) {
   const key = process.env.OPENAGENDA_KEY;
   if (!key) {
     log('  OPENAGENDA_KEY absent : source ignorée');
     return [];
   }
-  const agendas = new Set(source.agendas ?? []);
+  const agendas = new Set(await agendasFor(source, departments));
   if (source.discover?.length) {
     const found = await discoverAgendas(key, source.discover, log);
     found.slice(0, source.maxDiscovered ?? 40).forEach((uid) => agendas.add(uid));

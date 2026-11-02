@@ -1361,7 +1361,20 @@ function renderFavs() {
     ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
     ${past.length ? `<details><summary>${past.length} événement${past.length > 1 ? 's' : ''} passé${past.length > 1 ? 's' : ''}</summary><ul class="list fav-list">${past.map((f) => favEventItem(f, true)).join('')}</ul><button type="button" class="btn small" data-clearpast>Effacer les événements passés</button></details>` : ''}
     ${store.get('appliCarte') && NAV_APPS[store.get('appliCarte')] ? `<p class="src">Itinéraires ouverts avec ${esc(NAV_APPS[store.get('appliCarte')].label)} · <a href="#" data-navreset>changer</a></p>` : ''}
+    <p class="src"><button type="button" class="link-btn" data-refresh>🔄 Actualiser l'application</button> · version ${esc(APP_VERSION)}</p>
     <p class="src">${account.user ? 'Vos favoris et votre groupe sont enregistrés sur cet appareil et synchronisés avec votre compte.' : 'Sans compte, vos favoris sont enregistrés uniquement sur cet appareil (rien n\'est envoyé).'}</p>`;
+}
+// Actualiser : sur mobile (appli installée) on ne peut pas toujours « tirer pour recharger ».
+// On vide le cache de l'appli, on demande la nouvelle version au service worker, puis on recharge.
+const APP_VERSION = '2026.11.02';
+async function refreshApp(btn) {
+  if (btn) btn.textContent = '⏳ Actualisation…';
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration();
+    await reg?.update();
+    if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
+  } catch { /* hors ligne : on recharge quand même */ }
+  location.reload();
 }
 function openFavs() {
   renderFavs();
@@ -1380,6 +1393,7 @@ $('accountBtn').addEventListener('click', openFavs);
 document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs]')) { e.preventDefault(); openFavs(); } });
 $('favView').addEventListener('click', async (e) => {
   if (e.target.closest('[data-favclose]')) return closeFavs();
+  if (e.target.closest('[data-refresh]')) return refreshApp(e.target.closest('[data-refresh]'));
   if (e.target.closest('[data-usegroup]')) { useSavedGroup(e.target.closest('[data-usegroup]').dataset.usegroup); closeFavs(); return; }
   if (e.target.closest('[data-rmgroup]')) { removeSavedGroup(e.target.closest('[data-rmgroup]').dataset.rmgroup); return renderFavs(); }
   if (e.target.closest('[data-navreset]')) { e.preventDefault(); store.set('appliCarte', null); return renderFavs(); }

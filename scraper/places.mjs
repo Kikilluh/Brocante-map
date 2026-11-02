@@ -49,7 +49,8 @@ function kindOf(types, label) {
 
 // ---------- DATAtourisme ----------
 // Les lieux changent peu : réponse gardée 6 jours (quota DATAtourisme : 1 000 pages par heure pour toute la France)
-const DT_MAX_AGE = 6 * 864e5;
+// Durée de 5 à 7 jours selon les départements du groupe : les régions ne rechargent pas toutes le même jour
+const DT_MAX_AGE = (5 + [...departments.join('')].reduce((n, c) => n + c.charCodeAt(0), 0) % 3) * 864e5;
 async function dtFetchAll(endpoint, fields) {
   const key = process.env.DATATOURISME_API_KEY;
   if (!key) {
