@@ -606,7 +606,7 @@ map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => 
 
 function eventItem(ev) {
   const facts = [priceLabel(ev), ageLabel(ev), ev._dist != null ? km(ev._dist) : ''].filter(Boolean).join(' · ');
-  return `<li><button class="item" data-id="${esc(ev.id)}">
+  return `<li class="${expandedId === ev.id ? 'open' : ''}"><button class="item" data-id="${esc(ev.id)}" aria-expanded="${expandedId === ev.id}">
     <span class="ico" style="background:${color(ev.category)}" aria-hidden="true">${iconOf(ev, true)}</span>
     <span class="body">
       <span class="when">${esc(occLabel(ev._next))}${ev._next.hours ? ` · ${esc(ev._next.hours)}` : ''}</span>
@@ -615,16 +615,32 @@ function eventItem(ev) {
       ${ev.venue ? `<span class="venue" style="display:block">${esc(ev.venue)}</span>` : ''}
       <span class="where" style="display:block">${esc(ev.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
       ${ev._notes?.length ? `<span class="fit">${esc(ev._notes[0])}</span>` : ''}
-    </span>${thumb(ev)}</button></li>`;
+    </span>${thumb(ev)}</button>${expandedId === ev.id ? itemMore(ev, true) : ''}</li>`;
 }
 function placeItem(p) {
   const facts = [placePriceLabel(p), p.distanceKm ? km(p.distanceKm) : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
-  return `<li><button class="item" data-id="${esc(p.id)}">
+  return `<li class="${expandedId === p.id ? 'open' : ''}"><button class="item" data-id="${esc(p.id)}" aria-expanded="${expandedId === p.id}">
     <span class="ico sq" style="background:${kcolor(p.kind)}" aria-hidden="true">${iconOf(p, false)}</span>
     <span class="body">
       <span class="title" style="display:block">${esc(p.name)}</span>
       <span class="where" style="display:block">${esc(p.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
-    </span>${thumb(p)}</button></li>`;
+    </span>${thumb(p)}</button>${expandedId === p.id ? itemMore(p, false) : ''}</li>`;
+}
+// Élément déplié dans la liste : premières infos et actions ; un nouveau toucher sur le titre le replie
+let expandedId = null;
+function itemMore(x, isEv) {
+  const desc = x.description ? x.description.slice(0, 220) + (x.description.length > 220 ? '…' : '') : '';
+  const where = [x.venue, x.address, x.city].filter(Boolean).join(', ');
+  return `<div class="item-more">
+    ${where ? `<p class="muted">📍 ${esc(where)}</p>` : ''}
+    ${desc ? `<p class="desc">${esc(desc)}</p>` : ''}
+    <div class="more-actions">
+      <button type="button" class="eye-btn" data-eye="${esc(x.id)}" aria-label="Voir sur la carte" title="Voir sur la carte"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 5C6.5 5 2.7 9.2 1.5 12c1.2 2.8 5 7 10.5 7s9.3-4.2 10.5-7C21.3 9.2 17.5 5 12 5zm0 11.5A4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 0 1 0 9zm0-7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" fill="currentColor"/></svg> Voir</button>
+      ${navBtn(x, 'Itinéraire')}
+      ${favBtn(isEv ? 'events' : 'places', x)}
+      <button type="button" data-more="${esc(x.id)}">Plus d'infos</button>
+    </div>
+  </div>`;
 }
 
 const thumb = (x) => (x.image ? `<img class="thumb" src="${esc(x.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">` : '');
@@ -933,10 +949,35 @@ $('detail').addEventListener('click', async (e) => {
   }
 });
 $('list').addEventListener('click', (e) => {
+  // 👁 : montre l'élément sur la carte (la liste se range)
+  const eye = e.target.closest('[data-eye]');
+  if (eye) {
+    if (isMobile()) setSheet('hidden');
+    showOnMap(eye.dataset.eye);
+    return;
+  }
+  const more = e.target.closest('[data-more]');
+  if (more) { select(state.mode, more.dataset.more, { open: true }); return; }
   const b = e.target.closest('.item');
   if (!b) return;
-  if (isMobile()) setSheet('peek');
-  showOnMap(b.dataset.id);
+  // toucher : déplie / replie l'élément sur place (la carte ne bouge pas, la liste garde son contenu)
+  const id = b.dataset.id;
+  const li = b.closest('li');
+  const wasOpen = expandedId === id;
+  $('list').querySelectorAll('li.open').forEach((x) => {
+    x.classList.remove('open');
+    x.querySelector('.item-more')?.remove();
+    x.querySelector('.item')?.setAttribute('aria-expanded', 'false');
+  });
+  expandedId = wasOpen ? null : id;
+  if (wasOpen) return;
+  const isEv = state.mode === 'events';
+  const x = (isEv ? events : places).find((y) => y.id === id);
+  if (!x) return;
+  li.classList.add('open');
+  b.setAttribute('aria-expanded', 'true');
+  b.insertAdjacentHTML('afterend', itemMore(x, isEv));
+  li.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 });
 // Liste repliée par défaut (PC) : bouton pour l'ouvrir
 function setListOpen(open) {

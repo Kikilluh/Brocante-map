@@ -719,3 +719,14 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
   .sheet-hidden .filters-fab { bottom: calc(22px + env(safe-area-inset-bottom)); }
   html:not(.sheet-hidden) .filters-fab { bottom: calc(50% + 14px); }
 }
+
+/* ---------- Élément déplié dans la liste ---------- */
+.list li.open { background: var(--surface-2); border-radius: 14px; }
+.item-more { padding: 0 12px 12px 58px; animation: more-in .2s var(--ease-out); }
+.item-more p { margin: 0 0 6px; font-size: 14px; line-height: 1.4; }
+.more-actions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.more-actions > button:not(.fav-btn) { height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.more-actions .eye-btn { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.more-actions > *:active { transform: scale(.97); }
+@keyframes more-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (max-width: 760px) { .sheet { --sheet-h: 75%; } html:not(.sheet-hidden) .filters-fab { bottom: calc(75% + 14px); } }
