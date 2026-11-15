@@ -1864,7 +1864,8 @@ function prepPlace(p) {
   return { ...p, _search: norm(`${p.name} ${p.city ?? ''} ${p.postcode ?? ''} ${p.description ?? ''} ${p.discipline ?? ''} ${KINDS[p.kind]}`) };
 }
 function addItems(kind, list) {
-  const ok = list.filter((x) => x.lat != null && x.lon != null && (kind === 'events' || x.kind in KINDS));
+  // oratoires retirés (trop nombreux) : écartés aussi des données déjà en ligne
+  const ok = list.filter((x) => x.lat != null && x.lon != null && (kind === 'events' || (x.kind in KINDS && x.sub !== 'oratoire')));
   if (kind === 'events') events.push(...ok.map(prepEvent)); else places.push(...ok.map(prepPlace));
 }
 

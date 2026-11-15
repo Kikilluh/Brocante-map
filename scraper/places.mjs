@@ -393,7 +393,7 @@ const pois = await collect('osm-petits-lieux', async () => {
   for (const d of departments) all.push(...(await loadPois(d, join(ROOT, 'cache'), log))); // une requête à la fois (Overpass)
   return all;
 });
-for (const p of pois) {
+for (const p of pois.filter((x) => x.sub !== 'oratoire')) { // oratoires retirés (trop nombreux)
   kept.push({ ...p, credit: '© contributeurs OpenStreetMap', sources: [{ id: 'osm-petits-lieux', url: `https://www.openstreetmap.org/${p.osmType}/${p.osmRef}` }] });
 }
 

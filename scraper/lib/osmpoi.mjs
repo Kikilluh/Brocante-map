@@ -1,5 +1,5 @@
 // Petits lieux de proximité d'OpenStreetMap (licence ODbL, « © contributeurs OpenStreetMap ») :
-// croix et calvaires, oratoires, lavoirs, aires de jeux, boulodromes, terrains multisports, skateparks,
+// croix et calvaires, lavoirs, aires de jeux, boulodromes, terrains multisports, skateparks,
 // aires de pique-nique, parcours sportifs, points de vue.
 // UNE requête Overpass par département (limites administratives : pas d'erreur de rattachement),
 // gardée 7 jours dans scraper/cache/poi-<dept>.json.
@@ -14,7 +14,7 @@ function query(dept) {
   return `[out:json][timeout:180];
 area["ref:INSEE"="${dept}"]["admin_level"="6"]->.d;
 (
-  nwr(area.d)["historic"~"^(wayside_cross|wayside_shrine)$"];
+  nwr(area.d)["historic"="wayside_cross"];
   nwr(area.d)["amenity"="lavoir"];
   nwr(area.d)["leisure"="playground"];
   nwr(area.d)["leisure"="pitch"]["sport"~"boules|petanque|multi|skateboard"];
@@ -27,7 +27,6 @@ out center tags;`;
 /** Type d'un élément OSM → { kind, sub, label } (label = nom par défaut s'il n'en a pas). */
 export function classify(t = {}) {
   if (t.historic === 'wayside_cross') return { kind: 'petitpatrimoine', sub: 'croix', label: 'Croix' };
-  if (t.historic === 'wayside_shrine') return { kind: 'petitpatrimoine', sub: 'oratoire', label: 'Oratoire' };
   if (t.amenity === 'lavoir') return { kind: 'petitpatrimoine', sub: 'lavoir', label: 'Lavoir' };
   if (t.leisure === 'playground') return { kind: 'equipement', sub: 'jeux', label: 'Aire de jeux' };
   if (t.leisure === 'pitch' && /boules|petanque/.test(t.sport ?? '')) return { kind: 'equipement', sub: 'boulodrome', label: 'Boulodrome' };
