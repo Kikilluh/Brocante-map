@@ -139,6 +139,12 @@ jobs:
       - name: Bibliothèques de carte (Leaflet) intégrées au site
         run: bash scripts/vendor.sh
 
+      - name: Numéro de version affiché dans le profil
+        run: |
+          BUILD="n° ${{ github.run_number }}, mise en ligne le $(TZ=Europe/Paris date '+%d/%m/%Y à %Hh%M')"
+          sed -i "s|'__BUILD__'.startsWith('__') ? 'de développement' : '__BUILD__'|'$BUILD'|" public/app.js
+          grep -n "const APP_VERSION" public/app.js
+
       - name: Déploiement Firebase Hosting
         if: env.HAS_FIREBASE == 'true'
         uses: FirebaseExtended/action-hosting-deploy@v0

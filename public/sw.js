@@ -1,5 +1,5 @@
 // Service worker : l'application s'ouvre même sans réseau (dernières données connues).
-const VERSION = 'v29';
+const VERSION = 'v30';
 const SHELL = [
   './', 'index.html', 'app.js', 'style.css', 'manifest.webmanifest', 'mentions-legales.html',
   'icons/icon.svg', 'icons/icon-192.png',
@@ -19,7 +19,7 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname.startsWith('/__/')) return; // URL réservées de Firebase (configuration, connexion)
   // Réseau d'abord (données et pages toujours à jour), cache en secours hors connexion
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-cache' }) // toujours revérifié auprès du serveur (pas de vieille version)
       .then((res) => {
         if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(e.request, copy)); }
         return res;

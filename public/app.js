@@ -992,6 +992,7 @@ function goToCommune(c) {
   render();
   map.flyTo([lat, lon], 12, { duration: 0.8 });
 }
+$('qSuggest').addEventListener('pointerdown', (e) => e.preventDefault());
 $('qSuggest').addEventListener('mousedown', (e) => e.preventDefault()); // garde le focus le temps du clic
 $('qSuggest').addEventListener('click', (e) => {
   const b = e.target.closest('[data-commune]');
@@ -1461,13 +1462,16 @@ function renderFavs() {
 }
 // Actualiser : sur mobile (appli installée) on ne peut pas toujours « tirer pour recharger ».
 // On vide le cache de l'appli, on demande la nouvelle version au service worker, puis on recharge.
-const APP_VERSION = '2026.11.15b';
+// Remplacé à chaque mise en ligne par le workflow (numéro et date de la mise en ligne)
+const APP_VERSION = '__BUILD__'.startsWith('__') ? 'de développement' : '__BUILD__';
 async function refreshApp(btn) {
   if (btn) btn.textContent = '⏳ Actualisation…';
   try {
     const reg = await navigator.serviceWorker?.getRegistration();
     await reg?.update();
     if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
+    // contourne aussi le cache du navigateur pour les fichiers de l'application
+    await Promise.all(['./', 'index.html', 'app.js', 'style.css'].map((f) => fetch(f, { cache: 'reload' }).catch(() => null)));
   } catch { /* hors ligne : on recharge quand même */ }
   location.reload();
 }
