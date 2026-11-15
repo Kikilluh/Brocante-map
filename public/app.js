@@ -821,8 +821,16 @@ function placeCallout(firstTime = false) {
   const dot = svg.querySelector('circle');
   dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
 }
+function markSelected(m, on) {
+  m?.getElement()?.classList.toggle('is-selected', on);
+  m?.setZIndexOffset(on ? 1000 : 0);
+}
 function openCallout(m) {
+  if (calloutMarker && calloutMarker !== m) markSelected(calloutMarker, false);
+  const appear = calloutLayer.hidden || calloutMarker !== m;
   calloutMarker = m;
+  markSelected(m, true);
+  if (appear) { calloutCard.classList.remove('appear'); void calloutCard.offsetWidth; calloutCard.classList.add('appear'); }
   calloutCard.innerHTML = `<button type="button" class="callout-close" data-calloutclose aria-label="Fermer">✕</button>${popupHtml(m.item, m.isEv)}`;
   calloutLayer.hidden = false;
   if (isMobile() && $('sheet').dataset.state !== 'peek') setSheet('peek');
@@ -832,6 +840,7 @@ function openCallout(m) {
   calloutCard.querySelector('img')?.addEventListener('load', () => placeCallout(true), { once: true });
 }
 function closeCallout() {
+  markSelected(calloutMarker, false);
   calloutMarker = null;
   calloutLayer.hidden = true;
   calloutCard.innerHTML = '';
@@ -1515,6 +1524,7 @@ document.addEventListener('click', (e) => {
   });
   if (on) { b.classList.remove('pop-anim'); void b.offsetWidth; b.classList.add('pop-anim'); }
   if (!$('favView').hidden) renderFavs();
+  if ($('favDialog').open) renderFavDialog();
 }, true);
 
 // --- Export vers l'agenda du téléphone (.ics) ---
@@ -1649,7 +1659,47 @@ function closeFavs() {
   $('favView').hidden = true;
   if (state.selected) $('detail').hidden = false; else $('list').hidden = false;
 }
-$('favPill').addEventListener('click', () => { openFavs(); $('favView').querySelector('.fav-title.favs')?.scrollIntoView({ block: 'start' }); });
+// Bouton ❤️ : fenêtre avec la liste des favoris ; un toucher sur l'un d'eux l'ouvre sur la carte
+function renderFavDialog() {
+  const t = today();
+  const evs = favs.filter((f) => f.type === 'events');
+  const upcoming = evs.filter((f) => f.occurrences.some((o) => o.end >= t))
+    .sort((a, b) => a.occurrences.find((o) => o.end >= t).start.localeCompare(b.occurrences.find((o) => o.end >= t).start));
+  const pls = favs.filter((f) => f.type === 'places');
+  $('favDialogBody').innerHTML = (!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : '')
+    + (upcoming.length ? `<h3>📅 À venir</h3><ul class="list fav-list">${upcoming.map((f) => favEventItem(f)).join('')}</ul>` : '')
+    + (pls.length ? `<h3>📍 Lieux et activités</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : '')
+    + '<p class="src"><button type="button" class="link-btn" data-favall>Planning complet, agenda et compte</button></p>';
+}
+$('favPill').addEventListener('click', () => { renderFavDialog(); $('favDialog').showModal(); });
+$('favDialog').addEventListener('click', async (e) => {
+  if (e.target.closest('[data-favall]')) { $('favDialog').close(); openFavs(); return; }
+  const b = e.target.closest('[data-favopen]');
+  if (!b) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const i = b.dataset.favopen.indexOf('|');
+  const type = b.dataset.favopen.slice(0, i);
+  const id = b.dataset.favopen.slice(i + 1);
+  const f = favs.find((x) => x.type === type && x.id === id);
+  if (f?.dept && dataIndex?.depts?.[f.dept]) await loadDept(type, f.dept);
+  const list = type === 'events' ? events : places;
+  const x = list.find((y) => y.id === id) ?? list.find((y) => looseKey(y) === f?.loose);
+  if (!x) { b.querySelector('.where').textContent = "N'est plus en ligne"; return; }
+  $('favDialog').close();
+  if (state.mode !== type) state.mode = type;
+  render();
+  if (markers.get(x.id)) {
+    // le favori est sur la carte : on y va et on ouvre son aperçu
+    if (isMobile()) setSheet('peek');
+    map.setView([x.lat, x.lon], Math.max(map.getZoom(), 15), { animate: false });
+    showOnMap(x.id);
+  } else {
+    // masqué par les filtres actuels : fiche complète
+    select(type, x.id, { open: true });
+    map.setView([x.lat, x.lon], Math.max(map.getZoom(), 14));
+  }
+});
 $('accountBtn').addEventListener('click', openFavs);
 document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs]')) { e.preventDefault(); openFavs(); } });
 $('favView').addEventListener('click', async (e) => {

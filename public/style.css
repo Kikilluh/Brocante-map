@@ -1,4 +1,6 @@
 :root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   /* Thème pastel : fonds crème, accent corail doux, texte foncé sur les boutons colorés */
   --bg: #fbf7f2;
   --surface: #ffffff;
@@ -160,7 +162,7 @@ button { cursor: pointer; }
   --sheet-h: calc(100% - 8px);
   position: absolute; left: 0; right: 0; bottom: 0; height: var(--sheet-h); z-index: 1000;
   background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; box-shadow: var(--shadow);
-  display: flex; flex-direction: column; transition: transform .28s cubic-bezier(.2,.8,.2,1); will-change: transform;
+  display: flex; flex-direction: column; transition: transform .34s var(--ease-drawer); will-change: transform;
 }
 .sheet[data-state="peek"] { transform: translateY(calc(100% - 92px - env(safe-area-inset-bottom))); }
 .sheet[data-state="half"] { transform: translateY(45%); }
@@ -500,9 +502,9 @@ button { cursor: pointer; }
   position: absolute; pointer-events: auto; width: min(290px, calc(100% - 24px));
   background: var(--surface); color: var(--text); border-radius: 16px; overflow: hidden;
   box-shadow: 0 8px 28px rgba(0,0,0,.25); border: 1px solid var(--border);
-  animation: callout-in .16s ease-out;
 }
-@keyframes callout-in { from { opacity: 0; transform: scale(.97); } }
+.callout.appear { animation: callout-in .18s var(--ease-out); transform-origin: center bottom; }
+@keyframes callout-in { from { opacity: 0; transform: scale(.96) translateY(4px); } }
 @media (prefers-reduced-motion: reduce) { .callout { animation: none; } }
 .callout-close {
   position: absolute; top: 8px; right: 8px; z-index: 3; width: 30px; height: 30px; border-radius: 50%;
@@ -568,3 +570,41 @@ button { cursor: pointer; }
 .hero figcaption a, .popcredit a { color: #fff; text-decoration: none; }
 .popimg-wrap { position: relative; }
 .popcredit { position: absolute; right: 6px; bottom: 6px; max-width: 85%; font-size: 10px; padding: 1px 7px; border-radius: 999px; background: rgba(0,0,0,.45); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- Bouton Filtres en bas à droite (à portée de pouce) ---------- */
+.filters-fab {
+  position: absolute; right: 12px; bottom: calc(92px + 14px + env(safe-area-inset-bottom)); z-index: 960;
+  display: inline-flex; align-items: center; gap: 6px; height: 46px; padding: 0 16px; border-radius: 999px;
+  border: 0; background: var(--accent); color: var(--accent-ink); font-size: 14.5px; font-weight: 700;
+  box-shadow: 0 6px 18px rgba(200,100,74,.35);
+}
+.filters-fab .dot-badge { top: 4px; right: 6px; }
+@media (min-width: 761px) {
+  .filters-fab { bottom: 24px; right: 16px; transition: right .25s var(--ease-out), transform .16s var(--ease-out); }
+  .list-open .filters-fab { right: 436px; }
+}
+
+/* ---------- Retours tactiles et petites animations ---------- */
+/* Appui : léger enfoncement de tout ce qui se touche */
+button, .btn, .pill, .chip, .item, .filters-fab, .dept-bubble { transition: transform .16s var(--ease-out), background-color .2s ease, box-shadow .2s ease; }
+button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .dept-bubble:active { transform: scale(.97); }
+.item:active { transform: scale(.985); }
+/* Marqueurs : grossissent au survol (souris) et quand leur aperçu est ouvert */
+.mk, .mk-bundle span { transition: transform .18s var(--ease-out), box-shadow .18s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .leaflet-marker-icon:hover .mk, .mk-bundle span:hover { transform: scale(1.1); }
+}
+.leaflet-marker-icon:active .mk, .mk-bundle:active span { transform: scale(.94); }
+.is-selected .mk { transform: scale(1.25); box-shadow: 0 0 0 4px rgba(242,164,139,.45), 0 4px 12px rgba(60,40,60,.4); }
+.mk.sq { transform-origin: center; }
+.mk:not(.sq) { transform-origin: center bottom; }
+/* Fenêtres : apparition douce (montée sur mobile, zoom léger sur PC) */
+.modal[open] { animation: modal-in .26s var(--ease-drawer); }
+.modal[open]::backdrop { animation: fade-in .2s ease-out; }
+@keyframes modal-in { from { opacity: 0; transform: translateY(24px); } }
+@keyframes fade-in { from { opacity: 0; } }
+@media (min-width: 761px) { @keyframes modal-in { from { opacity: 0; transform: scale(.96); } } }
+/* Cœur : petit rebond à l'ajout (déjà déclenché par le script) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

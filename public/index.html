@@ -64,8 +64,8 @@
     <div class="map-hint" id="mapHint" role="status" hidden></div>
     <div class="map-pills">
       <button class="pill fav-pill" id="favPill" hidden aria-label="Mes favoris"><span aria-hidden="true">❤️</span> <span id="favCount">0</span></button>
-      <button class="pill filters-pill" id="periodPill" aria-label="Filtres"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M3 5h18v2H3zm4 6h10v2H7zm3 6h4v2h-4z" fill="currentColor"/></svg> <span id="periodLabel">30 jours</span><span class="dot-badge" id="pillBadge" hidden></span></button>
     </div>
+    <button class="filters-fab" id="periodPill" aria-label="Filtres"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 5h18v2H3zm4 6h10v2H7zm3 6h4v2h-4z" fill="currentColor"/></svg> <span id="periodLabel">30 jours</span><span class="dot-badge" id="pillBadge" hidden></span></button>
     <button class="list-toggle" id="listToggle" aria-expanded="false" aria-controls="sheet">☰ Liste · <span id="listCount">0</span></button>
     <button class="locate-btn" id="locate" aria-label="Me localiser" title="Me localiser">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm9 3h-2.1A7 7 0 0 0 13 5.1V3h-2v2.1A7 7 0 0 0 5.1 11H3v2h2.1a7 7 0 0 0 5.9 5.9V21h2v-2.1a7 7 0 0 0 5.9-5.9H21v-2zm-9 6a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" fill="currentColor"/></svg>
@@ -161,6 +161,17 @@
         <button class="btn ghost" value="later" id="installLater">Plus tard</button>
         <button type="button" class="btn primary" id="installNow" hidden>Installer maintenant</button>
       </footer>
+    </form>
+  </dialog>
+
+  <!-- Favoris : liste rapide, un toucher ouvre l'élément sur la carte -->
+  <dialog class="modal small" id="favDialog" aria-labelledby="favTitle">
+    <form method="dialog" class="modal-inner">
+      <header class="modal-head">
+        <h2 id="favTitle">❤️ Mes favoris</h2>
+        <button class="icon-btn" value="close" aria-label="Fermer">✕</button>
+      </header>
+      <div class="modal-body" id="favDialogBody"></div>
     </form>
   </dialog>
 
