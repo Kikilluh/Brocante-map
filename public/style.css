@@ -556,3 +556,10 @@ button { cursor: pointer; }
 .leaflet-control-scale-line { background: rgba(255,255,255,.85); color: #2f2a33; border-color: #2f2a33; font-size: 12px; font-weight: 600; }
 /* Mobile : les contrôles du bas (échelle, fond de carte, crédits) restent au-dessus du panneau replié */
 @media (max-width: 760px) { .leaflet-bottom { bottom: calc(92px + env(safe-area-inset-bottom)); } }
+
+/* Groupe de près : icônes serrées ensemble */
+.mk-bundle {
+  display: grid; gap: 2px; padding: 3px; background: var(--surface); border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.28); border: 2px solid #fff; width: max-content;
+}
+.mk-bundle span { width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; line-height: 1; }

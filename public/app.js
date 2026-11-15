@@ -224,8 +224,25 @@ const savedBase = BASES[store.get('fond')];
 if (savedBase && savedBase !== planIGN) { map.removeLayer(planIGN); savedBase.addTo(map); }
 map.on('baselayerchange', (e) => store.set('fond', e.name));
 // Le zoom au clic sur un groupe est géré plus bas (zoom progressif)
-const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });
-const placeCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });
+// Groupes : au loin, une pastille avec le nombre ; de près (zoom 13 et plus) et s'ils sont peu nombreux,
+// les icônes des éléments serrées ensemble, qui se séparent à leur place exacte en zoomant.
+const BUNDLE_ZOOM = 13;
+const BUNDLE_MAX = 8;
+function clusterIcon(c) {
+  const kids = c.getAllChildMarkers();
+  const z = c._zoom ?? map.getZoom();
+  if (z < BUNDLE_ZOOM || kids.length > BUNDLE_MAX) return L.MarkerClusterGroup.prototype._defaultIconCreateFunction(c);
+  const cols = kids.length <= 3 ? kids.length : kids.length === 4 ? 2 : Math.ceil(kids.length / 2);
+  const rows = Math.ceil(kids.length / cols);
+  const w = cols * 26 + 8;
+  const h = rows * 26 + 8;
+  const html = `<div class="mk-bundle" style="grid-template-columns:repeat(${cols},24px)">${kids.map((m) => `<span style="background:${m.col ?? 'var(--accent)'}">${m.ico ?? '📍'}</span>`).join('')}</div>`;
+  return L.divIcon({ className: '', html, iconSize: [w, h], iconAnchor: [w / 2, h / 2] });
+}
+// Rayon de regroupement plus petit de près : les éléments voisins se séparent plus vite
+const clusterRadius = (z) => (z >= 16 ? 22 : z >= 14 ? 32 : 45);
+const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: clusterRadius, zoomToBoundsOnClick: false, iconCreateFunction: clusterIcon });
+const placeCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: clusterRadius, zoomToBoundsOnClick: false, iconCreateFunction: clusterIcon });
 // Souris (PC) : bulle immédiate avec le nom au survol des marqueurs et des groupes
 const canHover = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
 for (const group of [cluster, placeCluster]) {
@@ -236,7 +253,8 @@ for (const group of [cluster, placeCluster]) {
     const bounds = c.getBounds();
     const target = Math.min(map.getBoundsZoom(bounds.pad(0.15)), map.getMaxZoom());
     if (target <= map.getZoom() || map.getZoom() >= map.getMaxZoom() || bounds.getNorthEast().equals(bounds.getSouthWest())) c.spiderfy();
-    else map.flyToBounds(bounds, { padding: [40, 40], duration: 0.65, easeLinearity: 0.4, maxZoom: Math.max(target, map.getZoom() + 1) });
+    // zoom modéré : au plus 3 niveaux d'un coup (2 quand on est déjà proche), centré sur le groupe
+    else map.flyTo(bounds.getCenter(), Math.min(target, map.getZoom() + (map.getZoom() >= 12 ? 2 : 3)), { duration: 0.65, easeLinearity: 0.4 });
   });
   group.on('clustermouseover', (e) => {
     if (!canHover()) return;
@@ -454,6 +472,8 @@ function render() {
     if (canHover()) m.bindTooltip(esc(name), { direction: 'top', offset: [0, isEv ? -38 : -16], className: 'tip', opacity: 1 });
     m.item = x;
     m.isEv = isEv;
+    m.ico = iconOf(x, isEv);
+    m.col = isEv ? color(x.category) : kcolor(x.kind);
     m.on('click', () => { m.closeTooltip(); openCallout(m); });
     markers.set(x.id, m);
     return m;
