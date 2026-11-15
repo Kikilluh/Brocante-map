@@ -82,10 +82,22 @@
       <div class="sheet-body" id="sheetBody">
         <ol class="list" id="list"></ol>
         <article class="detail" id="detail" hidden></article>
-        <article class="detail fav-view" id="favView" hidden></article>
         <footer class="meta" id="meta"></footer>
       </div>
     </section>
+
+    <!-- Liste du bas masquée : flèche pour la rouvrir, avec le nombre d'éléments visibles -->
+    <button type="button" class="sheet-up" id="sheetUp" aria-label="Afficher la liste" hidden>
+      <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="sheet-up-count" id="sheetUpCount"></span>
+    </button>
+
+    <!-- Panneau flottant à gauche : favoris, profil -->
+    <div class="side-scrim" id="sideScrim" hidden></div>
+    <aside class="side-panel" id="sidePanel" aria-label="Favoris et profil" aria-hidden="true">
+      <article class="detail fav-view" id="favView" hidden></article>
+      <article class="detail fav-view" id="favQuick" hidden></article>
+    </aside>
   </main>
 
   <!-- Filtres -->
@@ -161,17 +173,6 @@
         <button class="btn ghost" value="later" id="installLater">Plus tard</button>
         <button type="button" class="btn primary" id="installNow" hidden>Installer maintenant</button>
       </footer>
-    </form>
-  </dialog>
-
-  <!-- Favoris : liste rapide, un toucher ouvre l'élément sur la carte -->
-  <dialog class="modal small" id="favDialog" aria-labelledby="favTitle">
-    <form method="dialog" class="modal-inner">
-      <header class="modal-head">
-        <h2 id="favTitle">❤️ Mes favoris</h2>
-        <button class="icon-btn" value="close" aria-label="Fermer">✕</button>
-      </header>
-      <div class="modal-body" id="favDialogBody"></div>
     </form>
   </dialog>
 

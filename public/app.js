@@ -305,7 +305,7 @@ for (const group of [cluster, placeCluster]) {
 map.addLayer(cluster);
 let centerLayer = null;
 let meMarker = null;
-map.on('click', () => { if (isMobile() && !state.selected) setSheet('peek'); });
+map.on('click', () => { if (isMobile() && !state.selected && ['half', 'full'].includes($('sheet').dataset.state)) setSheet('peek'); });
 
 const icons = {};
 const pinIcon = (cat, ico = CAT_ICONS[cat] ?? '📍') => (icons[`${cat}|${ico}`] ??= L.divIcon({ className: '', html: `<div class="mk" style="--c:${color(cat)}"><span>${ico}</span></div>`, iconSize: [34, 41], iconAnchor: [17, 41], popupAnchor: [0, -38] }));
@@ -573,6 +573,7 @@ function renderList() {
   const noun = isEv ? `événement${n > 1 ? 's' : ''}` : `lieu${n > 1 ? 'x' : ''} et activité${n > 1 ? 's' : ''}`;
   $('count').textContent = n === total ? `${n} ${noun}` : `${n} ${noun} ici · ${total} au total`;
   $('listCount').textContent = n;
+  updateSheetUp(n);
   updateMapHint(n);
   const ol = $('list');
   if (!total) {
@@ -874,7 +875,6 @@ function select(type, id, { fromMap = false, open = false } = {}) {
   d.innerHTML = type === 'events' ? eventDetail(item) : placeDetail(item);
   d.hidden = false;
   $('list').hidden = true;
-  $('favView').hidden = true;
   $('sheetBody').scrollTop = 0;
   const m = markers.get(id);
   if (m && !fromMap) (type === 'events' ? cluster : placeCluster).zoomToShowLayer(m, () => map.panTo(m.getLatLng()));
@@ -889,7 +889,6 @@ function unselect() {
   clearTrace();
   state.selected = null;
   $('detail').hidden = true;
-  $('favView').hidden = true;
   $('list').hidden = false;
   writeHash();
 }
@@ -919,13 +918,27 @@ function setListOpen(open) {
 $('listToggle').addEventListener('click', () => setListOpen(!document.documentElement.classList.contains('list-open')));
 
 // ---------- Panneau du bas (mobile) ----------
-function setSheet(s) { $('sheet').dataset.state = s; }
+// États : hidden (masqué, flèche en bas), peek (bandeau), half, full.
+// Une action qui « replie » le panneau (peek) ne le fait pas réapparaître s'il a été masqué.
+function setSheet(s, { force = false } = {}) {
+  const cur = $('sheet').dataset.state;
+  if (s === 'peek' && cur === 'hidden' && !force) return;
+  $('sheet').dataset.state = s;
+  document.documentElement.classList.toggle('sheet-hidden', s === 'hidden');
+  $('sheetUp').hidden = s !== 'hidden';
+}
+$('sheetUp').addEventListener('click', () => setSheet('half', { force: true }));
+function updateSheetUp(n) {
+  $('sheetUpCount').textContent = n > 100 ? '100+' : String(n);
+  $('sheetUpCount').hidden = !n;
+}
 // Glisser la carte quand le panneau est à moitié ouvert : il se replie pour libérer la carte
 map.on('dragstart', () => { if (isMobile() && $('sheet').dataset.state === 'half') setSheet('peek'); });
 // Bouton ⌄ pour réduire d'un cran
 $('sheetDown').addEventListener('click', (e) => {
   e.stopPropagation();
-  setSheet($('sheet').dataset.state === 'full' ? 'half' : 'peek');
+  const st = $('sheet').dataset.state;
+  setSheet(st === 'full' ? 'half' : st === 'half' ? 'peek' : 'hidden');
 });
 // Balayer vers le bas depuis le contenu (quand il est déjà tout en haut) réduit aussi le panneau
 (() => {
@@ -936,14 +949,15 @@ $('sheetDown').addEventListener('click', (e) => {
     if (y0 == null || !isMobile()) return;
     const dy = e.changedTouches[0].clientY - y0;
     y0 = null;
-    if (top0 <= 0 && dy > 60) setSheet($('sheet').dataset.state === 'full' ? 'half' : 'peek');
+    const st = $('sheet').dataset.state;
+    if (top0 <= 0 && dy > 60) setSheet(st === 'full' ? 'half' : st === 'half' ? 'peek' : 'hidden');
   }, { passive: true });
 })();
 (() => {
   const sheet = $('sheet');
   const handle = $('sheetHandle');
   let y0 = null; let t0 = 0; let base = 0; let moved = false;
-  const order = ['peek', 'half', 'full'];
+  const order = ['hidden', 'peek', 'half', 'full'];
   handle.addEventListener('pointerdown', (e) => {
     if (!isMobile() || e.target.closest('select, button')) return;
     y0 = e.clientY; t0 = Date.now(); moved = false;
@@ -965,9 +979,9 @@ $('sheetDown').addEventListener('click', (e) => {
     const fast = Math.abs(dy) / Math.max(1, Date.now() - t0) > 0.5;
     const i = order.indexOf(sheet.dataset.state);
     // Toucher : ouvre si replié, sinon réduit d'un cran ; glisser : suit le sens du geste
-    if (!moved) setSheet(i === 0 ? 'half' : order[i - 1]);
-    else if (dy < -25 || (fast && dy < 0)) setSheet(order[Math.min(2, i + 1)]);
-    else if (dy > 25 || (fast && dy > 0)) setSheet(order[Math.max(0, i - 1)]);
+    if (!moved) setSheet(i === 1 ? 'half' : order[i - 1]);
+    else if (dy < -25 || (fast && dy < 0)) setSheet(order[Math.min(3, i + 1)]);
+    else if (dy > 25 || (fast && dy > 0)) setSheet(order[Math.max(0, i - 1)], { force: true });
     y0 = null;
   };
   handle.addEventListener('pointerup', end);
@@ -1524,7 +1538,7 @@ document.addEventListener('click', (e) => {
   });
   if (on) { b.classList.remove('pop-anim'); void b.offsetWidth; b.classList.add('pop-anim'); }
   if (!$('favView').hidden) renderFavs();
-  if ($('favDialog').open) renderFavDialog();
+  if (!$('favQuick').hidden) renderFavDialog();
 }, true);
 
 // --- Export vers l'agenda du téléphone (.ics) ---
@@ -1618,8 +1632,7 @@ function renderFavs() {
     lastLabel = label;
     return head + favEventItem(f);
   }).join('');
-  $('favView').innerHTML = `<button class="back" data-favclose>← Retour à la liste</button>
-    <h2>👤 Mon profil</h2>
+  $('favView').innerHTML = `<div class="side-head"><h2>👤 Mon profil</h2><button type="button" class="icon-btn flat" data-favclose aria-label="Fermer">✕</button></div>
     ${accountBox()}
     <h2 class="fav-title">👥 Mes groupes</h2>
     ${savedGroups.length ? `<ul class="list fav-list">${savedGroups.map((g) => `<li class="fav-row"><div class="item"><span class="ico" style="background:var(--accent-soft)" aria-hidden="true">⭐</span><span class="body"><span class="title" style="display:block">${esc(g.name)}</span><span class="where" style="display:block">${esc(groupSummaryOf({ ...NEW_GROUP(), ...g.group }))}</span></span></div><span class="fav-tools"><button type="button" class="btn small" data-usegroup="${esc(g.id)}">Utiliser</button><button type="button" class="icon-btn flat" data-rmgroup="${esc(g.id)}" aria-label="Supprimer ce groupe" title="Supprimer">✕</button></span></li>`).join('')}</ul>` : '<p class="muted">Dans « Qui sort ? », touchez ⭐ pour enregistrer un groupe (famille, amis…) et le retrouver ici en un geste.</p>'}
@@ -1647,37 +1660,33 @@ async function refreshApp(btn) {
   } catch { /* hors ligne : on recharge quand même */ }
   location.reload();
 }
+// ---------- Panneau flottant à gauche (favoris, profil) ----------
+function openSide(which) {
+  $('favView').hidden = which !== 'favView';
+  $('favQuick').hidden = which !== 'favQuick';
+  $('sidePanel').classList.add('open');
+  $('sidePanel').setAttribute('aria-hidden', 'false');
+  $('sidePanel').scrollTop = 0;
+  $('sideScrim').hidden = false;
+  closeCallout();
+}
+function closeSide() {
+  $('sidePanel').classList.remove('open');
+  $('sidePanel').setAttribute('aria-hidden', 'true');
+  $('sideScrim').hidden = true;
+  // contenu masqué après la sortie du panneau (les tests « ouvert ? » s'appuient dessus)
+  $('favView').hidden = true;
+  $('favQuick').hidden = true;
+}
+$('sideScrim').addEventListener('click', closeSide);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('sidePanel').classList.contains('open')) closeSide(); });
 function openFavs() {
   renderFavs();
-  $('favView').hidden = false;
-  $('list').hidden = true;
-  $('detail').hidden = true;
-  $('sheetBody').scrollTop = 0;
-  if (isMobile()) setSheet('full'); else setListOpen(true);
+  openSide('favView');
 }
-function closeFavs() {
-  $('favView').hidden = true;
-  if (state.selected) $('detail').hidden = false; else $('list').hidden = false;
-}
-// Bouton ❤️ : fenêtre avec la liste des favoris ; un toucher sur l'un d'eux l'ouvre sur la carte
-function renderFavDialog() {
-  const t = today();
-  const evs = favs.filter((f) => f.type === 'events');
-  const upcoming = evs.filter((f) => f.occurrences.some((o) => o.end >= t))
-    .sort((a, b) => a.occurrences.find((o) => o.end >= t).start.localeCompare(b.occurrences.find((o) => o.end >= t).start));
-  const pls = favs.filter((f) => f.type === 'places');
-  $('favDialogBody').innerHTML = (!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : '')
-    + (upcoming.length ? `<h3>📅 À venir</h3><ul class="list fav-list">${upcoming.map((f) => favEventItem(f)).join('')}</ul>` : '')
-    + (pls.length ? `<h3>📍 Lieux et activités</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : '')
-    + '<p class="src"><button type="button" class="link-btn" data-favall>Planning complet, agenda et compte</button></p>';
-}
-$('favPill').addEventListener('click', () => { renderFavDialog(); $('favDialog').showModal(); });
-$('favDialog').addEventListener('click', async (e) => {
-  if (e.target.closest('[data-favall]')) { $('favDialog').close(); openFavs(); return; }
-  const b = e.target.closest('[data-favopen]');
-  if (!b) return;
-  e.preventDefault();
-  e.stopPropagation();
+const closeFavs = closeSide;
+/** Ouvre un favori sur la carte (aperçu), ou sa fiche s'il est masqué par les filtres. */
+async function goToFav(b) {
   const i = b.dataset.favopen.indexOf('|');
   const type = b.dataset.favopen.slice(0, i);
   const id = b.dataset.favopen.slice(i + 1);
@@ -1686,19 +1695,35 @@ $('favDialog').addEventListener('click', async (e) => {
   const list = type === 'events' ? events : places;
   const x = list.find((y) => y.id === id) ?? list.find((y) => looseKey(y) === f?.loose);
   if (!x) { b.querySelector('.where').textContent = "N'est plus en ligne"; return; }
-  $('favDialog').close();
+  closeSide();
   if (state.mode !== type) state.mode = type;
   render();
   if (markers.get(x.id)) {
-    // le favori est sur la carte : on y va et on ouvre son aperçu
-    if (isMobile()) setSheet('peek');
     map.setView([x.lat, x.lon], Math.max(map.getZoom(), 15), { animate: false });
     showOnMap(x.id);
   } else {
-    // masqué par les filtres actuels : fiche complète
     select(type, x.id, { open: true });
     map.setView([x.lat, x.lon], Math.max(map.getZoom(), 14));
   }
+}
+// Bouton ❤️ : fenêtre avec la liste des favoris ; un toucher sur l'un d'eux l'ouvre sur la carte
+function renderFavDialog() {
+  const t = today();
+  const evs = favs.filter((f) => f.type === 'events');
+  const upcoming = evs.filter((f) => f.occurrences.some((o) => o.end >= t))
+    .sort((a, b) => a.occurrences.find((o) => o.end >= t).start.localeCompare(b.occurrences.find((o) => o.end >= t).start));
+  const pls = favs.filter((f) => f.type === 'places');
+  $('favQuick').innerHTML = '<div class="side-head"><h2>❤️ Mes favoris</h2><button type="button" class="icon-btn flat" data-sideclose aria-label="Fermer">✕</button></div>' + (!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : '')
+    + (upcoming.length ? `<h3>📅 À venir</h3><ul class="list fav-list">${upcoming.map((f) => favEventItem(f)).join('')}</ul>` : '')
+    + (pls.length ? `<h3>📍 Lieux et activités</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : '')
+    + '<p class="src"><button type="button" class="link-btn" data-favall>Planning complet, agenda et compte</button></p>';
+}
+$('favPill').addEventListener('click', () => { renderFavDialog(); openSide('favQuick'); });
+$('favQuick').addEventListener('click', (e) => {
+  if (e.target.closest('[data-sideclose]')) return closeSide();
+  if (e.target.closest('[data-favall]')) return openFavs();
+  const b = e.target.closest('[data-favopen]');
+  if (b) goToFav(b);
 });
 $('accountBtn').addEventListener('click', openFavs);
 document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs]')) { e.preventDefault(); openFavs(); } });
@@ -1720,19 +1745,7 @@ $('favView').addEventListener('click', async (e) => {
     return renderFavs();
   }
   const b = e.target.closest('[data-favopen]');
-  if (!b) return;
-  const i = b.dataset.favopen.indexOf('|');
-  const type = b.dataset.favopen.slice(0, i);
-  const id = b.dataset.favopen.slice(i + 1);
-  const f = favs.find((x) => x.type === type && x.id === id);
-  if (f?.dept && dataIndex?.depts?.[f.dept]) await loadDept(type, f.dept);
-  const list = type === 'events' ? events : places;
-  const x = list.find((y) => y.id === id) ?? list.find((y) => looseKey(y) === f?.loose);
-  if (!x) { b.querySelector('.where').textContent = "N'est plus en ligne"; return; }
-  $('favView').hidden = true;
-  if (state.mode !== type) { state.mode = type; render(); }
-  select(type, x.id, { open: true });
-  map.setView([x.lat, x.lon], Math.max(map.getZoom(), 13));
+  if (b) goToFav(b);
 });
 
 // ---------- Compte (facultatif) : synchronise favoris et groupe entre appareils ----------
@@ -1992,6 +2005,7 @@ function renderOverviewList() {
   const noun = state.mode === 'events' ? 'événements' : 'lieux et activités';
   $('count').textContent = `${total.toLocaleString('fr-FR')} ${noun} · zoomez sur un département`;
   $('listCount').textContent = total.toLocaleString('fr-FR');
+  updateSheetUp(total);
   $('list').innerHTML = depts.map(([d, i]) => `<li><button class="item" data-dept="${d}"><span class="body"><span class="title" style="display:block">${esc(i.name)} (${d})</span><span class="where" style="display:block">${deptCount(i).toLocaleString('fr-FR')} ${noun} (avant filtres)</span></span></button></li>`).join('');
 }
 $('list').addEventListener('click', (e) => {
