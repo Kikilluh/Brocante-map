@@ -178,6 +178,8 @@ osm.on('tileerror', ({ tile, coords }) => {
   tile.dataset.tries = '1';
   setTimeout(() => { tile.src = `${osm.getTileUrl(coords)}?essai=2`; }, 700);
 });
+// Échelle en kilomètres (en bas à gauche, sous le choix du fond de carte)
+L.control.scale({ metric: true, imperial: false, maxWidth: 130, position: 'bottomleft' }).addTo(map);
 L.control.layers({ 'Plan IGN': planIGN, OpenStreetMap: osm }, null, { position: 'bottomleft' }).addTo(map);
 // Le zoom au clic sur un groupe est géré plus bas (zoom progressif)
 const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });

@@ -551,3 +551,8 @@ button { cursor: pointer; }
 .search { position: relative; }
 .q-suggest { top: calc(100% + 4px); margin: 0; }
 .q-suggest .muted { color: var(--muted); font-size: 13px; }
+
+/* Échelle kilométrique lisible sur les deux thèmes */
+.leaflet-control-scale-line { background: rgba(255,255,255,.85); color: #2f2a33; border-color: #2f2a33; font-size: 12px; font-weight: 600; }
+/* Mobile : les contrôles du bas (échelle, fond de carte, crédits) restent au-dessus du panneau replié */
+@media (max-width: 760px) { .leaflet-bottom { bottom: calc(92px + env(safe-area-inset-bottom)); } }
