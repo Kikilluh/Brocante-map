@@ -493,7 +493,22 @@ const badge = (label, col, ico = '') => `<span class="badge" style="background:$
 const evBadge = (ev) => badge(CATS[ev.category], color(ev.category), CAT_ICONS[ev.category]);
 const plBadge = (p) => badge(KINDS[p.kind] ?? p.kind, kcolor(p.kind), KIND_ICONS[p.kind]);
 
+// Bascule Événements / Toute l'année : la pastille active glisse d'un onglet à l'autre (même élément
+// partagé, API View Transitions quand le navigateur la connaît) et s'étire de 12 % au passage
+function stretchMode(btn) {
+  btn.classList.remove('stretch');
+  void btn.offsetWidth;
+  btn.classList.add('stretch');
+}
 function render() {
+  if (render.shared && document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    render.shared = false;
+    document.startViewTransition(() => renderNow());
+    return;
+  }
+  renderNow();
+}
+function renderNow() {
   document.body.className = `mode-${state.mode}`;
   $$('[data-mode]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.mode === state.mode)));
   const isEv = state.mode === 'events';
@@ -807,6 +822,8 @@ function placeCallout(firstTime = false) {
     }
     calloutCard.style.left = `${Math.round(x)}px`;
     calloutCard.style.top = `${Math.round(Math.max(8, y))}px`;
+    // l'aperçu naît du marqueur (et y retourne en se fermant)
+    calloutCard.style.transformOrigin = `${Math.round(pt.x - x)}px ${Math.round(pt.y - Math.max(8, y))}px`;
   }
   // trait : du bord de la fiche le plus proche jusqu'au marqueur
   const x0 = calloutCard.offsetLeft;
@@ -826,7 +843,10 @@ function markSelected(m, on) {
   m?.getElement()?.classList.toggle('is-selected', on);
   m?.setZIndexOffset(on ? 1000 : 0);
 }
+let calloutLeave = null;
 function openCallout(m) {
+  clearTimeout(calloutLeave);
+  calloutCard.classList.remove('leaving');
   if (calloutMarker && calloutMarker !== m) markSelected(calloutMarker, false);
   const appear = calloutLayer.hidden || calloutMarker !== m;
   calloutMarker = m;
@@ -841,10 +861,19 @@ function openCallout(m) {
   calloutCard.querySelector('img')?.addEventListener('load', () => placeCallout(true), { once: true });
 }
 function closeCallout() {
+  if (!calloutMarker) return;
   markSelected(calloutMarker, false);
   calloutMarker = null;
-  calloutLayer.hidden = true;
-  calloutCard.innerHTML = '';
+  // sortie rapide vers le marqueur, puis masquage
+  calloutCard.classList.remove('appear');
+  calloutCard.classList.add('leaving');
+  clearTimeout(calloutLeave);
+  calloutLeave = setTimeout(() => {
+    calloutCard.classList.remove('leaving');
+    if (calloutMarker) return;
+    calloutLayer.hidden = true;
+    calloutCard.innerHTML = '';
+  }, 130);
 }
 map.on('move zoom zoomend resize', () => placeCallout(false));
 map.on('resize', () => placeCallout(true));
@@ -928,10 +957,13 @@ function setSheet(s, { force = false } = {}) {
   if (s === cur && !force) return;
   $('sheet').dataset.state = s;
   document.documentElement.classList.toggle('sheet-hidden', s === 'hidden');
-  $('sheetUp').hidden = s !== 'hidden';
+  // la même flèche ouvre (vers le haut) et referme (vers le bas) la liste
+  $('sheetUp').hidden = !isMobile();
+  $('sheetUp').classList.toggle('down', s !== 'hidden');
+  $('sheetUp').setAttribute('aria-label', s === 'hidden' ? 'Afficher la liste' : 'Masquer la liste');
 }
 if (isMobile()) setSheet('hidden', { force: true });
-$('sheetUp').addEventListener('click', () => setSheet('full', { force: true }));
+$('sheetUp').addEventListener('click', () => setSheet($('sheet').dataset.state === 'hidden' ? 'full' : 'hidden', { force: true }));
 function updateSheetUp(n) {
   $('sheetUpCount').textContent = n > 100 ? '100+' : String(n);
   $('sheetUpCount').hidden = !n;
@@ -1092,7 +1124,10 @@ document.addEventListener('click', (e) => {
     state.preset = t.dataset.preset;
     [state.from, state.to] = presetRange(state.preset);
     if (t.closest('#groupDialog')) { syncControls(); return; }
-  } else if (t.dataset.mode) { state.mode = t.dataset.mode; unselect(); }
+  } else if (t.dataset.mode) {
+    if (t.dataset.mode !== state.mode) { stretchMode(t); render.shared = true; }
+    state.mode = t.dataset.mode; unselect();
+  }
   render();
   if (t.dataset.mode) ensureData();
 });
@@ -1448,6 +1483,38 @@ const APP_LINKS = {
     ios: (a, o) => `waze://?ll=${a},${o}&navigate=yes`,
   },
 };
+// ---------- Petites fenêtres ancrées à leur bouton (naissent du bouton à l'échelle 0,95, y retournent) ----------
+let popOpen = null;
+let popTimer = null;
+function openPopover(pop, trigger) {
+  clearTimeout(popTimer);
+  if (popOpen && popOpen !== pop) { popOpen.hidden = true; popOpen.classList.remove('open'); }
+  pop.hidden = false;
+  pop.classList.remove('open');
+  const b = trigger.getBoundingClientRect();
+  const w = pop.offsetWidth;
+  const h = pop.offsetHeight;
+  const vw = innerWidth;
+  const vh = innerHeight;
+  const left = Math.min(Math.max(8, b.left + b.width / 2 - w / 2), vw - w - 8);
+  const below = b.bottom + 8 + h <= vh - 8;
+  const top = below ? b.bottom + 8 : Math.max(8, b.top - 8 - h);
+  pop.style.left = `${left}px`;
+  pop.style.top = `${top}px`;
+  pop.style.transformOrigin = `${Math.round(b.left + b.width / 2 - left)}px ${below ? 0 : h}px`;
+  void pop.offsetWidth;
+  pop.classList.add('open');
+  popOpen = pop;
+}
+function closePopover() {
+  const pop = popOpen;
+  if (!pop) return;
+  popOpen = null;
+  pop.classList.remove('open');
+  popTimer = setTimeout(() => { pop.hidden = true; }, 140);
+}
+document.addEventListener('pointerdown', (e) => { if (popOpen && !popOpen.contains(e.target) && !e.target.closest('[data-nav]')) closePopover(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopover(); });
 function tryAppThenWeb(appUrl, web) {
   // si l'appli s'ouvre, la page passe en arrière-plan : on annule le secours
   const fallback = setTimeout(() => { if (document.visibilityState === 'visible') location.href = web; }, 1600);
@@ -1474,13 +1541,13 @@ document.addEventListener('click', (e) => {
   $('navApps').innerHTML = Object.entries(NAV_APPS).filter(([, a]) => !a.only || a.only())
     .map(([k, a]) => `<button type="button" class="btn" data-navapp="${k}">${a.label}</button>`).join('');
   $('navRemember').checked = false;
-  $('navDialog').showModal();
+  openPopover($('navPop'), b);
 }, true);
 $('navApps').addEventListener('click', (e) => {
   const b = e.target.closest('[data-navapp]');
   if (!b || !navTarget) return;
   if ($('navRemember').checked) store.set('appliCarte', b.dataset.navapp);
-  $('navDialog').close();
+  closePopover();
   openNav(b.dataset.navapp, navTarget);
   if (!$('favView').hidden) renderFavs();
 });

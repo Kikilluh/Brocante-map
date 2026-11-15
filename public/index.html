@@ -177,19 +177,12 @@
     </form>
   </dialog>
 
-  <!-- Choix de l'application de navigation -->
-  <dialog class="modal small" id="navDialog" aria-labelledby="navTitle">
-    <form method="dialog" class="modal-inner">
-      <header class="modal-head">
-        <h2 id="navTitle">Y aller avec…</h2>
-        <button class="icon-btn" value="close" aria-label="Fermer">✕</button>
-      </header>
-      <div class="modal-body">
-        <div class="nav-apps" id="navApps"></div>
-        <label class="switch"><input type="checkbox" id="navRemember"> <span>Toujours utiliser cette application</span></label>
-      </div>
-    </form>
-  </dialog>
+  <!-- Choix de l'application de navigation : petite fenêtre ancrée au bouton « Itinéraire » -->
+  <div class="popover" id="navPop" role="dialog" aria-label="Y aller avec…" hidden>
+    <p class="popover-title">Y aller avec…</p>
+    <div class="nav-apps" id="navApps"></div>
+    <label class="switch"><input type="checkbox" id="navRemember"> <span>Toujours utiliser cette application</span></label>
+  </div>
 
   <!-- Assistant « Notre groupe » -->
   <dialog class="modal" id="groupDialog" aria-labelledby="groupTitle">

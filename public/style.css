@@ -503,8 +503,10 @@ button { cursor: pointer; }
   background: var(--surface); color: var(--text); border-radius: 16px; overflow: hidden;
   box-shadow: 0 8px 28px rgba(0,0,0,.25); border: 1px solid var(--border);
 }
-.callout.appear { animation: callout-in .18s var(--ease-out); transform-origin: center bottom; }
-@keyframes callout-in { from { opacity: 0; transform: scale(.96) translateY(4px); } }
+.callout.appear { animation: callout-in .18s var(--ease-out); }
+.callout.leaving { animation: callout-out .13s ease-in forwards; }
+@keyframes callout-out { to { opacity: 0; transform: scale(.95); } }
+@keyframes callout-in { from { opacity: 0; transform: scale(.95); } }
 @media (prefers-reduced-motion: reduce) { .callout { animation: none; } }
 .callout-close {
   position: absolute; top: 8px; right: 8px; z-index: 3; width: 30px; height: 30px; border-radius: 50%;
@@ -654,7 +656,7 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
   position: absolute; top: 8px; right: 8px; z-index: 1050; width: 75%; height: 75%; max-width: 520px;
   background: var(--surface); color: var(--text); border-radius: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.3);
   overflow-y: auto; overscroll-behavior: contain; padding: 0 16px 16px;
-  opacity: 0; transform: scale(.9); visibility: hidden; pointer-events: none;
+  opacity: 0; transform: scale(.95); visibility: hidden; pointer-events: none;
   transition: opacity .14s ease, transform .14s var(--ease-out), visibility 0s linear .14s;
 }
 .side-panel.open {
@@ -678,4 +680,42 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
   .lefty .top { flex-direction: row-reverse; }
   .lefty .leaflet-bottom.leaflet-left { left: auto; right: 0; }
   .lefty .leaflet-left .leaflet-control { float: right; clear: both; margin-left: 0; margin-right: 10px; }
+}
+
+/* ---------- Petites fenêtres ancrées (itinéraire…) ---------- */
+.popover {
+  position: fixed; z-index: 2000; width: min(300px, calc(100vw - 16px)); padding: 12px 14px;
+  background: var(--surface); color: var(--text); border-radius: 16px; border: 1px solid var(--border);
+  box-shadow: 0 10px 32px rgba(0,0,0,.28);
+  opacity: 0; transform: scale(.95); transition: opacity .12s ease, transform .14s var(--ease-out);
+}
+.popover.open { opacity: 1; transform: none; transition: opacity .15s ease, transform .18s var(--ease-out); }
+.popover[hidden] { display: none; }
+.popover-title { margin: 0 0 8px; font-weight: 700; }
+.popover .nav-apps { margin-bottom: 10px; }
+
+/* ---------- Appui dans les fenêtres : 0,97 ---------- */
+.callout button, .callout a, .popactions > *, .actions > *, .popover button, .side-panel button, .side-panel a.btn, .modal button, .nav-apps .btn {
+  transition: transform .16s var(--ease-out), background-color .2s ease;
+}
+.callout button:active, .callout a:active, .popactions > *:active, .actions > *:active, .popover button:active,
+.side-panel button:active, .side-panel a.btn:active, .modal button:active, .nav-apps .btn:active { transform: scale(.97); }
+
+/* ---------- Bascule Événements / Toute l'année ---------- */
+.mode[aria-selected="true"] { view-transition-name: mode-pill; }
+.mode.stretch { animation: mode-stretch .32s var(--ease-out); }
+@keyframes mode-stretch { 35% { transform: scaleX(1.12); } }
+::view-transition-group(mode-pill) { animation-duration: .28s; animation-timing-function: var(--ease-out); }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+
+/* ---------- Liste du bas : moitié de l'écran, flèche pour la fermer au même endroit ---------- */
+@media (max-width: 760px) {
+  .sheet { --sheet-h: 50%; }
+  .sheet-body { padding-bottom: 84px; }
+  .sheet-up { z-index: 1010; transition: transform .2s var(--ease-out); }
+  .sheet-up svg { transition: transform .22s var(--ease-out); }
+  .sheet-up.down svg { transform: rotate(180deg); }
+  .sheet-up.down .sheet-up-count { display: none; }
+  .sheet-hidden .filters-fab { bottom: calc(22px + env(safe-area-inset-bottom)); }
+  html:not(.sheet-hidden) .filters-fab { bottom: calc(50% + 14px); }
 }
