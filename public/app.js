@@ -228,16 +228,35 @@ map.on('baselayerchange', (e) => store.set('fond', e.name));
 // les icônes des éléments serrées ensemble, qui se séparent à leur place exacte en zoomant.
 const BUNDLE_ZOOM = 13;
 const BUNDLE_MAX = 8;
+// Positions en nid d'abeille autour du centre (bulles qui se touchent, sans cadre)
+const BUBBLE = 28;
+function hexSpots(n, d = BUBBLE - 3) {
+  const spots = [[0, 0]];
+  for (let ring = 1; spots.length < n; ring++) {
+    for (let i = 0; i < 6 * ring && spots.length < n; i++) {
+      const a = (Math.PI / 3) * Math.floor(i / ring) + Math.PI / 6;
+      const b = a + (2 * Math.PI) / 3;
+      const k = i % ring;
+      spots.push([d * (ring * Math.cos(a) + k * Math.cos(b)), d * (ring * Math.sin(a) + k * Math.sin(b))]);
+    }
+  }
+  // recentrage (2 ou 3 bulles : côte à côte / en triangle plutôt qu'autour d'une bulle centrale)
+  const cx = spots.reduce((t, p) => t + p[0], 0) / n;
+  const cy = spots.reduce((t, p) => t + p[1], 0) / n;
+  return spots.map(([x, y]) => [x - cx, y - cy]);
+}
 function clusterIcon(c) {
   const kids = c.getAllChildMarkers();
   const z = c._zoom ?? map.getZoom();
   if (z < BUNDLE_ZOOM || kids.length > BUNDLE_MAX) return L.MarkerClusterGroup.prototype._defaultIconCreateFunction(c);
-  const cols = kids.length <= 3 ? kids.length : kids.length === 4 ? 2 : Math.ceil(kids.length / 2);
-  const rows = Math.ceil(kids.length / cols);
-  const w = cols * 26 + 8;
-  const h = rows * 26 + 8;
-  const html = `<div class="mk-bundle" style="grid-template-columns:repeat(${cols},24px)">${kids.map((m) => `<span style="background:${m.col ?? 'var(--accent)'}">${m.ico ?? '📍'}</span>`).join('')}</div>`;
-  return L.divIcon({ className: '', html, iconSize: [w, h], iconAnchor: [w / 2, h / 2] });
+  const spots = hexSpots(kids.length);
+  const half = Math.max(...spots.flat().map(Math.abs)) + BUBBLE / 2 + 2;
+  const size = Math.ceil(half * 2);
+  const html = `<div class="mk-bundle" style="width:${size}px;height:${size}px">${kids.map((m, i) => {
+    const [x, y] = spots[i];
+    return `<span style="background:${m.col ?? 'var(--accent)'};left:${(half + x - BUBBLE / 2).toFixed(1)}px;top:${(half + y - BUBBLE / 2).toFixed(1)}px">${m.ico ?? '📍'}</span>`;
+  }).join('')}</div>`;
+  return L.divIcon({ className: '', html, iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
 }
 // Rayon de regroupement plus petit de près : les éléments voisins se séparent plus vite
 const clusterRadius = (z) => (z >= 16 ? 22 : z >= 14 ? 32 : 45);
