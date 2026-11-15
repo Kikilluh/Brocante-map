@@ -21,7 +21,7 @@ async function robotsAllows(url) {
   if (!robotsCache.has(origin)) {
     let rules = [];
     try {
-      const res = await fetch(`${origin}/robots.txt`, { headers: { 'User-Agent': settings.userAgent } });
+      const res = await fetch(`${origin}/robots.txt`, { headers: { 'User-Agent': settings.userAgent }, signal: AbortSignal.timeout(10000) });
       if (res.ok) {
         let applies = false;
         for (const line of (await res.text()).split('\n')) {
@@ -40,12 +40,12 @@ async function robotsAllows(url) {
   return !robotsCache.get(origin).some((rule) => pathname.startsWith(rule.replace(/\*.*$/, '')));
 }
 
-export async function fetchText(url, { json = false, headers = {}, checkRobots = true, delayMs } = {}) {
+export async function fetchText(url, { json = false, headers = {}, checkRobots = true, delayMs, timeoutMs = 30000 } = {}) {
   if (checkRobots && !(await robotsAllows(url))) throw new Error(`robots.txt interdit ${url}`);
   await throttle(delayMs);
   const res = await fetch(url, {
     headers: { 'User-Agent': settings.userAgent, 'Accept-Language': 'fr-FR,fr;q=0.9', ...headers },
-    signal: AbortSignal.timeout(30000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');

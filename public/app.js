@@ -328,6 +328,11 @@ function momentOk(o) {
   if (h == null) return true;
   return m === 'matin' ? h < 12 : m === 'aprem' ? h >= 12 && h < 18 : h >= 18;
 }
+/** Zone de recherche du groupe (carré autour du centre), ou null si aucune limite de distance. */
+function groupZone() {
+  const g = state.group;
+  return g.set && g.center && g.radius ? L.latLng(g.center.lat, g.center.lon).toBounds(g.radius * 2000) : null;
+}
 function inRadius(x) {
   const g = state.group;
   if (!g.set || !g.radius || !g.center) return true;
@@ -428,9 +433,36 @@ function visibleBounds() {
     return b;
   } catch { return null; }
 }
+// Bandeau sur la carte quand la partie visible est vide : dit pourquoi (zone du groupe, filtres) et propose d'élargir.
+function widenSearch() {
+  state.preset = 'all'; [state.from, state.to] = presetRange('all'); state.unknown = true; state.q = ''; $('q').value = '';
+  if (state.group.radius) state.group.radius = 0;
+  saveGroup(); render();
+}
+function updateMapHint(n) {
+  const el = $('mapHint');
+  if (!el) return;
+  const zone = groupZone();
+  const view = map.getBounds();
+  if (isOverview() || n > 0 || loadingCount > 0 || wantedDepts().some((d) => !loaded[state.mode].has(d))) { el.hidden = true; return; }
+  const g = state.group;
+  if (zone && !zone.intersects(view)) {
+    el.innerHTML = `<span>Rien ici : votre groupe cherche à ${g.radius} km autour de ${esc(g.center.label ?? 'son point de départ')}.</span>`
+      + '<span class="hint-actions"><button class="btn small" data-hint="all">Chercher partout</button><button class="btn small ghost" data-hint="zone">Revenir à la zone</button></span>';
+  } else {
+    el.innerHTML = '<span>Rien ici avec les filtres choisis (dates, types, groupe).</span><span class="hint-actions"><button class="btn small" data-hint="widen">Élargir la recherche</button></span>';
+  }
+  el.hidden = false;
+}
+$('mapHint')?.addEventListener('click', (e) => {
+  const a = e.target.closest('[data-hint]')?.dataset.hint;
+  if (a === 'all') { state.group.radius = 0; saveGroup(); render(); }
+  else if (a === 'zone') map.flyToBounds(groupZone(), { duration: 0.7 });
+  else if (a === 'widen') widenSearch();
+});
 function renderList() {
   const isEv = state.mode === 'events';
-  if (isOverview()) return renderOverviewList();
+  if (isOverview()) { updateMapHint(1); return renderOverviewList(); }
   const b = visibleBounds();
   const inView = b?.contains ? current.filter((x) => b.contains([x.lat, x.lon])) : current;
   const n = inView.length;
@@ -438,10 +470,11 @@ function renderList() {
   const noun = isEv ? `événement${n > 1 ? 's' : ''}` : `lieu${n > 1 ? 'x' : ''} et activité${n > 1 ? 's' : ''}`;
   $('count').textContent = n === total ? `${n} ${noun}` : `${n} ${noun} ici · ${total} au total`;
   $('listCount').textContent = n;
+  updateMapHint(n);
   const ol = $('list');
   if (!total) {
     ol.innerHTML = `<li class="empty">Rien ne correspond à ces critères.<br><button class="btn small" id="widen">Élargir la recherche</button></li>`;
-    $('widen').onclick = () => { state.preset = 'all'; [state.from, state.to] = presetRange('all'); state.unknown = true; state.q = ''; $('q').value = ''; if (state.group.radius) state.group.radius = 0; saveGroup(); render(); };
+    $('widen').onclick = widenSearch;
   } else if (!n) {
     ol.innerHTML = `<li class="empty">Rien dans cette partie de la carte.<br><button class="btn small" id="zoomOut">Voir tout</button></li>`;
     $('zoomOut').onclick = () => map.fitBounds(L.latLngBounds(current.map((x) => [x.lat, x.lon])).pad(0.05), { maxZoom: 12 });
@@ -1366,7 +1399,7 @@ function renderFavs() {
 }
 // Actualiser : sur mobile (appli installée) on ne peut pas toujours « tirer pour recharger ».
 // On vide le cache de l'appli, on demande la nouvelle version au service worker, puis on recharge.
-const APP_VERSION = '2026.11.02';
+const APP_VERSION = '2026.11.15';
 async function refreshApp(btn) {
   if (btn) btn.textContent = '⏳ Actualisation…';
   try {
@@ -1630,16 +1663,18 @@ function addItems(kind, list) {
 let dataIndex = null;
 const loaded = { events: new Set(), places: new Set() };
 const pending = new Map();
+let loadingCount = 0;
 /** Charge (une seule fois) les données d'un département. Renvoie true si de nouvelles données sont arrivées. */
 function loadDept(kind, d) {
   if (loaded[kind].has(d)) return Promise.resolve(false);
   const key = `${kind}/${d}`;
   if (!pending.has(key)) {
+    loadingCount++;
     pending.set(key, getJson(`data/${d}/${kind}.json`).then((data) => {
       addItems(kind, data?.[kind] ?? []);
       loaded[kind].add(d);
       return true;
-    }));
+    }).finally(() => { loadingCount--; }));
   }
   return pending.get(key);
 }
@@ -1658,13 +1693,15 @@ function renderOverview() {
   map.removeLayer(placeCluster);
   closeCallout?.();
   overviewLayer.clearLayers();
+  const zone = groupZone();
   for (const [d, i] of Object.entries(dataIndex.depts)) {
     if (!i.bbox) continue;
     const n = deptCount(i);
+    const out = zone && !deptBounds(i).intersects(zone);
     const label = n >= 1000 ? `${(n / 1000).toFixed(1).replace('.', ',').replace(',0', '')} k` : String(n);
-    const icon = L.divIcon({ className: '', html: `<button type="button" class="dept-bubble" aria-label="${esc(i.name)}"><strong>${label}</strong><span>${d}</span></button>`, iconSize: [52, 40], iconAnchor: [26, 20] });
+    const icon = L.divIcon({ className: '', html: `<button type="button" class="dept-bubble${out ? ' out' : ''}" aria-label="${esc(i.name)}${out ? ' (hors de la zone du groupe)' : ''}"><strong>${label}</strong><span>${d}</span></button>`, iconSize: [52, 40], iconAnchor: [26, 20] });
     const m = L.marker(deptBounds(i).getCenter(), { icon, keyboard: true });
-    if (canHover()) m.bindTooltip(`${esc(i.name)} : ${n.toLocaleString('fr-FR')} ${state.mode === 'events' ? 'événements' : 'lieux et activités'}`, { direction: 'top', offset: [0, -20], className: 'tip', opacity: 1 });
+    if (canHover()) m.bindTooltip(`${esc(i.name)} : ${n.toLocaleString('fr-FR')} ${state.mode === 'events' ? 'événements' : 'lieux et activités'}${out ? ' (hors de la zone du groupe)' : ''}`, { direction: 'top', offset: [0, -20], className: 'tip', opacity: 1 });
     m.on('click', () => map.flyToBounds(deptBounds(i), { padding: [20, 20], duration: 0.7 }));
     overviewLayer.addLayer(m);
   }
@@ -1695,7 +1732,7 @@ function wantedDepts() {
   if (!dataIndex || isOverview()) return [];
   const view = map.getBounds().pad(0.1);
   const g = state.group;
-  const zone = g.set && g.center && g.radius ? L.latLng(g.center.lat, g.center.lon).toBounds(g.radius * 2000) : null;
+  const zone = groupZone();
   return Object.entries(dataIndex.depts ?? {})
     .filter(([, i]) => i.bbox && (deptBounds(i).intersects(view) || (zone && deptBounds(i).intersects(zone))))
     .map(([d]) => d);
@@ -1703,7 +1740,7 @@ function wantedDepts() {
 async function ensureData() {
   const kind = state.mode;
   const fresh = await Promise.all(wantedDepts().map((d) => loadDept(kind, d)));
-  if (fresh.some(Boolean)) render();
+  if (fresh.some(Boolean)) render(); else renderList();
 }
 
 (async () => {

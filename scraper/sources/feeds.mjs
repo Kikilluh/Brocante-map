@@ -139,9 +139,16 @@ const CANDIDATES = [
   (b) => ({ type: 'html', url: `${b}events/` }),
 ];
 
+// Délais : un site de mairie lent ne doit pas retenir toute la collecte
+const SITE_TIMEOUT = 10000;        // par page
+const DETECT_TIMEOUT = 45000;      // recherche d'agenda sur un site (plusieurs pages essayées)
+const DETECT_BUDGET = 8 * 60000;   // temps total consacré aux nouvelles recherches par collecte
+const TIMED_OUT = Symbol('délai dépassé');
+const withTimeout = (p, ms) => Promise.race([p, new Promise((resolve) => setTimeout(() => resolve(TIMED_OUT), ms).unref())]);
+
 async function readFeed({ type, url }) {
-  if (type === 'tribe') return parseTribe(await fetchText(url, { json: true, delayMs: 300 }));
-  const text = await fetchText(url, { delayMs: 300 });
+  if (type === 'tribe') return parseTribe(await fetchText(url, { json: true, delayMs: 300, timeoutMs: SITE_TIMEOUT }));
+  const text = await fetchText(url, { delayMs: 300, timeoutMs: SITE_TIMEOUT });
   if (type === 'ical' || /BEGIN:VCALENDAR/.test(text.slice(0, 500))) return parseIcs(text);
   return extractEvents(text, url).map((r) => ({ ...r, occurrences: r.occurrences ?? [{ start: r.start, end: r.end ?? r.start, hours: r.hours ?? null }] }));
 }
@@ -153,7 +160,7 @@ async function detect(site, today, log) {
   const tried = [];
   // liens présents sur la page (flux iCal annoncés)
   try {
-    const html = await fetchText(site.url, { delayMs: 300 });
+    const html = await fetchText(site.url, { delayMs: 300, timeoutMs: SITE_TIMEOUT });
     const links = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => /\.ics\b|[?&]ical=|^webcal:/i.test(h));
     for (const h of links.slice(0, 3)) tried.push({ type: 'ical', url: new URL(h.replace(/^webcal:/, 'https:'), base).href });
     if (extractEvents(html, site.url).length) tried.push({ type: 'html', url: site.url });
@@ -224,14 +231,16 @@ export async function run(source, { departments, log }) {
   // Balayage progressif : au plus maxDetectPerRun nouvelles détections par collecte ; résultat gardé 30 jours
   // (7 jours pour les sites de la configuration)
   let budget = source.maxDetectPerRun ?? 60;
+  const detectUntil = Date.now() + DETECT_BUDGET;
   let silent = 0;
   for (const site of sites) {
     let feed = detected[site.url];
     const maxAge = site.auto ? 30 * 864e5 : WEEK;
     if (!feed || Date.now() - (feed.at ?? 0) > maxAge) {
-      if (budget <= 0) continue;
+      if (budget <= 0 || Date.now() > detectUntil) continue;
       budget--;
-      const found = await detect(site, today, site.auto ? () => {} : log);
+      const found = await withTimeout(detect(site, today, site.auto ? () => {} : log), DETECT_TIMEOUT);
+      if (found === TIMED_OUT) { log(`  ${site.name} : site trop lent, réessayé une autre fois`); continue; }
       feed = { ...(found ?? { none: true }), at: Date.now() };
       detected[site.url] = feed;
     }
