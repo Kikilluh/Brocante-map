@@ -592,7 +592,64 @@ function placeItem(p) {
 }
 
 const thumb = (x) => (x.image ? `<img class="thumb" src="${esc(x.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">` : '');
-const hero = (x) => (x.image ? `<figure class="hero"><img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">${x.imageCredit ? `<figcaption>${esc(x.imageCredit)}</figcaption>` : ''}</figure>` : '');
+const hero = (x) => (x.image ? `<figure class="hero"><img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">${x.imageCredit ? `<figcaption>${x.imageLink ? `<a href="${esc(x.imageLink)}" target="_blank" rel="noopener">${esc(x.imageCredit)}</a>` : esc(x.imageCredit)}</figcaption>` : ''}</figure>` : '');
+
+// ---------- Photo d'un lieu sans image : Wikimedia Commons, sinon vue de rue Panoramax ----------
+// Cherchée seulement à l'ouverture de l'aperçu ou de la fiche (rien au chargement de la carte).
+const stripHtml = (h) => String(h ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+const nameWords = (n) => norm(n ?? '').split(/[^a-z0-9]+/).filter((w) => w.length >= 4 && !/^(chapelle|eglise|chateau|musee|parc|jardin|place|croix|lavoir|aire|jeux|saint|sainte|notre|dame)$/.test(w));
+async function commonsPhoto(x) {
+  const url = `https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&generator=geosearch&ggscoord=${x.lat}|${x.lon}&ggsradius=120&ggsnamespace=6&ggslimit=15&prop=imageinfo|coordinates&iiprop=url|extmetadata&iiurlwidth=640`;
+  const r = await fetch(url);
+  if (!r.ok) return null;
+  const pages = Object.values((await r.json()).query?.pages ?? {}).filter((pg) => /\.(jpe?g|webp)$/i.test(pg.title) && pg.imageinfo?.[0]?.thumburl);
+  const words = nameWords(x.name);
+  const scored = pages.map((pg) => {
+    const c = pg.coordinates?.[0];
+    const dist = c ? map.distance([x.lat, x.lon], [c.lat, c.lon]) : 999;
+    const t = norm(pg.title);
+    return { pg, dist, match: words.some((w) => t.includes(w)) };
+  }).filter((o) => o.match || o.dist <= 35).sort((a, b) => (b.match - a.match) || (a.dist - b.dist));
+  const best = scored[0]?.pg;
+  if (!best) return null;
+  const info = best.imageinfo[0];
+  const meta = info.extmetadata ?? {};
+  const author = stripHtml(meta.Artist?.value).slice(0, 60);
+  const licence = stripHtml(meta.LicenseShortName?.value);
+  return { image: info.thumburl, imageCredit: ['Wikimedia Commons', author, licence].filter(Boolean).join(' · '), imageLink: info.descriptionurl };
+}
+async function panoramaxPhoto(x) {
+  const d = 0.0005; // environ 50 m
+  const url = `https://api.panoramax.xyz/api/search?bbox=${x.lon - d},${x.lat - d},${x.lon + d},${x.lat + d}&limit=10`;
+  const r = await fetch(url);
+  if (!r.ok) return null;
+  const feats = ((await r.json()).features ?? []).filter((f) => f.geometry?.coordinates && (f.assets?.sd?.href || f.assets?.thumb?.href));
+  if (!feats.length) return null;
+  const dist = (f) => map.distance([x.lat, x.lon], [f.geometry.coordinates[1], f.geometry.coordinates[0]]);
+  const f = feats.sort((a, b) => dist(a) - dist(b))[0];
+  const pr = f.properties ?? {};
+  const author = (pr.providers ?? f.providers ?? [])[0]?.name ?? '';
+  return { image: f.assets.sd?.href ?? f.assets.thumb.href, imageCredit: ['Panoramax', author, pr.license ?? ''].filter(Boolean).join(' · '), imageLink: `https://api.panoramax.xyz/#focus=pic&pic=${encodeURIComponent(f.id)}` };
+}
+async function enrichPhoto(x) {
+  if (x.image || x._photoTried || x.lat == null) return;
+  x._photoTried = true;
+  let found = null;
+  for (const find of [commonsPhoto, panoramaxPhoto]) {
+    try { found = await find(x); } catch { found = null; }
+    if (found) break;
+  }
+  if (!found) return;
+  Object.assign(x, found);
+  // aperçu ou fiche de ce lieu encore ouverts : on les redessine avec la photo
+  if (calloutMarker?.item === x) openCallout(calloutMarker);
+  if (state.selected?.id === x.id && !$('detail').hidden) {
+    const top = $('sheetBody').scrollTop;
+    $('detail').innerHTML = placeDetail(x);
+    $('sheetBody').scrollTop = top;
+    if (x.trace) fillElevation(x);
+  }
+}
 
 // ---------- Fiche détaillée ----------
 // Lien principal d'un événement : billetterie, page de l'événement, ou seulement le site de l'organisateur
@@ -673,7 +730,7 @@ function popupHtml(x, isEv) {
   const heart = favBtn(isEv ? 'events' : 'places', x, true);
   return `<div class="popcard">
     ${x.image ? heart : ''}
-    ${x.image ? `<img class="popimg" src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
+    ${x.image ? `<div class="popimg-wrap"><img class="popimg" src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.remove()">${x.imageCredit ? `<span class="popcredit">${x.imageLink ? `<a href="${esc(x.imageLink)}" target="_blank" rel="noopener">${esc(x.imageCredit)}</a>` : esc(x.imageCredit)}</span>` : ''}</div>` : ''}
     <div class="popbody">
       ${x.image ? (isEv ? evBadge(x) : plBadge(x)) : `<span class="pop-badges">${isEv ? evBadge(x) : plBadge(x)}${heart.replace('fav-btn sm', 'fav-btn sm inline')}</span>`}
       <strong class="poptitle">${esc(x.title ?? x.name)}</strong>
@@ -750,6 +807,7 @@ function openCallout(m) {
   calloutLayer.hidden = false;
   if (isMobile() && $('sheet').dataset.state !== 'peek') setSheet('peek');
   placeCallout(true);
+  if (!m.isEv) enrichPhoto(m.item);
   // l'image peut arriver après : on recale
   calloutCard.querySelector('img')?.addEventListener('load', () => placeCallout(true), { once: true });
 }
@@ -795,6 +853,7 @@ function select(type, id, { fromMap = false, open = false } = {}) {
   if (isMobile()) setSheet(open ? 'full' : 'half');
   else setListOpen(true);
   if (type === 'places' && item.trace) fillElevation(item);
+  if (type === 'places') enrichPhoto(item);
   writeHash();
 }
 function unselect() {
