@@ -305,7 +305,7 @@ for (const group of [cluster, placeCluster]) {
 map.addLayer(cluster);
 let centerLayer = null;
 let meMarker = null;
-map.on('click', () => { if (isMobile() && !state.selected && ['half', 'full'].includes($('sheet').dataset.state)) setSheet('peek'); });
+
 
 const icons = {};
 const pinIcon = (cat, ico = CAT_ICONS[cat] ?? '📍') => (icons[`${cat}|${ico}`] ??= L.divIcon({ className: '', html: `<div class="mk" style="--c:${color(cat)}"><span>${ico}</span></div>`, iconSize: [34, 41], iconAnchor: [17, 41], popupAnchor: [0, -38] }));
@@ -921,24 +921,27 @@ $('listToggle').addEventListener('click', () => setListOpen(!document.documentEl
 // États : hidden (masqué, flèche en bas), peek (bandeau), half, full.
 // Une action qui « replie » le panneau (peek) ne le fait pas réapparaître s'il a été masqué.
 function setSheet(s, { force = false } = {}) {
+  // deux états seulement : masquée ou ouverte (plus de demi-ouverture ni de bandeau)
+  if (s === 'half') s = 'full';
+  if (s === 'peek') s = 'hidden';
   const cur = $('sheet').dataset.state;
-  if (s === 'peek' && cur === 'hidden' && !force) return;
+  if (s === cur && !force) return;
   $('sheet').dataset.state = s;
   document.documentElement.classList.toggle('sheet-hidden', s === 'hidden');
   $('sheetUp').hidden = s !== 'hidden';
 }
-$('sheetUp').addEventListener('click', () => setSheet('half', { force: true }));
+if (isMobile()) setSheet('hidden', { force: true });
+$('sheetUp').addEventListener('click', () => setSheet('full', { force: true }));
 function updateSheetUp(n) {
   $('sheetUpCount').textContent = n > 100 ? '100+' : String(n);
   $('sheetUpCount').hidden = !n;
 }
 // Glisser la carte quand le panneau est à moitié ouvert : il se replie pour libérer la carte
-map.on('dragstart', () => { if (isMobile() && $('sheet').dataset.state === 'half') setSheet('peek'); });
+
 // Bouton ⌄ pour réduire d'un cran
 $('sheetDown').addEventListener('click', (e) => {
   e.stopPropagation();
-  const st = $('sheet').dataset.state;
-  setSheet(st === 'full' ? 'half' : st === 'half' ? 'peek' : 'hidden');
+  setSheet('hidden');
 });
 // Balayer vers le bas depuis le contenu (quand il est déjà tout en haut) réduit aussi le panneau
 (() => {
@@ -949,15 +952,14 @@ $('sheetDown').addEventListener('click', (e) => {
     if (y0 == null || !isMobile()) return;
     const dy = e.changedTouches[0].clientY - y0;
     y0 = null;
-    const st = $('sheet').dataset.state;
-    if (top0 <= 0 && dy > 60) setSheet(st === 'full' ? 'half' : st === 'half' ? 'peek' : 'hidden');
+    if (top0 <= 0 && dy > 60) setSheet('hidden');
   }, { passive: true });
 })();
 (() => {
   const sheet = $('sheet');
   const handle = $('sheetHandle');
   let y0 = null; let t0 = 0; let base = 0; let moved = false;
-  const order = ['hidden', 'peek', 'half', 'full'];
+  const order = ['hidden', 'full'];
   handle.addEventListener('pointerdown', (e) => {
     if (!isMobile() || e.target.closest('select, button')) return;
     y0 = e.clientY; t0 = Date.now(); moved = false;
@@ -979,9 +981,9 @@ $('sheetDown').addEventListener('click', (e) => {
     const fast = Math.abs(dy) / Math.max(1, Date.now() - t0) > 0.5;
     const i = order.indexOf(sheet.dataset.state);
     // Toucher : ouvre si replié, sinon réduit d'un cran ; glisser : suit le sens du geste
-    if (!moved) setSheet(i === 1 ? 'half' : order[i - 1]);
-    else if (dy < -25 || (fast && dy < 0)) setSheet(order[Math.min(3, i + 1)]);
-    else if (dy > 25 || (fast && dy > 0)) setSheet(order[Math.max(0, i - 1)], { force: true });
+    // toucher la poignée ou glisser vers le bas : la liste se masque entièrement
+    if (!moved || dy > 25 || (fast && dy > 0)) setSheet('hidden');
+    else if (dy < -25 || (fast && dy < 0)) setSheet('full');
     y0 = null;
   };
   handle.addEventListener('pointerup', end);
@@ -1190,7 +1192,6 @@ $('q').addEventListener('keydown', (e) => {
   if (e.key === 'Escape') $('qSuggest').hidden = true;
 });
 $('openFilters').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
-$('filtersDialog').addEventListener('close', () => { if (isMobile()) setSheet('half'); });
 
 function locateMe(then, silent = false) {
   if (!navigator.geolocation) return silent ? null : alert('Localisation indisponible sur cet appareil.');
@@ -1301,7 +1302,6 @@ $('groupNext').addEventListener('click', () => {
   $('groupDialog').close();
   unselect();
   render();
-  if (isMobile()) setSheet('half');
 });
 $('groupClear').addEventListener('click', () => {
   state.group = NEW_GROUP();
@@ -1512,7 +1512,7 @@ function saveFavs(changed = false) {
   store.set('favorisRetires', favsRemoved);
   if (changed) scheduleSync();
   $('favCount').textContent = favs.length;
-  $('favPill').hidden = !favs.length;
+  $('favCount').hidden = !favs.length;
   updateAccountBtn();
 }
 function toggleFav(type, x) {
@@ -1616,14 +1616,14 @@ function favPlaceItem(f) {
     <span class="body"><span class="title" style="display:block">${esc(f.name)}</span><span class="where" style="display:block">${esc(f.city ?? '')}</span></span>
   </button><span class="fav-tools">${favBtn('places', f)}</span></li>`;
 }
-function renderFavs() {
+/** Favoris : planning des événements à venir (par jour), lieux, événements passés. */
+function favoritesHtml() {
   const t = today();
   const evs = favs.filter((f) => f.type === 'events');
   const upcoming = evs.filter((f) => f.occurrences.some((o) => o.end >= t))
     .sort((a, b) => (a.occurrences.find((o) => o.end >= t).start).localeCompare(b.occurrences.find((o) => o.end >= t).start));
   const past = evs.filter((f) => !upcoming.includes(f));
   const pls = favs.filter((f) => f.type === 'places');
-  // regroupement du planning par jour
   let lastLabel = '';
   const plan = upcoming.map((f) => {
     const o = f.occurrences.find((x) => x.end >= t);
@@ -1632,19 +1632,29 @@ function renderFavs() {
     lastLabel = label;
     return head + favEventItem(f);
   }).join('');
-  $('favView').innerHTML = `<div class="side-head"><h2>👤 Mon profil</h2><button type="button" class="icon-btn flat" data-favclose aria-label="Fermer">✕</button></div>
+  return `${!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : ''}
+    ${upcoming.length ? `<div class="fav-head"><h3>📅 Mon planning</h3><button type="button" class="btn small" data-icsall>Tout ajouter à mon agenda</button></div><ul class="list fav-list">${plan}</ul>` : ''}
+    ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
+    ${past.length ? `<details><summary>${past.length} événement${past.length > 1 ? 's' : ''} passé${past.length > 1 ? 's' : ''}</summary><ul class="list fav-list">${past.map((f) => favEventItem(f, true)).join('')}</ul><button type="button" class="btn small" data-clearpast>Effacer les événements passés</button></details>` : ''}`;
+}
+function renderFavs() {
+  $('favView').innerHTML = `<div class="side-head"><h2>👤 Mon profil</h2></div>
     ${accountBox()}
     <h2 class="fav-title">👥 Mes groupes</h2>
     ${savedGroups.length ? `<ul class="list fav-list">${savedGroups.map((g) => `<li class="fav-row"><div class="item"><span class="ico" style="background:var(--accent-soft)" aria-hidden="true">⭐</span><span class="body"><span class="title" style="display:block">${esc(g.name)}</span><span class="where" style="display:block">${esc(groupSummaryOf({ ...NEW_GROUP(), ...g.group }))}</span></span></div><span class="fav-tools"><button type="button" class="btn small" data-usegroup="${esc(g.id)}">Utiliser</button><button type="button" class="icon-btn flat" data-rmgroup="${esc(g.id)}" aria-label="Supprimer ce groupe" title="Supprimer">✕</button></span></li>`).join('')}</ul>` : '<p class="muted">Dans « Qui sort ? », touchez ⭐ pour enregistrer un groupe (famille, amis…) et le retrouver ici en un geste.</p>'}
-    <h2 class="fav-title favs">❤️ Mes favoris</h2>
-    ${!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : ''}
-    ${upcoming.length ? `<div class="fav-head"><h3>📅 Mon planning</h3><button type="button" class="btn small" data-icsall>Tout ajouter à mon agenda</button></div><ul class="list fav-list">${plan}</ul>` : ''}
-    ${pls.length ? `<h3>📍 Lieux et activités à faire</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : ''}
-    ${past.length ? `<details><summary>${past.length} événement${past.length > 1 ? 's' : ''} passé${past.length > 1 ? 's' : ''}</summary><ul class="list fav-list">${past.map((f) => favEventItem(f, true)).join('')}</ul><button type="button" class="btn small" data-clearpast>Effacer les événements passés</button></details>` : ''}
+    <h2 class="fav-title">⚙️ Réglages</h2>
+    <label class="switch"><input type="checkbox" data-lefty ${lefty() ? 'checked' : ''}> <span>Mode gaucher (boutons à gauche)</span></label>
     ${store.get('appliCarte') && NAV_APPS[store.get('appliCarte')] ? `<p class="src">Itinéraires ouverts avec ${esc(NAV_APPS[store.get('appliCarte')].label)} · <a href="#" data-navreset>changer</a></p>` : ''}
     <p class="src"><button type="button" class="link-btn" data-refresh>🔄 Actualiser l'application</button> · version ${esc(APP_VERSION)}</p>
     <p class="src">${account.user ? 'Vos favoris et votre groupe sont enregistrés sur cet appareil et synchronisés avec votre compte.' : 'Sans compte, vos favoris sont enregistrés uniquement sur cet appareil (rien n\'est envoyé).'}</p>`;
 }
+// ---------- Mode gaucher : boutons et panneaux du côté gauche ----------
+const lefty = () => store.get('gaucher') === true;
+function applyLefty() {
+  document.documentElement.classList.toggle('lefty', lefty());
+  setTimeout(() => map.invalidateSize(), 50);
+}
+applyLefty();
 // Actualiser : sur mobile (appli installée) on ne peut pas toujours « tirer pour recharger ».
 // On vide le cache de l'appli, on demande la nouvelle version au service worker, puis on recharge.
 // Remplacé à chaque mise en ligne par le workflow (numéro et date de la mise en ligne)
@@ -1660,29 +1670,49 @@ async function refreshApp(btn) {
   } catch { /* hors ligne : on recharge quand même */ }
   location.reload();
 }
-// ---------- Panneau flottant à gauche (favoris, profil) ----------
-function openSide(which) {
+// ---------- Panneau flottant (favoris, profil) : s'ouvre depuis son bouton, qui sert aussi à le fermer ----------
+let sideOpener = null;
+function openSide(which, opener) {
+  const panel = $('sidePanel');
   $('favView').hidden = which !== 'favView';
   $('favQuick').hidden = which !== 'favQuick';
-  $('sidePanel').classList.add('open');
-  $('sidePanel').setAttribute('aria-hidden', 'false');
-  $('sidePanel').scrollTop = 0;
+  // ancrage au coin du bouton (droite ou gauche selon sa position), 3/4 de la largeur et de la hauteur
+  const box = panel.parentElement.getBoundingClientRect();
+  const b = opener.getBoundingClientRect();
+  const right = b.left + b.width / 2 > box.left + box.width / 2;
+  const top = Math.max(8, b.top - box.top);
+  panel.style.top = `${top}px`;
+  panel.style.left = right ? 'auto' : `${Math.max(8, b.left - box.left)}px`;
+  panel.style.right = right ? `${Math.max(8, box.right - b.right)}px` : 'auto';
+  panel.style.transformOrigin = `${right ? 'right' : 'left'} top`;
+  panel.dataset.side = right ? 'right' : 'left';
+  panel.dataset.inset = b.top >= box.top ? 'button' : 'none'; // bouton posé sur le panneau : marge pour ne pas le cacher
+  panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
+  panel.scrollTop = 0;
   $('sideScrim').hidden = false;
+  if (sideOpener && sideOpener !== opener) sideOpener.classList.remove('is-open');
+  sideOpener = opener;
+  opener.classList.add('is-open');
+  opener.setAttribute('aria-expanded', 'true');
   closeCallout();
 }
 function closeSide() {
   $('sidePanel').classList.remove('open');
   $('sidePanel').setAttribute('aria-hidden', 'true');
   $('sideScrim').hidden = true;
-  // contenu masqué après la sortie du panneau (les tests « ouvert ? » s'appuient dessus)
   $('favView').hidden = true;
   $('favQuick').hidden = true;
+  if (sideOpener) { sideOpener.classList.remove('is-open'); sideOpener.setAttribute('aria-expanded', 'false'); }
+  sideOpener = null;
 }
+const sideIs = (which) => $('sidePanel').classList.contains('open') && !$(which).hidden;
 $('sideScrim').addEventListener('click', closeSide);
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('sidePanel').classList.contains('open')) closeSide(); });
 function openFavs() {
+  if (sideIs('favView')) return closeSide(); // même bouton : referme
   renderFavs();
-  openSide('favView');
+  openSide('favView', $('accountBtn'));
 }
 const closeFavs = closeSide;
 /** Ouvre un favori sur la carte (aperçu), ou sa fiche s'il est masqué par les filtres. */
@@ -1708,20 +1738,25 @@ async function goToFav(b) {
 }
 // Bouton ❤️ : fenêtre avec la liste des favoris ; un toucher sur l'un d'eux l'ouvre sur la carte
 function renderFavDialog() {
-  const t = today();
-  const evs = favs.filter((f) => f.type === 'events');
-  const upcoming = evs.filter((f) => f.occurrences.some((o) => o.end >= t))
-    .sort((a, b) => a.occurrences.find((o) => o.end >= t).start.localeCompare(b.occurrences.find((o) => o.end >= t).start));
-  const pls = favs.filter((f) => f.type === 'places');
-  $('favQuick').innerHTML = '<div class="side-head"><h2>❤️ Mes favoris</h2><button type="button" class="icon-btn flat" data-sideclose aria-label="Fermer">✕</button></div>' + (!favs.length ? '<p class="muted">Touchez 🤍 sur un événement ou un lieu pour le retrouver ici.</p>' : '')
-    + (upcoming.length ? `<h3>📅 À venir</h3><ul class="list fav-list">${upcoming.map((f) => favEventItem(f)).join('')}</ul>` : '')
-    + (pls.length ? `<h3>📍 Lieux et activités</h3><ul class="list fav-list">${pls.map(favPlaceItem).join('')}</ul>` : '')
-    + '<p class="src"><button type="button" class="link-btn" data-favall>Planning complet, agenda et compte</button></p>';
+  $('favQuick').innerHTML = `<div class="side-head"><h2>❤️ Mes favoris</h2></div>${favoritesHtml()}`;
 }
-$('favPill').addEventListener('click', () => { renderFavDialog(); openSide('favQuick'); });
+$('favPill').addEventListener('click', () => {
+  if (sideIs('favQuick')) return closeSide(); // même bouton : referme
+  renderFavDialog();
+  openSide('favQuick', $('favPill'));
+});
 $('favQuick').addEventListener('click', (e) => {
-  if (e.target.closest('[data-sideclose]')) return closeSide();
-  if (e.target.closest('[data-favall]')) return openFavs();
+  if (e.target.closest('[data-icsall]')) {
+    const t = today();
+    return downloadIcs(favs.filter((f) => f.type === 'events' && f.occurrences.some((o) => o.end >= t)), 'mon-planning');
+  }
+  if (e.target.closest('[data-clearpast]')) {
+    const t = today();
+    for (const f of favs) if (f.type === 'events' && !f.occurrences.some((o) => o.end >= t)) favsRemoved.push({ key: favKeyOf(f), at: Date.now() });
+    favs = favs.filter((f) => f.type !== 'events' || f.occurrences.some((o) => o.end >= t));
+    saveFavs(true);
+    return renderFavDialog();
+  }
   const b = e.target.closest('[data-favopen]');
   if (b) goToFav(b);
 });
@@ -1730,6 +1765,8 @@ document.addEventListener('click', (e) => { if (e.target.closest('[data-openfavs
 $('favView').addEventListener('click', async (e) => {
   if (e.target.closest('[data-favclose]')) return closeFavs();
   if (e.target.closest('[data-refresh]')) return refreshApp(e.target.closest('[data-refresh]'));
+  const lf = e.target.closest('[data-lefty]');
+  if (lf) { store.set('gaucher', lf.checked); applyLefty(); return; }
   if (e.target.closest('[data-usegroup]')) { useSavedGroup(e.target.closest('[data-usegroup]').dataset.usegroup); closeFavs(); return; }
   if (e.target.closest('[data-rmgroup]')) { removeSavedGroup(e.target.closest('[data-rmgroup]').dataset.rmgroup); return renderFavs(); }
   if (e.target.closest('[data-navreset]')) { e.preventDefault(); store.set('appliCarte', null); return renderFavs(); }

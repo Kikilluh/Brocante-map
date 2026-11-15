@@ -632,16 +632,50 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
 }
 @media (min-width: 761px) { .sheet-up { display: none; } }
 
-/* ---------- Panneau flottant à gauche (favoris, profil) ---------- */
-.side-panel {
-  position: absolute; top: 8px; left: 8px; bottom: 8px; z-index: 1050; width: min(400px, calc(100% - 48px));
-  background: var(--surface); color: var(--text); border-radius: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.3);
-  overflow-y: auto; overscroll-behavior: contain; padding: 4px 16px 16px;
-  transform: translateX(calc(-100% - 24px)); visibility: hidden;
-  transition: transform .34s var(--ease-drawer), visibility 0s linear .34s;
+/* ---------- Bouton favoris, sous le bouton de position ---------- */
+.fav-fab {
+  position: absolute; right: 10px; top: 62px; z-index: 1060; width: 44px; height: 44px; border-radius: 50%;
+  border: 0; background: var(--surface); color: var(--text); box-shadow: var(--shadow); display: grid; place-items: center; font-size: 19px;
 }
-.side-panel.open { transform: none; visibility: visible; transition: transform .34s var(--ease-drawer), visibility 0s; }
-.side-scrim { position: absolute; inset: 0; z-index: 1040; background: rgba(0,0,0,.25); animation: fade-in .2s ease-out; }
+.fav-fab .fav-ico, .fav-fab .fav-x { grid-area: 1 / 1; transition: opacity .15s ease, transform .18s var(--ease-out); }
+.fav-fab .fav-x { opacity: 0; transform: rotate(-45deg) scale(.6); font-size: 17px; }
+.fav-fab.is-open .fav-ico { opacity: 0; transform: scale(.6); }
+.fav-fab.is-open .fav-x { opacity: 1; transform: none; }
+.fav-count {
+  position: absolute; top: -3px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+  background: #e5484d; color: #fff; font-size: 11px; font-weight: 800; line-height: 18px; text-align: center; border: 2px solid var(--surface);
+}
+.fav-count[hidden], .fav-fab.is-open .fav-count { display: none; }
+.account-btn.is-open { box-shadow: 0 0 0 3px var(--accent); }
+@media (min-width: 761px) { .fav-fab { right: auto; left: 12px; top: 142px; } }
+
+/* ---------- Panneau flottant (favoris, profil) : s'ouvre depuis son bouton ---------- */
+.side-panel {
+  position: absolute; top: 8px; right: 8px; z-index: 1050; width: 75%; height: 75%; max-width: 520px;
+  background: var(--surface); color: var(--text); border-radius: 18px; box-shadow: 0 10px 40px rgba(0,0,0,.3);
+  overflow-y: auto; overscroll-behavior: contain; padding: 0 16px 16px;
+  opacity: 0; transform: scale(.9); visibility: hidden; pointer-events: none;
+  transition: opacity .14s ease, transform .14s var(--ease-out), visibility 0s linear .14s;
+}
+.side-panel.open {
+  opacity: 1; transform: none; visibility: visible; pointer-events: auto;
+  transition: opacity .18s ease, transform .2s var(--ease-out), visibility 0s;
+}
+@media (max-width: 760px) { .side-panel { max-width: none; } }
+.side-scrim { position: absolute; inset: 0; z-index: 1040; background: rgba(0,0,0,.18); animation: fade-in .18s ease-out; }
 .side-scrim[hidden] { display: none; }
-.side-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface); padding: 12px 0 8px; }
+.side-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface); padding: 14px 0 8px; min-height: 44px; }
 .side-head h2 { margin: 0; font-size: 20px; }
+/* le bouton qui a ouvert le panneau est posé sur son coin : le titre s'en écarte */
+.side-panel[data-inset="button"][data-side="right"] .side-head { padding-right: 52px; }
+.side-panel[data-inset="button"][data-side="left"] .side-head { padding-left: 52px; }
+
+/* ---------- Mode gaucher (téléphone) : boutons et panneaux à gauche ---------- */
+@media (max-width: 760px) {
+  .lefty .locate-btn, .lefty .fav-fab { right: auto; left: 10px; }
+  .lefty .filters-fab { right: auto; left: 12px; }
+  .lefty .map-pills { left: 64px; right: 10px; justify-content: flex-end; }
+  .lefty .top { flex-direction: row-reverse; }
+  .lefty .leaflet-bottom.leaflet-left { left: auto; right: 0; }
+  .lefty .leaflet-left .leaflet-control { float: right; clear: both; margin-left: 0; margin-right: 10px; }
+}
