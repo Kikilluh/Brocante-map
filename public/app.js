@@ -199,7 +199,7 @@ const map = L.map('map', { zoomControl: !isMobile(), attributionControl: true })
 const planIGN = L.tileLayer(
   'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
   { maxZoom: 19, keepBuffer: 4, attribution: '© <a href="https://www.ign.fr/">IGN</a>' },
-).addTo(map);
+);
 const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, keepBuffer: 4, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
 // Tuile qui ne se charge pas (serveur lent, limite de requêtes) : nouvel essai, puis la même tuile OpenStreetMap
 planIGN.on('tileerror', ({ tile, coords }) => {
@@ -217,11 +217,11 @@ osm.on('tileerror', ({ tile, coords }) => {
 L.control.scale({ metric: true, imperial: false, maxWidth: 130, position: 'bottomleft' }).addTo(map);
 // Fond détaillé d'OpenStreetMap France : aires de jeux, croix, chemins, commerces visibles en zoomant
 const osmfr = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 20, keepBuffer: 4, attribution: '© <a href="https://www.openstreetmap.fr/">OpenStreetMap France</a> · © <a href="https://www.openstreetmap.org/copyright">contributeurs OpenStreetMap</a>' });
-const BASES = { 'Plan IGN': planIGN, 'OpenStreetMap détaillé': osmfr, OpenStreetMap: osm };
+const BASES = { OpenStreetMap: osm, 'OpenStreetMap détaillé': osmfr, 'Plan IGN': planIGN };
 L.control.layers(BASES, null, { position: 'bottomleft' }).addTo(map);
 // Le fond choisi est mémorisé sur l'appareil
-const savedBase = BASES[store.get('fond')];
-if (savedBase && savedBase !== planIGN) { map.removeLayer(planIGN); savedBase.addTo(map); }
+// Fond par défaut : OpenStreetMap classique (sauf choix mémorisé)
+(BASES[store.get('fond')] ?? osm).addTo(map);
 map.on('baselayerchange', (e) => store.set('fond', e.name));
 // Le zoom au clic sur un groupe est géré plus bas (zoom progressif)
 // Groupes : au loin, une pastille avec le nombre ; de près (zoom 13 et plus) et s'ils sont peu nombreux,
