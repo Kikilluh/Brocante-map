@@ -512,6 +512,8 @@ function render() {
     m.ico = iconOf(x, isEv);
     m.col = isEv ? color(x.category) : kcolor(x.kind);
     m.on('click', () => { m.closeTooltip(); openCallout(m); });
+    // double toucher sur l'icône : zoom dessus (l'aperçu reste ouvert)
+    m.on('dblclick', () => { if (calloutMarker !== m) openCallout(m); map.flyTo(m.getLatLng(), Math.min(map.getMaxZoom(), Math.max(map.getZoom() + 2, 16)), { duration: 0.6 }); });
     markers.set(x.id, m);
     return m;
   }));
