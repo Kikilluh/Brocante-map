@@ -3,10 +3,10 @@
 // puis on garde le point de départ (ou d'entrée dans le département), la longueur, les liens et le tracé
 // simplifié (affiché sur la carte du site). Résultat mis en cache 7 jours dans scraper/cache/routes-v4-<dept>.json.
 
+import { overpass } from './overpass.mjs';
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const OVERPASS = 'https://overpass-api.de/api/interpreter';
 const MAX_AGE_MS = 7 * 864e5;
 
 import { deptBbox } from './depts.mjs';
@@ -124,14 +124,7 @@ area["ref:INSEE"="${dept}"]["admin_level"="6"]->.d;
 rel(area.d)["type"="route"]["route"~"^(hiking|foot|bicycle|mtb)$"];
 out body geom(${bb.join(',')});`;
   try {
-    const res = await fetch(OVERPASS, {
-      method: 'POST',
-      body: new URLSearchParams({ data: q }),
-      headers: { 'User-Agent': 'BrocanteMapBot/1.0 (+https://github.com/kikilluh/brocante-map)' },
-      signal: AbortSignal.timeout(300000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await overpass(q, 300000);
     const routes = (data.elements ?? []).map(mapRelation).filter(Boolean);
     await mkdir(cacheDir, { recursive: true });
     await writeFile(file, JSON.stringify(routes));

@@ -4,10 +4,10 @@
 // UNE requête Overpass par département (limites administratives : pas d'erreur de rattachement),
 // gardée 7 jours dans scraper/cache/poi-<dept>.json.
 
+import { overpass } from './overpass.mjs';
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const OVERPASS = 'https://overpass-api.de/api/interpreter';
 const MAX_AGE_MS = 7 * 864e5;
 
 function query(dept) {
@@ -46,14 +46,7 @@ export async function loadPois(dept, cacheDir, log = () => {}) {
     if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) return JSON.parse(await readFile(file, 'utf8'));
   } catch { /* pas de cache */ }
   try {
-    const res = await fetch(OVERPASS, {
-      method: 'POST',
-      body: new URLSearchParams({ data: query(dept) }),
-      headers: { 'User-Agent': 'BrocanteMapBot/1.0 (+https://github.com/kikilluh/brocante-map)' },
-      signal: AbortSignal.timeout(240000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await overpass(query(dept), 240000);
     const out = [];
     for (const e of data.elements ?? []) {
       const c = classify(e.tags);

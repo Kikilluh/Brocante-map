@@ -2,12 +2,12 @@
 // administratives d'OpenStreetMap (Overpass) puis gardée en cache : plus de tableau à remplir à la main
 // pour ajouter un département (zones Ticketmaster, découpe des itinéraires, rattachement des lieux).
 
+import { overpass } from './overpass.mjs';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const CACHE = join(dirname(fileURLToPath(import.meta.url)), '..', 'cache', 'dept-bbox.json');
-const OVERPASS = 'https://overpass-api.de/api/interpreter';
 
 // Valeurs connues (évitent une requête ; vérifiées sur la carte)
 const KNOWN = {
@@ -30,14 +30,7 @@ export async function deptBbox(dept, log = () => {}) {
   if (c[dept]) return c[dept];
   const q = `[out:json][timeout:60];relation["boundary"="administrative"]["ref:INSEE"="${dept}"]["admin_level"~"^(6|4)$"];out bb;`;
   try {
-    const res = await fetch(OVERPASS, {
-      method: 'POST',
-      body: new URLSearchParams({ data: q }),
-      headers: { 'User-Agent': 'BrocanteMapBot/1.0 (+https://github.com/kikilluh/brocante-map)' },
-      signal: AbortSignal.timeout(90000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const el = ((await res.json()).elements ?? []).find((e) => e.bounds);
+    const el = ((await overpass(q, 90000)).elements ?? []).find((e) => e.bounds);
     if (!el) throw new Error('limite introuvable');
     const b = el.bounds;
     const r2 = (x) => Math.round(x * 100) / 100;

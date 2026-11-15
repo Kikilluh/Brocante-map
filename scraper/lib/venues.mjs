@@ -2,11 +2,11 @@
 // Données OpenStreetMap (licence ODbL, attribution « © contributeurs OpenStreetMap ») via l'API Overpass :
 // UNE requête par département, mise en cache 7 jours dans scraper/cache/venues-<dept>.json.
 
+import { overpass } from './overpass.mjs';
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fetchText } from './http.mjs';
 
-const OVERPASS = 'https://overpass-api.de/api/interpreter';
 const MAX_AGE_MS = 7 * 864e5;
 
 const STREET = /^(\d|bis\b|ter\b)|^(rue|r\.|avenue|av\.?|boulevard|bd|place|pl\.|route|rte|chemin|ch\.|all[ée]e|impasse|imp\.|quai|parvis|square|cours|lieu[- ]dit|rond[- ]point|faubourg|fbg|chauss[ée]e|sentier|passage|esplanade|za\b|zi\b|zac\b|zone|lotissement|hameau|bp\b|cs\b|cedex|mail\b|promenade|sente|venelle|ruelle|carrefour|parc d.activit)/i;
@@ -41,15 +41,7 @@ async function loadDept(dept, cacheDir, log) {
     /* pas de cache */
   }
   try {
-    const body = new URLSearchParams({ data: query(dept) });
-    const res = await fetch(OVERPASS, {
-      method: 'POST',
-      body,
-      headers: { 'User-Agent': 'BrocanteMapBot/1.0 (+https://github.com/kikilluh/brocante-map)' },
-      signal: AbortSignal.timeout(120000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await overpass(query(dept), 120000);
     const venues = (data.elements ?? [])
       .map((e) => ({ name: e.tags?.name, lat: e.lat ?? e.center?.lat, lon: e.lon ?? e.center?.lon }))
       .filter((v) => v.name && v.lat != null);
