@@ -938,9 +938,71 @@ $('closeSearch').addEventListener('click', () => {
   $('top').classList.remove('searching');
   if (state.q) { state.q = ''; $('q').value = ''; render(); }
 });
-$('q').addEventListener('blur', () => { if (!$('q').value) $('top').classList.remove('searching'); });
+$('q').addEventListener('blur', () => {
+  setTimeout(() => { $('qSuggest').hidden = true; }, 150);
+  if (!$('q').value) $('top').classList.remove('searching');
+});
 let qTimer;
-$('q').addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(() => { state.q = $('q').value; unselect(); render(); }, 180); });
+$('q').addEventListener('input', () => {
+  clearTimeout(qTimer);
+  qTimer = setTimeout(() => { state.q = $('q').value; unselect(); render(); }, 180);
+  suggestCommunes($('q').value);
+});
+
+// ---------- Recherche d'une commune : la carte va dessus ----------
+// Le texte tapé est aussi envoyé au service public geo.api.gouv.fr pour proposer des communes.
+let communeTimer;
+let communeHits = [];
+let communeMarker = null;
+function suggestCommunes(text) {
+  clearTimeout(communeTimer);
+  const q = text.trim();
+  if (q.length < 2) { communeHits = []; $('qSuggest').hidden = true; return; }
+  communeTimer = setTimeout(async () => {
+    let list = [];
+    try {
+      const r = await fetch(`https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(q)}&fields=nom,centre,codeDepartement,codesPostaux&boost=population&limit=5`);
+      if (r.ok) list = await r.json();
+    } catch { /* service indisponible : la recherche par mot-clé continue */ }
+    if ($('q').value.trim() !== q) return; // l'utilisateur a continué à taper
+    communeHits = list.filter((c) => c.centre?.coordinates);
+    $('qSuggest').innerHTML = communeHits.map((c, i) => {
+      const covered = !dataIndex?.depts || dataIndex.depts[c.codeDepartement];
+      const dept = dataIndex?.depts?.[c.codeDepartement]?.name ?? DEPT_NAMES[c.codeDepartement] ?? c.codeDepartement;
+      return `<li><button type="button" data-commune="${i}">📍 ${esc(c.nom)} <span class="muted">· ${esc(dept)} (${esc(c.codeDepartement)})${covered ? '' : ' · pas encore couvert'}</span></button></li>`;
+    }).join('');
+    $('qSuggest').hidden = !communeHits.length;
+  }, 250);
+}
+function goToCommune(c) {
+  const [lon, lat] = c.centre.coordinates;
+  clearTimeout(qTimer);
+  clearTimeout(communeTimer);
+  communeHits = [];
+  $('qSuggest').hidden = true;
+  // on cherche autour de la commune, pas le mot dans les fiches
+  state.q = '';
+  $('q').value = '';
+  $('q').blur();
+  $('top').classList.remove('searching');
+  if (communeMarker) map.removeLayer(communeMarker);
+  communeMarker = L.circleMarker([lat, lon], { radius: 8, color: '#fff', weight: 3, fillColor: '#c8644a', fillOpacity: 1, interactive: false })
+    .bindTooltip(esc(c.nom), { permanent: true, direction: 'top', offset: [0, -8], className: 'tip' }).addTo(map);
+  if (isMobile()) setSheet('peek');
+  render();
+  map.flyTo([lat, lon], 12, { duration: 0.8 });
+}
+$('qSuggest').addEventListener('mousedown', (e) => e.preventDefault()); // garde le focus le temps du clic
+$('qSuggest').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-commune]');
+  if (!b) return;
+  e.preventDefault();
+  goToCommune(communeHits[+b.dataset.commune]);
+});
+$('q').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && communeHits.length) { e.preventDefault(); goToCommune(communeHits[0]); }
+  if (e.key === 'Escape') $('qSuggest').hidden = true;
+});
 $('openFilters').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
 $('filtersDialog').addEventListener('close', () => { if (isMobile()) setSheet('half'); });
 
@@ -1399,7 +1461,7 @@ function renderFavs() {
 }
 // Actualiser : sur mobile (appli installée) on ne peut pas toujours « tirer pour recharger ».
 // On vide le cache de l'appli, on demande la nouvelle version au service worker, puis on recharge.
-const APP_VERSION = '2026.11.15';
+const APP_VERSION = '2026.11.15b';
 async function refreshApp(btn) {
   if (btn) btn.textContent = '⏳ Actualisation…';
   try {

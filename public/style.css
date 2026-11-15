@@ -546,3 +546,8 @@ button { cursor: pointer; }
 .map-hint[hidden] { display: none; }
 .map-hint .hint-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 @media (min-width: 761px) { .map-hint { left: calc((100% - 420px) / 2); } }
+
+/* Communes proposées sous la barre de recherche */
+.search { position: relative; }
+.q-suggest { top: calc(100% + 4px); margin: 0; }
+.q-suggest .muted { color: var(--muted); font-size: 13px; }
