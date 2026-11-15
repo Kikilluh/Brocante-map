@@ -16,17 +16,52 @@ const CAT_ICONS = {
 const KINDS = {
   activite: 'Activités & cours', musee: 'Musées', chateau: 'Châteaux', patrimoine: 'Patrimoine', jardin: 'Parcs & jardins',
   nature: 'Nature', rando: 'Randonnées', velo: 'Vélo', loisir: 'Loisirs', festival: 'Festivals',
+  equipement: 'Jeux & sport libre', petitpatrimoine: 'Petit patrimoine',
 };
 const KALL = Object.keys(KINDS);
+// Icône précise selon le titre ou le nom (repli : icône de la catégorie). Premier motif trouvé gagne.
+const EV_ICON_RULES = {
+  concert: [[/jazz|swing|blues/i, '🎷'], [/orchestre|symphon|classique|piano|r[ée]cital|quatuor|baroque|op[ée]ra|violon/i, '🎻'], [/chorale|ch[œo]eur|chant\b|gospel/i, '🎶'], [/rock|metal|punk|guitare/i, '🎸'], [/electro|\bdj\b|techno|clubbing/i, '🎧'], [/rap|hip.?hop/i, '🎤'], [/accord[ée]on|bal\b|guinguette/i, '🪗']],
+  spectacle: [[/cin[ée]|film|projection|court.?m[ée]trage|documentaire/i, '🎬'], [/cirque|jongl|acrobat|clown/i, '🎪'], [/humour|humoriste|one.?(wo)?man|stand.?up|com[ée]die/i, '😂'], [/danse|ballet|flamenco|tango/i, '💃'], [/magie|magicien|illusion/i, '🪄'], [/marionnette|guignol/i, '🧸'], [/conte|lecture/i, '📖'], [/op[ée]ra|op[ée]rette/i, '🎼']],
+  exposition: [[/photo/i, '📷'], [/sculpt/i, '🗿'], [/bande dessin[ée]e|\bbd\b|manga/i, '💬'], [/dinosaure|fossile|pal[ée]onto/i, '🦕'], [/science|astronom|espace/i, '🔭']],
+  visite: [[/ch[âa]teau|forteresse|donjon/i, '🏰'], [/[ée]glise|cath[ée]drale|abbaye|basilique|chapelle|prieur[ée]/i, '⛪'], [/jardin|parc|arboretum|serre/i, '🌷'], [/cave|vin|vign|d[ée]gustation|chai\b/i, '🍷'], [/brasserie|bi[èe]re/i, '🍺'], [/nocturne|aux flambeaux|lanterne/i, '🔦'], [/ferme|[ée]levage|chèvre|fromag/i, '🐐'], [/usine|entreprise|industri|mine\b/i, '🏭'], [/grotte|troglo|souterrain|gouffre/i, '🕳️']],
+  atelier: [[/cuisine|p[âa]tiss|culinaire|recette/i, '👩‍🍳'], [/couture|tricot|crochet|broderie|textile/i, '🧵'], [/jardin|potager|graine|plante|semis/i, '🌱'], [/num[ée]rique|informatique|code|robot|jeu vid[ée]o/i, '💻'], [/lecture|conte|livre|biblioth|m[ée]diath/i, '📚'], [/poterie|c[ée]ramique|modelage|argile/i, '🏺'], [/photo/i, '📷'], [/musique|chant|percussion/i, '🎵'], [/yoga|m[ée]ditation|relaxation|sophro/i, '🧘'], [/jeux? de soci[ée]t[ée]|ludoth/i, '🎲'], [/b[ée]b[ée]|tout.?petits|parent/i, '🧒']],
+  rando: [[/v[ée]lo|vtt|cyclo/i, '🚴'], [/trail|course|running/i, '🏃'], [/marche nordique|marche|balade|promenade/i, '🚶'], [/oiseau|ornitho|lpo|faune/i, '🐦'], [/champignon|mycolo/i, '🍄'], [/cheval|[ée]questre/i, '🐴'], [/nuit|nocturne|[ée]toiles|astro/i, '🌙']],
+  sport: [[/foot/i, '⚽'], [/basket/i, '🏀'], [/rugby/i, '🏉'], [/handball|\bhand\b/i, '🤾'], [/volley/i, '🏐'], [/tennis|padel/i, '🎾'], [/trail|marathon|course|semi|cross|run/i, '🏃'], [/v[ée]lo|cyclo|vtt|cyclisme/i, '🚴'], [/natation|piscine|nage/i, '🏊'], [/judo|karat[ée]|bo[xi]|arts? martia/i, '🥋'], [/hockey/i, '🏒'], [/p[ée]tanque|boules?\b/i, '🎯'], [/golf/i, '⛳'], [/[ée]quitation|cheval|hippique|courses? de chevaux/i, '🏇'], [/ski|neige|luge/i, '⛷️'], [/escalade|grimpe/i, '🧗'], [/cano[ëe]|kayak|aviron|voile|paddle/i, '🛶'], [/moto|auto|rallye|karting/i, '🏁']],
+  fete: [[/no[ëe]l|saint.?nicolas|p[èe]re no[ëe]l/i, '🎄'], [/halloween|citrouille/i, '🎃'], [/carnaval|mardi gras/i, '🎭'], [/feu d.artifice|14 juillet|f[êe]te nationale/i, '🎆'], [/loto|quine|belote|tarot|concours de cartes/i, '🎲'], [/repas|banquet|moules|choucroute|paella|couscous|pot.?au.?feu|d[îi]ner|d[ée]jeuner/i, '🍽️'], [/bal\b|soir[ée]e dansante|thé dansant/i, '💃'], [/m[ée]di[ée]val|chevalier/i, '⚔️'], [/bi[èe]re|oktoberfest/i, '🍺'], [/vin|vendange|beaujolais/i, '🍷'], [/p[âa]ques|chasse aux [œo]eufs/i, '🐣'], [/musique|f[êe]te de la musique/i, '🎶']],
+  marche: [[/no[ëe]l/i, '🎄'], [/livre|bouquin/i, '📚'], [/fleur|plante|jardin/i, '🌸'], [/producteur|terroir|fermier|gourmand|gastronom/i, '🧺'], [/artisan|cr[ée]ateur|art\b/i, '🎨'], [/salon|foire|expo.?vente/i, '🏬'], [/truffe|champignon/i, '🍄']],
+  brocante: [[/jouet|pu[ée]riculture|enfant/i, '🧸'], [/v[êe]tement|fripe|textile/i, '👗'], [/livre|bouquin/i, '📚'], [/disque|vinyle/i, '💿'], [/collection|multicollection|cartes postales/i, '🔎'], [/v[ée]lo/i, '🚲']],
+  conference: [[/caf[ée].?(philo|d[ée]bat)|d[ée]bat|table ronde/i, '💬'], [/auteur|d[ée]dicace|litt[ée]ra|lecture/i, '📚'], [/science|astronom/i, '🔬'], [/histoire|patrimoine/i, '📜']],
+};
+const PL_ICON_RULES = {
+  patrimoine: [[/croix|calvaire/i, '✝️'], [/lavoir/i, '🫧'], [/[ée]glise|basilique|cath[ée]drale|chapelle|abbaye|prieur[ée]|collégiale|monast[èe]re|couvent/i, '⛪'], [/moulin/i, '🌾'], [/grotte|troglo|gouffre|souterrain|cave\b/i, '🕳️'], [/pont|viaduc|aqueduc/i, '🌉'], [/phare/i, '🗼'], [/tour\b|donjon|rempart|porte\b|beffroi/i, '🏯'], [/dolmen|menhir|m[ée]galith/i, '🪨'], [/monument aux morts|m[ée]morial|cimeti[èe]re/i, '🎖️'], [/village|cit[ée]|bourg|quartier|vieille ville/i, '🏘️'], [/gallo.?romain|antique|vestige|th[ée][âa]tre romain|arch[ée]olog/i, '🏛️'], [/maison|h[ôo]tel particulier|manoir|logis/i, '🏠'], [/fontaine/i, '⛲']],
+  musee: [[/beaux.?arts|peinture|art moderne|art contemporain|galerie/i, '🖼️'], [/histoire naturelle|dinosaure|fossile|pal[ée]onto|min[ée]ral/i, '🦕'], [/auto|voiture|moto/i, '🚗'], [/train|ferroviaire|chemin de fer|tramway/i, '🚂'], [/aviation|avion|a[ée]ronaut/i, '🛩️'], [/mine\b|minier|charbon/i, '⛏️'], [/vin|vigne|viticul/i, '🍷'], [/[ée]comus[ée]e|ferme|rural|paysan|m[ée]tiers/i, '🧑‍🌾'], [/jouet|poup[ée]e|automate/i, '🧸'], [/science|espace|astronom|plan[ée]tarium/i, '🔭'], [/guerre|r[ée]sistance|militaire|m[ée]morial/i, '🎖️']],
+  jardin: [[/arboretum|for[êe]t/i, '🌲'], [/roseraie|rose/i, '🌹'], [/labyrinthe/i, '🌀'], [/potager/i, '🥕'], [/jardin/i, '🌷']],
+  nature: [[/point de vue|belv[ée]d[èe]re|panorama|table d.orientation/i, '🔭'], [/cascade|chute/i, '💦'], [/lac|[ée]tang|plan d.eau|barrage/i, '🏞️'], [/plage|baignade/i, '🏖️'], [/for[êe]t|bois\b/i, '🌲'], [/r[ée]serve|marais|tourbi[èe]re|zone humide|oiseau|ornitho/i, '🐦'], [/volcan|puy\b|mont\b|sommet|pic\b|col\b|gorges?|rocher/i, '⛰️'], [/rivi[èe]re|fleuve|source/i, '🌊']],
+  loisir: [[/zoo|animalier|safari|faune|parc aux (oiseaux|animaux)|ferme p[ée]dagogique/i, '🦁'], [/aquarium/i, '🐠'], [/parc d.attraction|parc de loisirs|f[êe]te foraine/i, '🎢'], [/piscine|aquatique|baignade|centre nautique/i, '🏊'], [/escape|[ée]nigme/i, '🔐'], [/bowling/i, '🎳'], [/karting|circuit/i, '🏎️'], [/accrobranche|parcours aventure|tyrolienne|escalade|grimpe/i, '🧗'], [/mini.?golf|golf/i, '⛳'], [/[ée]quitation|[ée]questre|poney|haras|cheval/i, '🐴'], [/cano[ëe]|kayak|paddle|rafting|nautique|base de loisirs/i, '🛶'], [/cave|vin\b|vins|domaine|vignoble|viticole|ch[âa]teau .*(vin|cru)/i, '🍷'], [/brasserie|bi[èe]re|distillerie/i, '🍺'], [/patinoire/i, '⛸️'], [/cin[ée]ma/i, '🎬'], [/laser.?game|paintball/i, '🎯'], [/trampoline|jump|structure gonflable|plaine de jeux|parc (de jeux )?indoor/i, '🤸'], [/ski|station/i, '⛷️'], [/fromag|chocolat|confiserie|biscuit|miel/i, '🍯']],
+  activite: [[/yoga|m[ée]ditation|pilates/i, '🧘'], [/danse/i, '💃'], [/cuisine|p[âa]tiss/i, '👩‍🍳'], [/poterie|c[ée]ramique/i, '🏺'], [/peinture|dessin|aquarelle/i, '🎨'], [/musique|chant|piano|guitare/i, '🎵'], [/[ée]quitation|poney|cheval/i, '🐴'], [/escalade|grimpe/i, '🧗'], [/natation|aquagym|piscine/i, '🏊'], [/cano[ëe]|kayak|paddle|voile|aviron/i, '🛶'], [/v[ée]lo|vtt/i, '🚴'], [/tir [àa] l.arc/i, '🏹'], [/golf/i, '⛳'], [/p[êe]che/i, '🎣'], [/parapente|ulm|montgolfi[èe]re|vol\b/i, '🪂'], [/plong[ée]e/i, '🤿']],
+  velo: [[/vtt/i, '🚵']],
+  petitpatrimoine: [[/croix|calvaire/i, '✝️'], [/oratoire|niche/i, '🛐'], [/lavoir/i, '🫧'], [/fontaine/i, '⛲'], [/monument aux morts/i, '🎖️']],
+  equipement: [[/boulodrome|p[ée]tanque|boules/i, '🎯'], [/multisport|city.?stade/i, '⚽'], [/skate/i, '🛹'], [/pique.?nique/i, '🧺'], [/parcours sportif|fitness|agr[èe]s/i, '🏋️'], [/aire de jeux|jeux/i, '🛝']],
+};
+const SUB_ICONS = { croix: '✝️', oratoire: '🛐', lavoir: '🫧', jeux: '🛝', boulodrome: '🎯', multisport: '⚽', skatepark: '🛹', piquenique: '🧺', fitness: '🏋️', vue: '🔭' };
+function iconOf(x, isEv) {
+  if (x._ico) return x._ico;
+  const text = isEv ? x.title ?? '' : x.name ?? '';
+  const rules = (isEv ? EV_ICON_RULES[x.category] : PL_ICON_RULES[x.kind]) ?? [];
+  const hit = (!isEv && SUB_ICONS[x.sub]) || rules.find(([re]) => re.test(text))?.[1];
+  x._ico = hit ?? (isEv ? CAT_ICONS[x.category] : KIND_ICONS[x.kind]) ?? '📍';
+  return x._ico;
+}
 const KIND_ICONS = {
   activite: '🤸', musee: '🏛️', chateau: '🏰', patrimoine: '⛪', jardin: '🌳', nature: '🌿',
-  rando: '🥾', velo: '🚲', loisir: '🎡', festival: '🎪',
+  rando: '🥾', velo: '🚲', loisir: '🎡', festival: '🎪', equipement: '🛝', petitpatrimoine: '✝️',
 };
 // Envies du groupe → catégories de sorties et types de lieux
 const ENVIES = {
-  culture: { label: 'Culture', cats: ['exposition', 'visite', 'spectacle', 'conference'], kinds: ['musee', 'chateau', 'patrimoine'] },
-  nature: { label: 'Nature & balades', cats: ['rando'], kinds: ['jardin', 'nature', 'rando', 'velo'] },
-  sport: { label: 'Sport & activités', cats: ['sport', 'atelier'], kinds: ['activite', 'loisir'] },
+  culture: { label: 'Culture', cats: ['exposition', 'visite', 'spectacle', 'conference'], kinds: ['musee', 'chateau', 'patrimoine', 'petitpatrimoine'] },
+  nature: { label: 'Nature & balades', cats: ['rando'], kinds: ['jardin', 'nature', 'rando', 'velo', 'petitpatrimoine'] },
+  sport: { label: 'Sport & activités', cats: ['sport', 'atelier'], kinds: ['activite', 'loisir', 'equipement'] },
   fete: { label: 'Fêtes & musique', cats: ['fete', 'concert'], kinds: ['festival'] },
   chine: { label: 'Brocantes & marchés', cats: ['brocante', 'marche'], kinds: [] },
 };
@@ -35,7 +70,7 @@ const DEPT_NAMES = { '18': 'Cher', '28': 'Eure-et-Loir', '36': 'Indre', '37': 'I
 const SOURCE_NAMES = {
   datatourisme: 'DATAtourisme', openagenda: 'OpenAgenda', manual: 'ajout manuel', ticketmaster: 'Ticketmaster',
   museofile: 'Musées de France', festivals: 'Liste des festivals', 'agendas-locaux': 'Agenda de la collectivité', 'datatourisme-lieux': 'DATAtourisme',
-  'datatourisme-itineraires': 'DATAtourisme', 'osm-itineraires': 'OpenStreetMap',
+  'datatourisme-itineraires': 'DATAtourisme', 'osm-itineraires': 'OpenStreetMap', 'osm-petits-lieux': 'OpenStreetMap',
 };
 const MOMENTS = { any: 'Peu importe', matin: 'le matin', aprem: "l'après-midi", soir: 'en soirée' };
 
@@ -180,7 +215,14 @@ osm.on('tileerror', ({ tile, coords }) => {
 });
 // Échelle en kilomètres (en bas à gauche, sous le choix du fond de carte)
 L.control.scale({ metric: true, imperial: false, maxWidth: 130, position: 'bottomleft' }).addTo(map);
-L.control.layers({ 'Plan IGN': planIGN, OpenStreetMap: osm }, null, { position: 'bottomleft' }).addTo(map);
+// Fond détaillé d'OpenStreetMap France : aires de jeux, croix, chemins, commerces visibles en zoomant
+const osmfr = L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', { subdomains: 'abc', maxZoom: 20, keepBuffer: 4, attribution: '© <a href="https://www.openstreetmap.fr/">OpenStreetMap France</a> · © <a href="https://www.openstreetmap.org/copyright">contributeurs OpenStreetMap</a>' });
+const BASES = { 'Plan IGN': planIGN, 'OpenStreetMap détaillé': osmfr, OpenStreetMap: osm };
+L.control.layers(BASES, null, { position: 'bottomleft' }).addTo(map);
+// Le fond choisi est mémorisé sur l'appareil
+const savedBase = BASES[store.get('fond')];
+if (savedBase && savedBase !== planIGN) { map.removeLayer(planIGN); savedBase.addTo(map); }
+map.on('baselayerchange', (e) => store.set('fond', e.name));
 // Le zoom au clic sur un groupe est géré plus bas (zoom progressif)
 const cluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });
 const placeCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClusterRadius: 45, zoomToBoundsOnClick: false });
@@ -211,9 +253,9 @@ let meMarker = null;
 map.on('click', () => { if (isMobile() && !state.selected) setSheet('peek'); });
 
 const icons = {};
-const pinIcon = (cat) => (icons[cat] ??= L.divIcon({ className: '', html: `<div class="mk" style="--c:${color(cat)}"><span>${CAT_ICONS[cat] ?? '📍'}</span></div>`, iconSize: [34, 41], iconAnchor: [17, 41], popupAnchor: [0, -38] }));
+const pinIcon = (cat, ico = CAT_ICONS[cat] ?? '📍') => (icons[`${cat}|${ico}`] ??= L.divIcon({ className: '', html: `<div class="mk" style="--c:${color(cat)}"><span>${ico}</span></div>`, iconSize: [34, 41], iconAnchor: [17, 41], popupAnchor: [0, -38] }));
 const picons = {};
-const placeIcon = (k) => (picons[k] ??= L.divIcon({ className: '', html: `<div class="mk sq" style="--c:${kcolor(k)}"><span>${KIND_ICONS[k] ?? '📍'}</span></div>`, iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] }));
+const placeIcon = (k, ico = KIND_ICONS[k] ?? '📍') => (picons[`${k}|${ico}`] ??= L.divIcon({ className: '', html: `<div class="mk sq" style="--c:${kcolor(k)}"><span>${ico}</span></div>`, iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] }));
 
 function distFrom(ref, x) {
   return ref ? map.distance([ref.lat, ref.lon], [x.lat, x.lon]) / 1000 : null;
@@ -408,7 +450,7 @@ function render() {
   markers.clear();
   layer.addLayers(list.map((x) => {
     const name = x.title ?? x.name;
-    const m = L.marker([x.lat, x.lon], { icon: isEv ? pinIcon(x.category) : placeIcon(x.kind), name, alt: name, keyboard: true });
+    const m = L.marker([x.lat, x.lon], { icon: isEv ? pinIcon(x.category, iconOf(x, true)) : placeIcon(x.kind, iconOf(x, false)), name, alt: name, keyboard: true });
     if (canHover()) m.bindTooltip(esc(name), { direction: 'top', offset: [0, isEv ? -38 : -16], className: 'tip', opacity: 1 });
     m.item = x;
     m.isEv = isEv;
@@ -490,7 +532,7 @@ map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => 
 function eventItem(ev) {
   const facts = [priceLabel(ev), ageLabel(ev), ev._dist != null ? km(ev._dist) : ''].filter(Boolean).join(' · ');
   return `<li><button class="item" data-id="${esc(ev.id)}">
-    <span class="ico" style="background:${color(ev.category)}" aria-hidden="true">${CAT_ICONS[ev.category]}</span>
+    <span class="ico" style="background:${color(ev.category)}" aria-hidden="true">${iconOf(ev, true)}</span>
     <span class="body">
       <span class="when">${esc(occLabel(ev._next))}${ev._next.hours ? ` · ${esc(ev._next.hours)}` : ''}</span>
       ${ev.daysUnknown ? '<span class="vague">⚠️ Jours à vérifier</span>' : ''}
@@ -503,7 +545,7 @@ function eventItem(ev) {
 function placeItem(p) {
   const facts = [placePriceLabel(p), p.distanceKm ? km(p.distanceKm) : '', p.dplus != null ? `D+ ${p.dplus} m` : '', p.network ?? '', p.period ?? '', p._dist != null ? `à ${km(p._dist)}` : ''].filter(Boolean).join(' · ');
   return `<li><button class="item" data-id="${esc(p.id)}">
-    <span class="ico sq" style="background:${kcolor(p.kind)}" aria-hidden="true">${KIND_ICONS[p.kind]}</span>
+    <span class="ico sq" style="background:${kcolor(p.kind)}" aria-hidden="true">${iconOf(p, false)}</span>
     <span class="body">
       <span class="title" style="display:block">${esc(p.name)}</span>
       <span class="where" style="display:block">${esc(p.city ?? '')}${facts ? ` · ${esc(facts)}` : ''}</span>
@@ -1418,7 +1460,7 @@ const slugName = (s) => norm(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''
 function favEventItem(f, past = false) {
   const o = f.occurrences.find((x) => x.end >= today()) ?? f.occurrences.at(-1) ?? {};
   return `<li class="fav-row${past ? ' past' : ''}"><button class="item" data-favopen="events|${esc(f.id)}">
-    <span class="ico" style="background:${color(f.category)}" aria-hidden="true">${CAT_ICONS[f.category] ?? '📍'}</span>
+    <span class="ico" style="background:${color(f.category)}" aria-hidden="true">${iconOf(f, true)}</span>
     <span class="body">
       <span class="when">${o.start ? esc(occLabel(o)) : ''}${o.hours ? ` · ${esc(o.hours)}` : ''}</span>
       <span class="title" style="display:block">${esc(f.title)}</span>
@@ -1428,7 +1470,7 @@ function favEventItem(f, past = false) {
 }
 function favPlaceItem(f) {
   return `<li class="fav-row"><button class="item" data-favopen="places|${esc(f.id)}">
-    <span class="ico sq" style="background:${kcolor(f.kind)}" aria-hidden="true">${KIND_ICONS[f.kind] ?? '📍'}</span>
+    <span class="ico sq" style="background:${kcolor(f.kind)}" aria-hidden="true">${iconOf(f, false)}</span>
     <span class="body"><span class="title" style="display:block">${esc(f.name)}</span><span class="where" style="display:block">${esc(f.city ?? '')}</span></span>
   </button><span class="fav-tools">${favBtn('places', f)}</span></li>`;
 }

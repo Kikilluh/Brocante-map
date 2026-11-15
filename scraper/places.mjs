@@ -18,6 +18,7 @@ import { fr, get, listOf, readImage, readPrices } from './sources/datatourisme.m
 import { loadRoutes } from './lib/routes.mjs';
 import { deptBboxes } from './lib/depts.mjs';
 import { createElevation } from './lib/elevation.mjs';
+import { loadPois } from './lib/osmpoi.mjs';
 import { readPrevious, writeSplit, keepMissing, deptByBbox, DATA_DIR } from './lib/store.mjs';
 import { loadConfig, deptsFromArgs } from './lib/config.mjs';
 
@@ -385,6 +386,17 @@ for (const p of places) {
   kept.push({ ...p, sources: [{ id: p.source, url: p.sourceUrl ?? null }] });
 }
 
+// Petits lieux de proximité (OpenStreetMap) : nombreux et sans doublon possible avec les autres sources,
+// ajoutés après la recherche de doublons pour qu'elle reste rapide
+const pois = await collect('osm-petits-lieux', async () => {
+  const all = [];
+  for (const d of departments) all.push(...(await loadPois(d, join(ROOT, 'cache'), log))); // une requête à la fois (Overpass)
+  return all;
+});
+for (const p of pois) {
+  kept.push({ ...p, credit: '© contributeurs OpenStreetMap', sources: [{ id: 'osm-petits-lieux', url: `https://www.openstreetmap.org/${p.osmType}/${p.osmRef}` }] });
+}
+
 // Identifiant stable d'un jour à l'autre (utile pour les favoris) : type + nom + position arrondie
 const usedIds = new Set();
 const stableId = (p) => {
@@ -403,7 +415,7 @@ const out = kept.map((p) => {
     o.trace = `r${p.osmId}`;
     traces.set(o.id, p.geom);
   }
-  for (const k of ['name', 'kind', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'minutes', 'shape', 'priceMin', 'priceMax', 'free', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
+  for (const k of ['name', 'kind', 'sub', 'address', 'postcode', 'city', 'lat', 'lon', 'url', 'routeUrl', 'gpx', 'image', 'imageCredit', 'description', 'distanceKm', 'partial', 'duration', 'minutes', 'shape', 'priceMin', 'priceMax', 'free', 'network', 'ref', 'period', 'discipline', 'credit', 'sources']) {
     if (p[k] != null && p[k] !== '' && p[k] !== false) o[k] = p[k];
   }
   return o;
