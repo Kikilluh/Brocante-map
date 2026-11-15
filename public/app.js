@@ -265,16 +265,34 @@ const placeCluster = L.markerClusterGroup({ showCoverageOnHover: false, maxClust
 // Souris (PC) : bulle immédiate avec le nom au survol des marqueurs et des groupes
 const canHover = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
 for (const group of [cluster, placeCluster]) {
-  // Clic sur un groupe : zoom animé (rapide mais progressif) ; groupe indivisible → éventail
+  // Groupe de près (bulles d'icônes) : un toucher écarte les icônes pour en choisir une, sans zoomer ;
+  // un double toucher zoome. Groupe lointain (pastille avec un nombre) : un toucher zoome.
+  let clickTimer = null;
   group.on('clusterclick', (e) => {
     const c = e.layer;
     c.closeTooltip?.();
-    const bounds = c.getBounds();
-    const target = Math.min(map.getBoundsZoom(bounds.pad(0.15)), map.getMaxZoom());
-    if (target <= map.getZoom() || map.getZoom() >= map.getMaxZoom() || bounds.getNorthEast().equals(bounds.getSouthWest())) c.spiderfy();
-    // zoom modéré : au plus 3 niveaux d'un coup (2 quand on est déjà proche), centré sur le groupe
-    else map.flyTo(bounds.getCenter(), Math.min(target, map.getZoom() + (map.getZoom() >= 12 ? 2 : 3)), { duration: 0.65, easeLinearity: 0.4 });
+    if (isBundle(c)) {
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => c.spiderfy(), 280);
+      return;
+    }
+    zoomCluster(c);
   });
+  group.on('clusterdblclick', (e) => {
+    clearTimeout(clickTimer);
+    if (isBundle(e.layer)) zoomCluster(e.layer, true);
+  });
+}
+const isBundle = (c) => (c._zoom ?? map.getZoom()) >= BUNDLE_ZOOM && c.getChildCount() <= BUNDLE_MAX;
+/** Zoom animé sur un groupe : au plus 3 niveaux (2 de près), ou jusqu'à le voir en entier (double toucher). */
+function zoomCluster(c, closer = false) {
+  const bounds = c.getBounds();
+  const target = Math.min(map.getBoundsZoom(bounds.pad(0.15)), map.getMaxZoom());
+  // groupe indivisible ou déjà au plus près : éventail
+  if (target <= map.getZoom() || map.getZoom() >= map.getMaxZoom() || bounds.getNorthEast().equals(bounds.getSouthWest())) c.spiderfy();
+  else map.flyTo(bounds.getCenter(), closer ? target : Math.min(target, map.getZoom() + (map.getZoom() >= 12 ? 2 : 3)), { duration: 0.65, easeLinearity: 0.4 });
+}
+for (const group of [cluster, placeCluster]) {
   group.on('clustermouseover', (e) => {
     if (!canHover()) return;
     const kids = e.layer.getAllChildMarkers();
