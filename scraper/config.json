@@ -19,9 +19,8 @@
       "89",
       "90"
     ],
-    "auvergne-rhone-alpes": [
-      "38"
-    ],
+    "auvergne-rhone-alpes": ["01", "07", "26", "38", "42", "69", "73", "74"],
+    "auvergne": ["03", "15", "43", "63"],
     "pays-de-la-loire": [
       "44",
       "49",
