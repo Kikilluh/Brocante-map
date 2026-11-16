@@ -1131,6 +1131,8 @@ function syncControls() {
   const gb = $('openGroup');
   gb.classList.toggle('set', state.group.set);
   $('groupBadge').hidden = !state.group.set;
+  $('groupFabBadge').hidden = !state.group.set;
+  $('groupFab').classList.toggle('on', !!state.group.set);
   gb.title = state.group.set ? `Notre groupe : ${groupSummary()} (modifier)` : 'Qui sort ? Filtrer pour notre groupe';
   gb.setAttribute('aria-label', gb.title);
   $('periodLabel').textContent = state.mode === 'places' ? 'Filtres' : periodLabel();
@@ -1363,6 +1365,7 @@ function renderGroup() {
   syncControls();
 }
 $('openGroup').addEventListener('click', openGroup);
+$('groupFab').addEventListener('click', openGroup);
 $('periodPill').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
 $('groupForm').addEventListener('click', (e) => {
   const t = e.target;
@@ -1805,7 +1808,13 @@ function renderFavs() {
     <h2 class="fav-title">⚙️ Réglages</h2>
     <label class="switch"><input type="checkbox" data-lefty ${lefty() ? 'checked' : ''}> <span>Mode gaucher (boutons à gauche)</span></label>
     ${store.get('appliCarte') && NAV_APPS[store.get('appliCarte')] ? `<p class="src">Itinéraires ouverts avec ${esc(NAV_APPS[store.get('appliCarte')].label)} · <a href="#" data-navreset>changer</a></p>` : ''}
-    <p class="src"><button type="button" class="link-btn" data-refresh>🔄 Actualiser l'application</button> · version ${esc(APP_VERSION)}</p>
+    <h2 class="fav-title">ℹ️ L'application</h2>
+    <ul class="side-links">
+      <li><button type="button" class="link-btn" data-install>📲 Installer l'appli sur l'écran d'accueil</button></li>
+      <li><button type="button" class="link-btn" data-refresh>🔄 Actualiser l'application</button></li>
+      <li><a href="mentions-legales.html">⚖️ Mentions légales et confidentialité</a></li>
+    </ul>
+    <p class="src">Version ${esc(APP_VERSION)}</p>
     <p class="src">${account.user ? 'Vos favoris et votre groupe sont enregistrés sur cet appareil et synchronisés avec votre compte.' : 'Sans compte, vos favoris sont enregistrés uniquement sur cet appareil (rien n\'est envoyé).'}</p>`;
 }
 // ---------- Mode gaucher : boutons et panneaux du côté gauche ----------
@@ -2257,7 +2266,7 @@ async function ensureData() {
   $('zone').textContent = codes.length > 3 ? `${codes.length} départements` : codes.map((d) => deptInfo[d]?.name ?? DEPT_NAMES[d] ?? `Département ${d}`).join(' · ');
   $('meta').innerHTML = `${meta?.generatedAt ? `Mis à jour le ${new Date(meta.generatedAt).toLocaleString('fr-FR', { dateStyle: 'long', timeStyle: 'short' })}. ` : ''}`
     + 'Données : DATAtourisme et OpenAgenda (Licence Ouverte), Ticketmaster, ministère de la Culture, © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (ODbL). '
-    + '<a href="#" data-openfavs>❤️ Favoris et compte</a> · <a href="mentions-legales.html">Mentions légales et confidentialité</a> · <a href="#" data-install>📲 Installer l\'appli</a>';
+    + '';
 
   // Vue de départ : élément partagé, zone du groupe, sinon toute la zone couverte
   const sel = state.selected;

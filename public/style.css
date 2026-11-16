@@ -730,3 +730,39 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
 .more-actions > *:active { transform: scale(.97); }
 @keyframes more-in { from { opacity: 0; transform: translateY(-4px); } }
 @media (max-width: 760px) { .sheet { --sheet-h: 75%; } html:not(.sheet-hidden) .filters-fab { bottom: calc(75% + 14px); } }
+
+/* ---------- Bouton groupe flottant, au-dessus du bouton Filtres ---------- */
+.group-fab {
+  position: absolute; right: 12px; bottom: calc(92px + 14px + 56px + env(safe-area-inset-bottom)); z-index: 960;
+  width: 48px; height: 48px; border-radius: 50%; border: 0; display: grid; place-items: center;
+  background: var(--surface); color: var(--text); box-shadow: var(--shadow);
+}
+.group-fab.on { background: var(--accent-soft); color: var(--accent-strong); }
+.group-fab .check-badge { position: absolute; top: -2px; right: -2px; }
+.sheet-hidden .group-fab { bottom: calc(22px + 56px + env(safe-area-inset-bottom)); }
+@media (max-width: 760px) {
+  html:not(.sheet-hidden) .group-fab { bottom: calc(75% + 14px + 56px); }
+  .lefty .group-fab { right: auto; left: 12px; }
+}
+@media (min-width: 761px) {
+  .group-fab { bottom: 80px; right: 16px; transition: right .25s var(--ease-out); }
+  .list-open .group-fab { right: 436px; }
+}
+
+/* ---------- Panneau profil / favoris : texte plus petit, marges réduites ---------- */
+.side-panel { padding: 0 12px 12px; font-size: 14px; }
+.side-panel .detail { padding: 0 0 8px; }
+.side-panel .side-head { padding: 10px 0 6px; min-height: 40px; }
+.side-panel .side-head h2 { font-size: 17px; }
+.side-panel .fav-title { font-size: 15px; margin: 16px 0 6px; }
+.side-panel h3 { font-size: 14px; margin: 12px 0 4px; }
+.side-panel p, .side-panel .muted { font-size: 13.5px; line-height: 1.4; }
+.side-panel .src { font-size: 12px; }
+.side-panel .acct-box { margin: 6px 0; padding: 10px 12px; }
+.side-panel .acct-box p { font-size: 13.5px; margin-bottom: 8px; }
+.side-panel .acct-box.on { background: var(--surface-2); border: 1px solid var(--border); }
+.side-panel .item { padding: 8px 6px; }
+.side-panel .switch { font-size: 14px; }
+.side-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.side-links li { font-size: 14px; }
+.side-links a, .side-links .link-btn { color: var(--text); text-decoration: none; display: inline-block; padding: 6px 0; font-size: 14px; }
