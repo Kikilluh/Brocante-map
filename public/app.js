@@ -1207,11 +1207,27 @@ function savedGroupChips() {
     savedGroups.map((g) => `<button type="button" class="chip" data-loadgroup="${esc(g.id)}" aria-pressed="${g.id === editingGroupId}">⭐ ${esc(g.name)}</button>`).join('')}</div>${
     editing ? `<p class="edit-note">✏️ Vous modifiez « ${esc(editing.name)} » : touchez 💾 pour enregistrer les changements · <button type="button" class="link-btn" data-renamegroup>Renommer</button> · <button type="button" class="link-btn" data-newgroup>Nouveau groupe</button></p>` : ''}</div>`;
 }
+/** Autres critères gardés avec un groupe enregistré : période, types, prix inconnus, randos. */
+function filtersSnapshot() {
+  return { preset: state.preset, from: state.from, to: state.to, cats: [...state.cats], kinds: [...state.kinds], unknown: state.unknown, vague: state.vague, rando: { ...state.rando } };
+}
+function applyFilters(f) {
+  if (!f) return;
+  // période glissante (« ce week-end », « 30 jours »…) recalculée à aujourd'hui ; dates précises gardées
+  if (f.preset) { state.preset = f.preset; [state.from, state.to] = presetRange(f.preset); }
+  else if (f.from || f.to) { state.preset = null; state.from = f.from ?? ''; state.to = f.to ?? ''; }
+  if (Array.isArray(f.cats)) state.cats = new Set(f.cats.filter((c) => c in CATS));
+  if (Array.isArray(f.kinds)) state.kinds = new Set(f.kinds.filter((k) => k in KINDS));
+  if (typeof f.unknown === 'boolean') state.unknown = f.unknown;
+  if (typeof f.vague === 'boolean') state.vague = f.vague;
+  if (f.rando) state.rando = { ...state.rando, ...f.rando };
+  renderRandoFilters();
+}
 /** Enregistre les changements du groupe en cours de modification (même nom, même identifiant). */
 function updateSavedGroup(id, group, name) {
   const g = savedGroups.find((x) => x.id === id);
   if (!g) return false;
-  const entry = { ...g, name: (name ?? g.name).trim().slice(0, 40) || g.name, group: { ...group, set: true }, savedAt: Date.now() };
+  const entry = { ...g, name: (name ?? g.name).trim().slice(0, 40) || g.name, group: { ...group, set: true }, filters: filtersSnapshot(), savedAt: Date.now() };
   savedGroups = savedGroups.map((x) => (x.id === id ? entry : x));
   saveSavedGroups(true);
   return true;
@@ -1221,7 +1237,7 @@ function rememberGroup(group) {
   const name = prompt('Nom de ce groupe (ex. « Famille », « Amis du samedi ») :', who);
   if (!name?.trim()) return false;
   const existing = savedGroups.find((g) => g.name.toLowerCase() === name.trim().toLowerCase());
-  const entry = { id: existing?.id ?? `g${Date.now().toString(36)}`, name: name.trim().slice(0, 40), group: { ...group, set: true }, savedAt: Date.now() };
+  const entry = { id: existing?.id ?? `g${Date.now().toString(36)}`, name: name.trim().slice(0, 40), group: { ...group, set: true }, filters: filtersSnapshot(), savedAt: Date.now() };
   savedGroups = [...savedGroups.filter((g) => g !== existing), entry];
   saveSavedGroups(true);
   return true;
@@ -1230,6 +1246,7 @@ function useSavedGroup(id) {
   const g = savedGroups.find((x) => x.id === id);
   if (!g) return;
   state.group = { ...NEW_GROUP(), ...g.group, set: true };
+  applyFilters(g.filters);
   saveGroup();
   drawCenter();
   if (state.group.center) map.setView([state.group.center.lat, state.group.center.lon], state.group.radius >= 40 ? 9 : state.group.radius >= 20 ? 10 : 11);
@@ -1508,6 +1525,8 @@ $('groupPrev').addEventListener('click', () => { step = Math.max(0, step - 1); r
 $('groupNext').addEventListener('click', () => {
   if (step < LAST_STEP) { step++; renderGroup(); return; }
   state.group = draft;
+  const loaded = savedGroups.find((x) => x.id === editingGroupId);
+  if (loaded?.filters) applyFilters(loaded.filters);
   saveGroup();
   drawCenter();
   if (draft.center) map.setView([draft.center.lat, draft.center.lon], draft.radius >= 40 ? 9 : draft.radius >= 20 ? 10 : 11);
