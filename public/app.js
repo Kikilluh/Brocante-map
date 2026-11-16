@@ -198,10 +198,13 @@ if (!(window.L && window.L.markerClusterGroup)) {
 const map = L.map('map', { zoomControl: !isMobile(), attributionControl: true }).setView([47.25, 0.7], 9);
 // Mobile : double toucher maintenu puis glisser vers le bas pour zoomer, vers le haut pour dézoomer
 // (comme les applis de cartes). Un double toucher simple garde son zoom habituel.
+// Même mécanique que le pincement de Leaflet : la carte affichée est agrandie pendant le geste
+// (pas de rechargement des tuiles, donc pas de carte grise), puis calée sur un niveau entier.
 (() => {
   const el = map.getContainer();
   let lastTap = 0; let lastX = 0; let lastY = 0;
-  let g = null; // geste en cours : { y0, z0, anchor, moved }
+  let g = null; // geste en cours
+  let raf = null;
   el.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) { g = null; return; }
     const t = e.touches[0];
@@ -210,32 +213,37 @@ const map = L.map('map', { zoomControl: !isMobile(), attributionControl: true })
     lastTap = now; lastX = t.clientX; lastY = t.clientY;
     if (!second) return;
     const r = el.getBoundingClientRect();
-    g = { y0: t.clientY, z0: map.getZoom(), anchor: L.point(t.clientX - r.left, t.clientY - r.top), moved: false };
+    const anchor = L.point(t.clientX - r.left, t.clientY - r.top);
+    g = { y0: t.clientY, z0: map.getZoom(), zoom: map.getZoom(), anchor, latlng: map.containerPointToLatLng(anchor), center: map.getCenter(), moved: false };
     map.dragging.disable();
-    map.options.zoomSnap = 0; // zoom continu pendant le geste
   }, { passive: true, capture: true });
   el.addEventListener('touchmove', (e) => {
     if (!g || e.touches.length !== 1) return;
     const dy = e.touches[0].clientY - g.y0;
     if (!g.moved && Math.abs(dy) < 8) return;
-    g.moved = true;
     e.preventDefault();
-    const z = Math.min(map.getMaxZoom(), Math.max(map.getMinZoom(), g.z0 + dy / 90));
-    map.setZoomAround(g.anchor, z, { animate: false });
+    if (!g.moved) { g.moved = true; map._stop(); map._moveStart(true, false); }
+    g.zoom = Math.min(map.getMaxZoom(), Math.max(map.getMinZoom(), g.z0 + dy / 90));
+    const delta = g.anchor.subtract(map.getSize().divideBy(2));
+    g.center = map.unproject(map.project(g.latlng, g.zoom).subtract(delta), g.zoom);
+    L.Util.cancelAnimFrame(raf);
+    const { center, zoom } = g;
+    raf = L.Util.requestAnimFrame(() => map._move(center, zoom, { pinch: true, round: false }), null, true);
   }, { passive: false, capture: true });
   const end = () => {
     if (!g) return;
-    const { moved, anchor } = g;
+    const { moved, center, zoom } = g;
     g = null;
     map.dragging.enable();
-    map.options.zoomSnap = 1;
-    if (moved) {
-      map.setZoomAround(anchor, Math.round(map.getZoom())); // calage sur un niveau entier (groupes, tuiles)
-      lastTap = 0;
-      // pas de zoom « double toucher » en plus à la fin du geste
-      map.doubleClickZoom.disable();
-      setTimeout(() => map.doubleClickZoom.enable(), 350);
-    }
+    if (!moved) return;
+    L.Util.cancelAnimFrame(raf);
+    lastTap = 0;
+    // calage animé sur un niveau entier, comme à la fin d'un pincement
+    if (map.options.zoomAnimation) map._animateZoom(center, map._limitZoom(zoom), true, map.options.zoomSnap);
+    else map._resetView(center, map._limitZoom(zoom));
+    // pas de zoom « double toucher » en plus à la fin du geste
+    map.doubleClickZoom.disable();
+    setTimeout(() => map.doubleClickZoom.enable(), 350);
   };
   el.addEventListener('touchend', end, { capture: true });
   el.addEventListener('touchcancel', end, { capture: true });
