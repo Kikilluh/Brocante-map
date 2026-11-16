@@ -766,3 +766,15 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
 .side-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .side-links li { font-size: 14px; }
 .side-links a, .side-links .link-btn { color: var(--text); text-decoration: none; display: inline-block; padding: 6px 0; font-size: 14px; }
+
+/* Bouton groupe du bas : « ? » (à remplir) ou coche verte (rempli) */
+.group-fab .check-badge { background: var(--muted); }
+.group-fab .check-badge.ok { background: #2f9e5b; }
+/* Téléphone : bouton « Qui sort ? » retiré de l'en-tête (remplacé par le bouton du bas) */
+@media (max-width: 760px) { #openGroup { display: none; } }
+/* Filtres et groupe un peu plus haut : ne recouvrent plus les crédits de la carte (Leaflet, OpenStreetMap) */
+.sheet-hidden .filters-fab { bottom: calc(40px + env(safe-area-inset-bottom)); }
+.sheet-hidden .group-fab { bottom: calc(40px + 56px + env(safe-area-inset-bottom)); }
+@media (max-width: 760px) {
+  .sheet-hidden .filters-fab { bottom: calc(40px + env(safe-area-inset-bottom)); }
+}

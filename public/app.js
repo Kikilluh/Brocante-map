@@ -1131,7 +1131,10 @@ function syncControls() {
   const gb = $('openGroup');
   gb.classList.toggle('set', state.group.set);
   $('groupBadge').hidden = !state.group.set;
-  $('groupFabBadge').hidden = !state.group.set;
+  // bouton du bas : « ? » tant que le groupe n'est pas rempli, coche verte ensuite
+  $('groupFabBadge').hidden = false;
+  $('groupFabBadge').textContent = state.group.set ? '✓' : '?';
+  $('groupFabBadge').classList.toggle('ok', !!state.group.set);
   $('groupFab').classList.toggle('on', !!state.group.set);
   gb.title = state.group.set ? `Notre groupe : ${groupSummary()} (modifier)` : 'Qui sort ? Filtrer pour notre groupe';
   gb.setAttribute('aria-label', gb.title);
