@@ -143,7 +143,7 @@ const km = (x) => (x < 1 ? "moins d'1 km" : `${String(Math.round(x * 10) / 10).r
 const NEW_GROUP = () => ({ set: false, adults: 2, kids: [], moment: 'any', center: null, radius: 0, budget: null, budgetMode: 'person', envies: [...EALL] });
 const state = {
   mode: 'events', preset: '30', from: '', to: '', cats: new Set(ALL), kinds: new Set(KALL), q: '',
-  unknown: true, vague: true, sort: 'date', me: null, rando: { len: '', dur: '', dplus: '', shape: '' }, group: { ...NEW_GROUP(), ...(store.get('groupe') ?? {}) }, selected: null,
+  unknown: true, vague: true, sort: store.get('tri') ?? 'distance', me: null, rando: { len: '', dur: '', dplus: '', shape: '' }, group: { ...NEW_GROUP(), ...(store.get('groupe') ?? {}) }, selected: null,
 };
 let events = [];
 let places = [];
@@ -632,6 +632,7 @@ $('mapHint')?.addEventListener('click', (e) => {
 });
 function renderList() {
   const isEv = state.mode === 'events';
+  syncSortSelect();
   if (isOverview()) { updateMapHint(1); return renderOverviewList(); }
   const b = visibleBounds();
   const inView = b?.contains ? current.filter((x) => b.contains([x.lat, x.lon])) : current;
@@ -650,9 +651,34 @@ function renderList() {
     ol.innerHTML = `<li class="empty">Rien dans cette partie de la carte.<br><button class="btn small" id="zoomOut">Voir tout</button></li>`;
     $('zoomOut').onclick = () => map.fitBounds(L.latLngBounds(current.map((x) => [x.lat, x.lon])).pad(0.05), { maxZoom: 12 });
   } else {
-    ol.innerHTML = communeListHtml() + inView.slice(0, 300).map((x) => (isEv ? eventItem(x) : placeItem(x))).join('');
+    ol.innerHTML = communeListHtml() + sortList(inView, isEv).slice(0, 300).map((x) => (isEv ? eventItem(x) : placeItem(x))).join('');
   }
 }
+// ---------- Tri de la liste (par défaut : du plus proche au plus loin) ----------
+// Distance mesurée depuis le point du groupe, sinon ma position, sinon le centre de la carte.
+const SORTS = { distance: 'Plus proche', date: 'Date', nom: 'Nom', prix: 'Prix' };
+function sortList(list, isEv) {
+  const by = state.sort === 'date' && !isEv ? 'nom' : state.sort;
+  const ref = refPoint() ?? (() => { const c = map.getCenter(); return { lat: c.lat, lon: c.lng }; })();
+  const arr = [...list];
+  const dateKey = (x) => x._next?.start ?? x.start ?? '';
+  const priceKey = (x) => (x.free || x.priceMin === 0 ? 0 : x.priceMin ?? Infinity);
+  if (by === 'distance') {
+    for (const x of arr) x._sd = map.distance([ref.lat, ref.lon], [x.lat, x.lon]);
+    arr.sort((a, b) => a._sd - b._sd);
+  } else if (by === 'date') arr.sort((a, b) => dateKey(a).localeCompare(dateKey(b)));
+  else if (by === 'prix') arr.sort((a, b) => priceKey(a) - priceKey(b) || dateKey(a).localeCompare(dateKey(b)));
+  else arr.sort((a, b) => (a.title ?? a.name ?? '').localeCompare(b.title ?? b.name ?? '', 'fr'));
+  return arr;
+}
+function syncSortSelect() {
+  const isEv = state.mode === 'events';
+  const sel = $('sortSel');
+  sel.innerHTML = Object.entries(SORTS).filter(([k]) => isEv || k !== 'date').map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  sel.value = state.sort === 'date' && !isEv ? 'nom' : state.sort;
+}
+$('sortSel').addEventListener('change', (e) => { state.sort = e.target.value; store.set('tri', state.sort); renderList(); });
+$('sortSel').addEventListener('pointerdown', (e) => e.stopPropagation()); // ne déclenche pas le glisser du panneau
 let moveTimer;
 map.on('moveend', () => { clearTimeout(moveTimer); moveTimer = setTimeout(() => { renderList(); ensureData(); }, 120); });
 

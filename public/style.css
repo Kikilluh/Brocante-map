@@ -780,7 +780,7 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
 }
 
 /* PC : croix pour fermer le panneau liste */
-.sheet-close { display: none; margin-left: auto; }
+.sheet-close { display: none; }
 @media (min-width: 761px) { .sheet-close { display: grid; } }
 
 .edit-note { margin: 8px 0 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
@@ -809,3 +809,8 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
 .side-panel .item .title { font-size: 14px; }
 .side-panel .item .where, .side-panel .item .when { font-size: 12.5px; }
 .side-panel .item .ico { width: 30px; height: 30px; font-size: 15px; }
+
+/* Tri de la liste */
+.sort-box { margin-left: auto; flex: none; }
+.sort-box select { height: 32px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface-2); color: var(--text); font-size: 13px; padding: 0 26px 0 10px; }
+.sheet-head #count { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
