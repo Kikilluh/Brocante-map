@@ -778,3 +778,7 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
 @media (max-width: 760px) {
   .sheet-hidden .filters-fab { bottom: calc(40px + env(safe-area-inset-bottom)); }
 }
+
+/* PC : croix pour fermer le panneau liste */
+.sheet-close { display: none; margin-left: auto; }
+@media (min-width: 761px) { .sheet-close { display: grid; } }

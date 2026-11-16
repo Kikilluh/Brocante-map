@@ -650,7 +650,7 @@ function renderList() {
     ol.innerHTML = `<li class="empty">Rien dans cette partie de la carte.<br><button class="btn small" id="zoomOut">Voir tout</button></li>`;
     $('zoomOut').onclick = () => map.fitBounds(L.latLngBounds(current.map((x) => [x.lat, x.lon])).pad(0.05), { maxZoom: 12 });
   } else {
-    ol.innerHTML = inView.slice(0, 300).map((x) => (isEv ? eventItem(x) : placeItem(x))).join('');
+    ol.innerHTML = communeListHtml() + inView.slice(0, 300).map((x) => (isEv ? eventItem(x) : placeItem(x))).join('');
   }
 }
 let moveTimer;
@@ -1001,6 +1001,10 @@ $('detail').addEventListener('click', async (e) => {
   }
 });
 $('list').addEventListener('click', (e) => {
+  const ch = e.target.closest('[data-commune]');
+  if (ch) { e.stopImmediatePropagation(); goToCommune(communeHits[+ch.dataset.commune]); }
+}, true);
+$('list').addEventListener('click', (e) => {
   // 👁 : montre l'élément sur la carte (la liste se range)
   const eye = e.target.closest('[data-eye]');
   if (eye) {
@@ -1038,6 +1042,7 @@ function setListOpen(open) {
   setTimeout(() => { map.invalidateSize(); renderList(); }, 260);
 }
 $('listToggle').addEventListener('click', () => setListOpen(!document.documentElement.classList.contains('list-open')));
+$('sheetClose').addEventListener('click', () => setListOpen(false));
 
 // ---------- Panneau du bas (mobile) ----------
 // États : hidden (masqué, flèche en bas), peek (bandeau), half, full.
@@ -1292,7 +1297,18 @@ function suggestCommunes(text) {
       return `<li><button type="button" data-commune="${i}">📍 ${esc(c.nom)} <span class="muted">· ${esc(dept)} (${esc(c.codeDepartement)})${covered ? '' : ' · pas encore couvert'}</span></button></li>`;
     }).join('');
     $('qSuggest').hidden = !communeHits.length;
+    // aussi en tête de la liste (PC : la liste s'ouvre si elle était fermée)
+    if (communeHits.length && !isMobile() && !document.documentElement.classList.contains('list-open')) setListOpen(true);
+    else renderList();
   }, 250);
+}
+/** Communes correspondant à la recherche, en tête de la liste. */
+function communeListHtml() {
+  if (!communeHits.length || $('q').value.trim().length < 2) return '';
+  return communeHits.map((c, i) => {
+    const dept = dataIndex?.depts?.[c.codeDepartement]?.name ?? DEPT_NAMES[c.codeDepartement] ?? c.codeDepartement;
+    return `<li><button class="item commune-hit" data-commune="${i}"><span class="ico" style="background:var(--accent-soft)" aria-hidden="true">📍</span><span class="body"><span class="title" style="display:block">${esc(c.nom)}</span><span class="where" style="display:block">${esc(dept)} (${esc(c.codeDepartement)}) · aller sur la carte</span></span></button></li>`;
+  }).join('');
 }
 function goToCommune(c) {
   const [lon, lat] = c.centre.coordinates;
@@ -2215,7 +2231,7 @@ function renderOverviewList() {
   $('count').textContent = `${total.toLocaleString('fr-FR')} ${noun} · zoomez sur un département`;
   $('listCount').textContent = total.toLocaleString('fr-FR');
   updateSheetUp(total);
-  $('list').innerHTML = depts.map(([d, i]) => `<li><button class="item" data-dept="${d}"><span class="body"><span class="title" style="display:block">${esc(i.name)} (${d})</span><span class="where" style="display:block">${deptCount(i).toLocaleString('fr-FR')} ${noun} (avant filtres)</span></span></button></li>`).join('');
+  $('list').innerHTML = communeListHtml() + depts.map(([d, i]) => `<li><button class="item" data-dept="${d}"><span class="body"><span class="title" style="display:block">${esc(i.name)} (${d})</span><span class="where" style="display:block">${deptCount(i).toLocaleString('fr-FR')} ${noun} (avant filtres)</span></span></button></li>`).join('');
 }
 $('list').addEventListener('click', (e) => {
   const b = e.target.closest('[data-dept]');
