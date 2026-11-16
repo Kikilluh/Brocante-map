@@ -782,3 +782,6 @@ button:active, .btn:active, .pill:active, .chip:active, .filters-fab:active, .de
 /* PC : croix pour fermer le panneau liste */
 .sheet-close { display: none; margin-left: auto; }
 @media (min-width: 761px) { .sheet-close { display: grid; } }
+
+.edit-note { margin: 8px 0 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+.edit-note .link-btn { font-size: 13px; }

@@ -1172,10 +1172,23 @@ function saveSavedGroups(changed = false) {
   store.set('groupesFavoris', savedGroups);
   if (changed) scheduleSync();
 }
+// Groupe enregistré en cours de modification dans « Qui sort ? » (null : nouveau groupe)
+let editingGroupId = null;
 function savedGroupChips() {
   if (!savedGroups.length) return '';
+  const editing = savedGroups.find((g) => g.id === editingGroupId);
   return `<div class="saved-groups"><span class="rando-label">Mes groupes enregistrés</span><div class="chips-wrap">${
-    savedGroups.map((g) => `<button type="button" class="chip" data-loadgroup="${esc(g.id)}">⭐ ${esc(g.name)}</button>`).join('')}</div></div>`;
+    savedGroups.map((g) => `<button type="button" class="chip" data-loadgroup="${esc(g.id)}" aria-pressed="${g.id === editingGroupId}">⭐ ${esc(g.name)}</button>`).join('')}</div>${
+    editing ? `<p class="edit-note">✏️ Vous modifiez « ${esc(editing.name)} » : touchez 💾 pour enregistrer les changements · <button type="button" class="link-btn" data-renamegroup>Renommer</button> · <button type="button" class="link-btn" data-newgroup>Nouveau groupe</button></p>` : ''}</div>`;
+}
+/** Enregistre les changements du groupe en cours de modification (même nom, même identifiant). */
+function updateSavedGroup(id, group, name) {
+  const g = savedGroups.find((x) => x.id === id);
+  if (!g) return false;
+  const entry = { ...g, name: (name ?? g.name).trim().slice(0, 40) || g.name, group: { ...group, set: true }, savedAt: Date.now() };
+  savedGroups = savedGroups.map((x) => (x.id === id ? entry : x));
+  saveSavedGroups(true);
+  return true;
 }
 function rememberGroup(group) {
   const who = group.kids.length ? 'Famille' : group.adults === 1 ? 'Solo' : group.adults === 2 ? 'En couple' : 'Entre amis';
@@ -1357,8 +1370,10 @@ $('locate').addEventListener('click', () => locateMe());
 let draft = null;
 let step = 0;
 const LAST_STEP = 4; // Qui, Quand, Où, Budget, Envies
-function openGroup() {
-  draft = structuredClone({ ...state.group, set: true });
+function openGroup(editId = null) {
+  const g = typeof editId === 'string' ? savedGroups.find((x) => x.id === editId) : null;
+  editingGroupId = g?.id ?? null;
+  draft = structuredClone(g ? { ...NEW_GROUP(), ...g.group, set: true } : { ...state.group, set: true });
   step = 0;
   renderGroup();
   $('groupDialog').showModal();
@@ -1369,6 +1384,9 @@ function renderGroup() {
   $('groupPrev').hidden = step === 0;
   $('groupNext').textContent = step === LAST_STEP ? 'Voir nos idées' : 'Suivant';
   $('savedGroupsBox').innerHTML = savedGroupChips();
+  $('groupSave').textContent = editingGroupId ? '💾' : '⭐';
+  $('groupSave').title = editingGroupId ? 'Enregistrer les modifications de ce groupe' : 'Enregistrer ce groupe dans mon profil';
+  $('groupSave').setAttribute('aria-label', $('groupSave').title);
   $('adults').textContent = draft.adults;
   const who = draft.kids.length ? 'famille' : draft.adults === 1 ? 'solo' : draft.adults === 2 ? 'couple' : draft.adults >= 3 ? 'amis' : null;
   $$('[data-gpreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.gpreset === who)));
@@ -1383,14 +1401,32 @@ function renderGroup() {
   $('centerLabel').textContent = draft.center ? `Autour de ${draft.center.label}` : "Toute la zone couverte";
   syncControls();
 }
-$('openGroup').addEventListener('click', openGroup);
-$('groupFab').addEventListener('click', openGroup);
+$('openGroup').addEventListener('click', () => openGroup());
+$('groupFab').addEventListener('click', () => openGroup());
 $('periodPill').addEventListener('click', () => { syncControls(); $('filtersDialog').showModal(); });
 $('groupForm').addEventListener('click', (e) => {
   const t = e.target;
   if (t.closest('[data-goto]')) step = +t.closest('[data-goto]').dataset.goto;
-  else if (t.closest('[data-loadgroup]')) { const g = savedGroups.find((x) => x.id === t.closest('[data-loadgroup]').dataset.loadgroup); if (g) draft = structuredClone({ ...NEW_GROUP(), ...g.group, set: true }); }
-  else if (t.closest('#groupSave')) { if (rememberGroup(draft)) { const b = t.closest('#groupSave'); b.textContent = '✓'; b.title = 'Groupe enregistré dans votre profil'; } return; }
+  else if (t.closest('[data-loadgroup]')) {
+    // choisir un groupe enregistré : on le charge… et on peut le modifier
+    const g = savedGroups.find((x) => x.id === t.closest('[data-loadgroup]').dataset.loadgroup);
+    if (g) { draft = structuredClone({ ...NEW_GROUP(), ...g.group, set: true }); editingGroupId = g.id; }
+  } else if (t.closest('[data-newgroup]')) editingGroupId = null;
+  else if (t.closest('[data-renamegroup]')) {
+    const g = savedGroups.find((x) => x.id === editingGroupId);
+    const name = g && prompt('Nouveau nom du groupe :', g.name);
+    if (name?.trim()) updateSavedGroup(g.id, g.group, name);
+  } else if (t.closest('#groupSave')) {
+    const b = t.closest('#groupSave');
+    const ok = editingGroupId ? updateSavedGroup(editingGroupId, draft) : rememberGroup(draft);
+    if (ok) {
+      if (!editingGroupId) editingGroupId = savedGroups.at(-1)?.id ?? null;
+      b.textContent = '✓';
+      b.title = 'Groupe enregistré dans votre profil';
+      setTimeout(() => renderGroup(), 900);
+    }
+    return;
+  }
   else if (t.closest('[data-adults]')) draft.adults = Math.max(0, Math.min(20, draft.adults + +t.closest('[data-adults]').dataset.adults));
   else if (t.closest('[data-gpreset]')) {
     const p = t.closest('[data-gpreset]').dataset.gpreset;
@@ -1823,7 +1859,7 @@ function renderFavs() {
   $('favView').innerHTML = `<div class="side-head"><h2>👤 Mon profil</h2></div>
     ${accountBox()}
     <h2 class="fav-title">👥 Mes groupes</h2>
-    ${savedGroups.length ? `<ul class="list fav-list">${savedGroups.map((g) => `<li class="fav-row"><div class="item"><span class="ico" style="background:var(--accent-soft)" aria-hidden="true">⭐</span><span class="body"><span class="title" style="display:block">${esc(g.name)}</span><span class="where" style="display:block">${esc(groupSummaryOf({ ...NEW_GROUP(), ...g.group }))}</span></span></div><span class="fav-tools"><button type="button" class="btn small" data-usegroup="${esc(g.id)}">Utiliser</button><button type="button" class="icon-btn flat" data-rmgroup="${esc(g.id)}" aria-label="Supprimer ce groupe" title="Supprimer">✕</button></span></li>`).join('')}</ul>` : '<p class="muted">Dans « Qui sort ? », touchez ⭐ pour enregistrer un groupe (famille, amis…) et le retrouver ici en un geste.</p>'}
+    ${savedGroups.length ? `<ul class="list fav-list">${savedGroups.map((g) => `<li class="fav-row"><div class="item"><span class="ico" style="background:var(--accent-soft)" aria-hidden="true">⭐</span><span class="body"><span class="title" style="display:block">${esc(g.name)}</span><span class="where" style="display:block">${esc(groupSummaryOf({ ...NEW_GROUP(), ...g.group }))}</span></span></div><span class="fav-tools"><button type="button" class="btn small" data-usegroup="${esc(g.id)}">Utiliser</button><button type="button" class="icon-btn flat" data-editgroup="${esc(g.id)}" aria-label="Modifier ce groupe" title="Modifier">✏️</button><button type="button" class="icon-btn flat" data-rmgroup="${esc(g.id)}" aria-label="Supprimer ce groupe" title="Supprimer">✕</button></span></li>`).join('')}</ul>` : '<p class="muted">Dans « Qui sort ? », touchez ⭐ pour enregistrer un groupe (famille, amis…) et le retrouver ici en un geste.</p>'}
     <h2 class="fav-title">⚙️ Réglages</h2>
     <label class="switch"><input type="checkbox" data-lefty ${lefty() ? 'checked' : ''}> <span>Mode gaucher (boutons à gauche)</span></label>
     ${store.get('appliCarte') && NAV_APPS[store.get('appliCarte')] ? `<p class="src">Itinéraires ouverts avec ${esc(NAV_APPS[store.get('appliCarte')].label)} · <a href="#" data-navreset>changer</a></p>` : ''}
@@ -1955,6 +1991,7 @@ $('favView').addEventListener('click', async (e) => {
   if (e.target.closest('[data-refresh]')) return refreshApp(e.target.closest('[data-refresh]'));
   const lf = e.target.closest('[data-lefty]');
   if (lf) { store.set('gaucher', lf.checked); applyLefty(); return; }
+  if (e.target.closest('[data-editgroup]')) { const id = e.target.closest('[data-editgroup]').dataset.editgroup; closeSide(); openGroup(id); return; }
   if (e.target.closest('[data-usegroup]')) { useSavedGroup(e.target.closest('[data-usegroup]').dataset.usegroup); closeFavs(); return; }
   if (e.target.closest('[data-rmgroup]')) { removeSavedGroup(e.target.closest('[data-rmgroup]').dataset.rmgroup); return renderFavs(); }
   if (e.target.closest('[data-navreset]')) { e.preventDefault(); store.set('appliCarte', null); return renderFavs(); }
