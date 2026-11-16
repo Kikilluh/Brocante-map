@@ -1756,7 +1756,7 @@ function saveFavs(changed = false) {
   store.set('favorisRetires', favsRemoved);
   if (changed) scheduleSync();
   $('favCount').textContent = favs.length;
-  $('favCount').hidden = !favs.length;
+  $('favCount').hidden = true; // pas de nombre sur le cœur
   updateAccountBtn();
 }
 function toggleFav(type, x) {
