@@ -1859,7 +1859,10 @@ function renderFavs() {
   $('favView').innerHTML = `<div class="side-head"><h2>👤 Mon profil</h2></div>
     ${accountBox()}
     <h2 class="fav-title">👥 Mes groupes</h2>
-    ${savedGroups.length ? `<ul class="list fav-list">${savedGroups.map((g) => `<li class="fav-row"><div class="item"><span class="ico" style="background:var(--accent-soft)" aria-hidden="true">⭐</span><span class="body"><span class="title" style="display:block">${esc(g.name)}</span><span class="where" style="display:block">${esc(groupSummaryOf({ ...NEW_GROUP(), ...g.group }))}</span></span></div><span class="fav-tools"><button type="button" class="btn small" data-usegroup="${esc(g.id)}">Utiliser</button><button type="button" class="icon-btn flat" data-editgroup="${esc(g.id)}" aria-label="Modifier ce groupe" title="Modifier">✏️</button><button type="button" class="icon-btn flat" data-rmgroup="${esc(g.id)}" aria-label="Supprimer ce groupe" title="Supprimer">✕</button></span></li>`).join('')}</ul>` : '<p class="muted">Dans « Qui sort ? », touchez ⭐ pour enregistrer un groupe (famille, amis…) et le retrouver ici en un geste.</p>'}
+    ${savedGroups.length ? `<ul class="group-cards">${savedGroups.map((g) => `<li class="group-card">
+      <div class="g-text"><strong>⭐ ${esc(g.name)}</strong><span>${esc(groupSummaryOf({ ...NEW_GROUP(), ...g.group }))}</span></div>
+      <div class="g-actions"><button type="button" class="btn small primary" data-usegroup="${esc(g.id)}">Utiliser</button><button type="button" class="btn small" data-editgroup="${esc(g.id)}">✏️ Modifier</button><button type="button" class="icon-btn flat" data-rmgroup="${esc(g.id)}" aria-label="Supprimer ce groupe" title="Supprimer">🗑️</button></div>
+    </li>`).join('')}</ul>` : '<p class="muted">Dans « Qui sort ? », touchez ⭐ pour enregistrer un groupe (famille, amis…) et le retrouver ici en un geste.</p>'}
     <h2 class="fav-title">⚙️ Réglages</h2>
     <label class="switch"><input type="checkbox" data-lefty ${lefty() ? 'checked' : ''}> <span>Mode gaucher (boutons à gauche)</span></label>
     ${store.get('appliCarte') && NAV_APPS[store.get('appliCarte')] ? `<p class="src">Itinéraires ouverts avec ${esc(NAV_APPS[store.get('appliCarte')].label)} · <a href="#" data-navreset>changer</a></p>` : ''}
@@ -1913,6 +1916,7 @@ function openSide(which, opener) {
   panel.dataset.inset = b.top >= box.top ? 'button' : 'none'; // bouton posé sur le panneau : marge pour ne pas le cacher
   panel.classList.add('open');
   panel.setAttribute('aria-hidden', 'false');
+  document.documentElement.classList.toggle('profile-open', which === 'favView');
   panel.scrollTop = 0;
   $('sideScrim').hidden = false;
   if (sideOpener && sideOpener !== opener) sideOpener.classList.remove('is-open');
@@ -1924,6 +1928,7 @@ function openSide(which, opener) {
 function closeSide() {
   $('sidePanel').classList.remove('open');
   $('sidePanel').setAttribute('aria-hidden', 'true');
+  document.documentElement.classList.remove('profile-open');
   $('sideScrim').hidden = true;
   $('favView').hidden = true;
   $('favQuick').hidden = true;
@@ -2122,7 +2127,7 @@ function updateAccountBtn() {
 function accountBox() {
   const u = account.user;
   if (u) {
-    return `<div class="acct-box on"><p>✓ Compte : <strong>${esc(u.email ?? u.displayName ?? 'connecté')}</strong><br><span class="muted">Favoris et groupe synchronisés sur vos appareils.</span></p>
+    return `<div class="acct-box on"><p class="acct-mail">✓ <strong>${esc(u.email ?? u.displayName ?? 'connecté')}</strong></p><p class="muted">Favoris et groupes synchronisés sur vos appareils.</p>
       ${account.status ? `<p class="warn">${esc(account.status)}</p>` : ''}
       <div class="acct-actions"><button type="button" class="btn small" data-logout>Se déconnecter</button><button type="button" class="btn small ghost danger" data-delacct>Supprimer mon compte</button></div></div>`;
   }
