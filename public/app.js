@@ -196,6 +196,50 @@ if (!(window.L && window.L.markerClusterGroup)) {
   $('mapError').hidden = false;
 }
 const map = L.map('map', { zoomControl: !isMobile(), attributionControl: true }).setView([47.25, 0.7], 9);
+// Mobile : double toucher maintenu puis glisser vers le bas pour zoomer, vers le haut pour dézoomer
+// (comme les applis de cartes). Un double toucher simple garde son zoom habituel.
+(() => {
+  const el = map.getContainer();
+  let lastTap = 0; let lastX = 0; let lastY = 0;
+  let g = null; // geste en cours : { y0, z0, anchor, moved }
+  el.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) { g = null; return; }
+    const t = e.touches[0];
+    const now = Date.now();
+    const second = now - lastTap < 300 && Math.hypot(t.clientX - lastX, t.clientY - lastY) < 30;
+    lastTap = now; lastX = t.clientX; lastY = t.clientY;
+    if (!second) return;
+    const r = el.getBoundingClientRect();
+    g = { y0: t.clientY, z0: map.getZoom(), anchor: L.point(t.clientX - r.left, t.clientY - r.top), moved: false };
+    map.dragging.disable();
+    map.options.zoomSnap = 0; // zoom continu pendant le geste
+  }, { passive: true, capture: true });
+  el.addEventListener('touchmove', (e) => {
+    if (!g || e.touches.length !== 1) return;
+    const dy = e.touches[0].clientY - g.y0;
+    if (!g.moved && Math.abs(dy) < 8) return;
+    g.moved = true;
+    e.preventDefault();
+    const z = Math.min(map.getMaxZoom(), Math.max(map.getMinZoom(), g.z0 + dy / 90));
+    map.setZoomAround(g.anchor, z, { animate: false });
+  }, { passive: false, capture: true });
+  const end = () => {
+    if (!g) return;
+    const { moved, anchor } = g;
+    g = null;
+    map.dragging.enable();
+    map.options.zoomSnap = 1;
+    if (moved) {
+      map.setZoomAround(anchor, Math.round(map.getZoom())); // calage sur un niveau entier (groupes, tuiles)
+      lastTap = 0;
+      // pas de zoom « double toucher » en plus à la fin du geste
+      map.doubleClickZoom.disable();
+      setTimeout(() => map.doubleClickZoom.enable(), 350);
+    }
+  };
+  el.addEventListener('touchend', end, { capture: true });
+  el.addEventListener('touchcancel', end, { capture: true });
+})();
 const planIGN = L.tileLayer(
   'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
   { maxZoom: 19, keepBuffer: 4, attribution: '© <a href="https://www.ign.fr/">IGN</a>' },
