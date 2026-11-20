@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "title": "Marché de Noël – Téléthon",
+    "category": "marche",
+    "occurrences": [
+      { "start": "2026-12-04", "end": "2026-12-04", "hours": "17h – 21h" },
+      { "start": "2026-12-05", "end": "2026-12-05", "hours": "10h – 19h" }
+    ],
+    "venue": "Place Charles Bidault",
+    "address": "Place Charles Bidault",
+    "city": "Bléré",
+    "postcode": "37150",
+    "lat": 47.3256,
+    "lon": 0.9903,
+    "free": true,
+    "description": "Marché de Noël au profit du Téléthon, avec animations et spectacles. Entrée libre.",
+    "organizer": "Mairie de Bléré",
+    "url": "https://www.ville-blere.fr/sortir-a-blere/grands-evenements/marche-de-noel/",
+    "credit": "Mairie de Bléré"
+  }
+]
