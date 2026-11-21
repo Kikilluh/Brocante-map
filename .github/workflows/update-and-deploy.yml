@@ -59,7 +59,7 @@ jobs:
     timeout-minutes: 120
     strategy:
       fail-fast: false
-      max-parallel: 4   # ménage les services interrogés (OpenStreetMap, IGN, DATAtourisme)
+      max-parallel: 5   # ménage les services interrogés (OpenStreetMap, IGN, DATAtourisme)
       matrix:
         group: ${{ fromJson(needs.plan.outputs.groups) }}
     name: collecte ${{ matrix.group.name }}
