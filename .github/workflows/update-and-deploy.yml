@@ -56,7 +56,7 @@ jobs:
     needs: plan
     if: needs.plan.outputs.collect == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 170
     strategy:
       fail-fast: false
       max-parallel: 5   # ménage les services interrogés (OpenStreetMap, IGN, DATAtourisme)
@@ -70,8 +70,8 @@ jobs:
           node-version: 22
 
       # Caches (géocodage, OpenStreetMap, altitudes, lieux DATAtourisme) propres à chaque groupe, hors Git
-      - name: Caches de la collecte
-        uses: actions/cache@v4
+      - name: Caches de la collecte (lecture)
+        uses: actions/cache/restore@v4
         with:
           path: scraper/cache
           key: scraper-cache-${{ matrix.group.name }}-${{ github.run_id }}
@@ -84,6 +84,7 @@ jobs:
         run: node scraper/tools/fetch-live.mjs --dept=${{ matrix.group.depts }}
 
       - name: Collecte
+        timeout-minutes: 150   # arrêt propre avant la limite de la tâche : les caches sont quand même enregistrés
         run: |
           node scraper/index.mjs --dept=${{ matrix.group.depts }}
           node scraper/places.mjs --dept=${{ matrix.group.depts }}
@@ -92,6 +93,14 @@ jobs:
           DATATOURISME_FEED_URL: ${{ secrets.DATATOURISME_FEED_URL }}
           OPENAGENDA_KEY: ${{ secrets.OPENAGENDA_KEY }}
           TICKETMASTER_KEY: ${{ secrets.TICKETMASTER_KEY }}
+
+      # Caches enregistrés même si la collecte échoue ou dépasse le temps (le travail fait n'est pas perdu)
+      - name: Caches de la collecte (enregistrement)
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: scraper/cache
+          key: scraper-cache-${{ matrix.group.name }}-${{ github.run_id }}
 
       - name: Préparer le résultat
         run: |

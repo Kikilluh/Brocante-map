@@ -30,6 +30,23 @@ export async function deptBbox(dept, log = () => {}) {
   if (KNOWN[dept]) return KNOWN[dept];
   const c = await load();
   if (c[dept]) return c[dept];
+  // 1) rapide et fiable : centres des communes du département (geo.api.gouv.fr, service public), avec une marge
+  try {
+    const res = await fetch(`https://geo.api.gouv.fr/departements/${dept}/communes?fields=centre&format=json`, { signal: AbortSignal.timeout(30000) });
+    if (res.ok) {
+      const pts = (await res.json()).map((c) => c.centre?.coordinates).filter(Boolean);
+      if (pts.length > 10) {
+        const r2 = (x) => Math.round(x * 100) / 100;
+        const m = 0.04;
+        c[dept] = [r2(Math.min(...pts.map((p) => p[1])) - m), r2(Math.min(...pts.map((p) => p[0])) - m), r2(Math.max(...pts.map((p) => p[1])) + m), r2(Math.max(...pts.map((p) => p[0])) + m)];
+        await mkdir(dirname(CACHE), { recursive: true });
+        await writeFile(CACHE, JSON.stringify(c, null, 1));
+        log(`  emprise du ${dept} (communes) : ${c[dept].join(', ')}`);
+        return c[dept];
+      }
+    }
+  } catch { /* repli sur OpenStreetMap */ }
+  // 2) repli : limite administrative OpenStreetMap
   const q = `[out:json][timeout:60];relation["boundary"="administrative"]["ref:INSEE"="${dept}"]["admin_level"~"^(6|4)$"];out bb;`;
   try {
     const el = ((await overpass(q, 90000)).elements ?? []).find((e) => e.bounds);
