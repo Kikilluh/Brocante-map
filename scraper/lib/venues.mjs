@@ -2,7 +2,7 @@
 // Données OpenStreetMap (licence ODbL, attribution « © contributeurs OpenStreetMap ») via l'API Overpass :
 // UNE requête par département, mise en cache 7 jours dans scraper/cache/venues-<dept>.json.
 
-import { overpass } from './overpass.mjs';
+import { overpass, deptArea } from './overpass.mjs';
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fetchText } from './http.mjs';
@@ -23,7 +23,7 @@ export function splitVenue(lines) {
 
 function query(dept) {
   return `[out:json][timeout:90];
-area["ref:INSEE"="${dept}"]["admin_level"="6"]->.d;
+${deptArea(dept)}
 (
   nwr(area.d)["name"]["amenity"~"^(theatre|arts_centre|cinema|community_centre|events_venue|library|music_venue|nightclub|townhall|social_centre|conference_centre|exhibition_centre|place_of_worship|marketplace)$"];
   nwr(area.d)["name"]["tourism"~"^(museum|gallery|attraction|zoo|theme_park)$"];
@@ -36,7 +36,10 @@ out center tags;`;
 async function loadDept(dept, cacheDir, log) {
   const file = join(cacheDir, `venues-${dept}.json`);
   try {
-    if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) return JSON.parse(await readFile(file, 'utf8'));
+    if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) {
+      const cached = JSON.parse(await readFile(file, 'utf8'));
+      if (cached.length) return cached; // une réponse vide est redemandée (zone mal reconnue, panne)
+    }
   } catch {
     /* pas de cache */
   }

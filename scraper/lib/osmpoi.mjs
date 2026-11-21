@@ -4,7 +4,7 @@
 // UNE requête Overpass par département (limites administratives : pas d'erreur de rattachement),
 // gardée 7 jours dans scraper/cache/poi-<dept>.json.
 
-import { overpass } from './overpass.mjs';
+import { overpass, deptArea } from './overpass.mjs';
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -12,7 +12,7 @@ const MAX_AGE_MS = 7 * 864e5;
 
 function query(dept) {
   return `[out:json][timeout:180];
-area["ref:INSEE"="${dept}"]["admin_level"="6"]->.d;
+${deptArea(dept)}
 (
   nwr(area.d)["historic"="wayside_cross"];
   nwr(area.d)["amenity"="lavoir"];
@@ -42,7 +42,10 @@ export function classify(t = {}) {
 export async function loadPois(dept, cacheDir, log = () => {}) {
   const file = join(cacheDir, `poi-${dept}.json`);
   try {
-    if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) return JSON.parse(await readFile(file, 'utf8'));
+    if (Date.now() - (await stat(file)).mtimeMs < MAX_AGE_MS) {
+      const cached = JSON.parse(await readFile(file, 'utf8'));
+      if (cached.length) return cached; // une réponse vide est redemandée (zone mal reconnue, panne)
+    }
   } catch { /* pas de cache */ }
   try {
     const data = await overpass(query(dept), 240000);

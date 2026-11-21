@@ -29,3 +29,12 @@ export async function overpass(query, timeoutMs = 180000) {
   }
   throw new Error(errors.join(' ; '));
 }
+
+/**
+ * Zone Overpass d'un département. Particularité : le Rhône est découpé dans OpenStreetMap en
+ * « Rhône » (69D) et « Métropole de Lyon » (69M) ; on prend les deux.
+ */
+export function deptArea(dept) {
+  const ref = dept === '69' ? '["ref:INSEE"~"^69[DM]?$"]' : `["ref:INSEE"="${dept}"]`;
+  return `area${ref}["admin_level"="6"]->.d;`;
+}

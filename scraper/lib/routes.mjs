@@ -3,7 +3,7 @@
 // puis on garde le point de départ (ou d'entrée dans le département), la longueur, les liens et le tracé
 // simplifié (affiché sur la carte du site). Résultat mis en cache 7 jours dans scraper/cache/routes-v4-<dept>.json.
 
-import { overpass } from './overpass.mjs';
+import { overpass, deptArea } from './overpass.mjs';
 import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -120,7 +120,7 @@ export async function loadRoutes(dept, cacheDir, log = () => {}) {
   const bb = await deptBbox(dept, log);
   if (!bb) return [];
   const q = `[out:json][timeout:240][maxsize:536870912];
-area["ref:INSEE"="${dept}"]["admin_level"="6"]->.d;
+${deptArea(dept)}
 rel(area.d)["type"="route"]["route"~"^(hiking|foot|bicycle|mtb)$"];
 out body geom(${bb.join(',')});`;
   try {
