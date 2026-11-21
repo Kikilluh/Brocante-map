@@ -14,7 +14,8 @@ const KNOWN = {
   '37': [46.73, -0.06, 47.72, 1.37],
   '45': [47.47, 1.50, 48.35, 3.14],
   '58': [46.64, 2.84, 47.60, 4.24],
-  '69': [45.45, 4.24, 46.31, 5.17], // Rhône + Métropole de Lyon (deux limites distinctes dans OpenStreetMap)
+  '69': [45.45, 4.24, 46.31, 5.17],
+  '75': [48.81, 2.22, 48.91, 2.47], // Paris (code « 75C » possible dans OpenStreetMap) // Rhône + Métropole de Lyon (deux limites distinctes dans OpenStreetMap)
 };
 
 let cache = null;

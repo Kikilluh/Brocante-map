@@ -35,6 +35,7 @@ export async function overpass(query, timeoutMs = 180000) {
  * « Rhône » (69D) et « Métropole de Lyon » (69M) ; on prend les deux.
  */
 export function deptArea(dept) {
-  const ref = dept === '69' ? '["ref:INSEE"~"^69[DM]?$"]' : `["ref:INSEE"="${dept}"]`;
+  // Paris : code « 75C » (Ville de Paris) dans OpenStreetMap selon les périodes ; on accepte les deux
+  const ref = dept === '69' ? '["ref:INSEE"~"^69[DM]?$"]' : dept === '75' ? '["ref:INSEE"~"^75C?$"]' : `["ref:INSEE"="${dept}"]`;
   return `area${ref}["admin_level"="6"]->.d;`;
 }
